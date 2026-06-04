@@ -1,0 +1,77 @@
+// ===========================
+// SkyLux Design System
+// ===========================
+
+// Color Palette
+$navy-950: #020817;
+$navy-900: #0a1628;
+$navy-800: #0d2240;
+$navy-700: #0f2f5a;
+$navy-600: #1a3a6e;
+$navy-500: #1e4a8a;
+
+$gold-300: #fde68a;
+$gold-400: #f5c842;
+$gold-500: #d4a017;
+$gold-600: #b8880f;
+
+$white: #ffffff;
+$white-90: rgba(255,255,255,0.9);
+$white-70: rgba(255,255,255,0.7);
+$white-60: rgba(255,255,255,0.6);
+$white-40: rgba(255,255,255,0.4);
+$white-20: rgba(255,255,255,0.2);
+$white-10: rgba(255,255,255,0.1);
+$white-05: rgba(255,255,255,0.05);
+
+$success: #22c55e;
+$danger:  #ef4444;
+$warning: #f59e0b;
+$info:    #3b82f6;
+
+// Glassmorphism
+$glass-bg:          rgba(255,255,255,0.07);
+$glass-bg-hover:    rgba(255,255,255,0.12);
+$glass-border:      rgba(255,255,255,0.15);
+$glass-border-gold: rgba(212,160,23,0.4);
+$glass-blur:        blur(12px);
+$glass-blur-heavy:  blur(20px);
+
+// Shadows
+$gold-glow:   0 0 20px rgba(212,160,23,0.35);
+$navy-shadow: 0 8px 32px rgba(0,0,0,0.6);
+$card-shadow: 0 4px 24px rgba(0,0,0,0.45);
+
+// Typography
+$font-display: 'Playfair Display', Georgia, serif;
+$font-body:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+$font-mono:    'JetBrains Mono', 'Fira Code', monospace;
+
+// Spacing
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-2xl: 48px;
+$spacing-3xl: 64px;
+
+// Border Radius
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-xl: 24px;
+$radius-full: 9999px;
+
+// Transitions
+$transition-fast:   all 0.2s ease;
+$transition-base:   all 0.3s ease;
+$transition-slow:   all 0.5s ease;
+
+// Breakpoints
+$bp-xs:     480px;
+$bp-sm:     640px;
+$bp-md:     768px;
+$bp-lg:     1024px;
+$bp-xl:     1280px;
+$bp-2xl:    1440px;

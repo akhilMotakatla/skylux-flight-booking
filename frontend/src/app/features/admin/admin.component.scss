@@ -1,0 +1,51 @@
+@use '../../../styles/variables' as v;
+@use '../../../styles/mixins' as m;
+
+.admin-page { min-height: 100vh; background: v.$navy-950; }
+
+.admin-header {
+  background: linear-gradient(180deg, v.$navy-800, v.$navy-950);
+  border-bottom: 1px solid v.$glass-border;
+  padding: 100px 0 0;
+  h1 { font-size: 2rem; margin-bottom: v.$spacing-xl; }
+}
+
+.tab-bar {
+  display: flex; gap: 0;
+  button {
+    padding: 12px 28px; background: none; border: none;
+    font-size: 14px; font-weight: 500; color: v.$white-60; cursor: pointer;
+    border-bottom: 3px solid transparent; transition: v.$transition-fast;
+    &:hover { color: v.$white; }
+    &.active { color: v.$gold-400; border-bottom-color: v.$gold-400; }
+  }
+}
+
+.admin-body { padding: v.$spacing-xl 0; }
+
+.loading-state { text-align: center; padding: v.$spacing-3xl;
+  .spinner { width: 40px; height: 40px; border: 3px solid v.$glass-border; border-top-color: v.$gold-400; border-radius: 50%; animation: rotate-slow 0.8s linear infinite; margin: auto; }
+}
+
+.table-wrap { overflow-x: auto; padding: 0; border-radius: v.$radius-lg; }
+.empty-row { padding: v.$spacing-2xl; text-align: center; color: v.$white-60; font-size: 14px; }
+
+table {
+  width: 100%; border-collapse: collapse;
+  th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 13px; }
+  th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: v.$white-40; background: rgba(255,255,255,0.03); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.03); }
+  small { font-size: 11px; color: v.$white-60; }
+}
+
+.btn-delete {
+  background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3);
+  color: v.$danger; padding: 5px 12px; border-radius: v.$radius-full;
+  font-size: 12px; cursor: pointer; transition: v.$transition-fast;
+  &:hover { background: rgba(239,68,68,0.25); }
+}
+
+.status-confirmed { color: v.$success; font-weight: 600; font-size: 12px; }
+.status-cancelled { color: v.$danger;  font-weight: 600; font-size: 12px; }
+.status-pending   { color: v.$warning; font-weight: 600; font-size: 12px; }

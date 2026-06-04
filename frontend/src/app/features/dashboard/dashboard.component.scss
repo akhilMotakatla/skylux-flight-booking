@@ -1,0 +1,69 @@
+@use '../../../styles/variables' as v;
+@use '../../../styles/mixins' as m;
+
+.dashboard-page { min-height: 100vh; background: v.$navy-950; }
+
+.dash-header {
+  background: linear-gradient(180deg, v.$navy-800 0%, v.$navy-950 100%);
+  border-bottom: 1px solid v.$glass-border;
+  padding: 100px 0 v.$spacing-2xl;
+
+  .container { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: v.$spacing-xl; }
+  h1 { font-size: 2.5rem; } p { color: v.$white-60; margin-top: v.$spacing-sm; }
+}
+
+.stats-row { display: flex; gap: v.$spacing-md; }
+.stat-card { padding: v.$spacing-lg v.$spacing-xl; text-align: center; min-width: 100px;
+  .stat-num { font-family: v.$font-display; font-size: 2rem; font-weight: 700; }
+  .stat-lbl { font-size: 11px; color: v.$white-60; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+}
+
+.dash-body { padding: v.$spacing-2xl 0; }
+.loading-state { text-align: center; padding: v.$spacing-3xl;
+  .spinner { width: 40px; height: 40px; border: 3px solid v.$glass-border; border-top-color: v.$gold-400; border-radius: 50%; animation: rotate-slow 0.8s linear infinite; margin: auto; }
+}
+.empty-state { padding: v.$spacing-3xl; text-align: center; max-width: 400px; margin: v.$spacing-2xl auto;
+  span { font-size: 48px; display: block; margin-bottom: v.$spacing-lg; }
+  h3 { margin-bottom: v.$spacing-sm; }
+  p  { color: v.$white-60; margin-bottom: v.$spacing-lg; }
+  a  { @include m.btn-gold(); padding: 12px 28px; border-radius: v.$radius-full; font-size: 14px; }
+}
+.section-header { margin-bottom: v.$spacing-lg; h2 { font-size: 1.5rem; } }
+
+.booking-card { margin-bottom: v.$spacing-md; padding: v.$spacing-lg;
+  &.past { opacity: 0.7; }
+}
+.bk-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: v.$spacing-md;
+  .bk-ref { font-family: v.$font-mono; font-size: 13px; color: v.$white-60; }
+}
+.bk-status { padding: 4px 12px; border-radius: v.$radius-full; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  &.status-confirmed { background: rgba(34,197,94,0.15); color: v.$success; border: 1px solid rgba(34,197,94,0.3); }
+  &.status-cancelled { background: rgba(239,68,68,0.15); color: v.$danger;  border: 1px solid rgba(239,68,68,0.3); }
+  &.status-pending   { background: rgba(245,158,11,0.15); color: v.$warning; border: 1px solid rgba(245,158,11,0.3); }
+}
+.bk-body { display: flex; align-items: center; gap: v.$spacing-xl; flex-wrap: wrap; }
+.bk-airline { min-width: 140px;
+  .airline-code { display: block; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .flight-num   { font-size: 12px; color: v.$white-60; font-family: v.$font-mono; }
+}
+.bk-route { display: flex; align-items: center; gap: v.$spacing-lg; flex: 1; }
+.rt-point { text-align: center;
+  .iata { font-family: v.$font-display; font-size: 20px; font-weight: 700; }
+  .city { font-size: 11px; color: v.$white-60; }
+  .time { font-size: 16px; font-weight: 600; margin-top: 4px; }
+  .date { font-size: 11px; color: v.$white-60; }
+}
+.rt-line { flex: 1; text-align: center; color: v.$gold-400;
+  display: flex; align-items: center; gap: 4px;
+  span { flex: 1; height: 1px; background: v.$glass-border; }
+  .rt-dur { font-size: 11px; color: v.$white-60; white-space: nowrap; margin-top: 4px; }
+}
+.bk-meta { display: flex; gap: v.$spacing-lg; flex-wrap: wrap;
+  .meta-item { text-align: center; span { display: block; font-size: 10px; color: v.$white-40; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; } strong { font-size: 13px; } }
+}
+.bk-actions { display: flex; justify-content: flex-end; margin-top: v.$spacing-md;
+  .btn-danger { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: v.$danger; padding: 8px 18px; border-radius: v.$radius-full; font-size: 13px; cursor: pointer; transition: v.$transition-fast;
+    &:hover:not(:disabled) { background: rgba(239,68,68,0.25); }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
+}

@@ -1,0 +1,190 @@
+@use '../../../../styles/variables' as v;
+@use '../../../../styles/mixins' as m;
+
+.results-page { min-height: 100vh; background: v.$navy-950; padding-bottom: v.$spacing-3xl; }
+
+.results-header {
+  background: rgba(10,22,40,0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid v.$glass-border;
+  padding: v.$spacing-lg 0;
+  position: sticky; top: 72px; z-index: 50;
+
+  .container { display: flex; align-items: center; gap: v.$spacing-lg; flex-wrap: wrap; }
+
+  .back-btn { @include m.btn-ghost(); padding: 8px 16px; border-radius: v.$radius-full; font-size: 13px; }
+
+  .route-info {
+    display: flex; align-items: center; gap: v.$spacing-sm; flex: 1;
+    .iata { font-family: v.$font-display; font-size: 20px; font-weight: 700; }
+    .arrow { color: v.$gold-400; font-size: 14px; }
+    .meta { font-size: 13px; color: v.$white-60; margin-left: v.$spacing-sm; }
+  }
+
+  .sort-bar {
+    display: flex; align-items: center; gap: v.$spacing-sm;
+    span { font-size: 12px; color: v.$white-60; }
+    button {
+      background: none; border: 1px solid v.$glass-border;
+      padding: 5px 12px; border-radius: v.$radius-full;
+      font-size: 12px; color: v.$white-60; cursor: pointer;
+      transition: v.$transition-fast;
+      &.active, &:hover { border-color: v.$gold-400; color: v.$gold-400; }
+    }
+  }
+}
+
+.results-body {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: v.$spacing-xl;
+  padding-top: v.$spacing-xl;
+
+  @include m.respond-to('lg') { grid-template-columns: 1fr; }
+}
+
+.filters {
+  padding: v.$spacing-lg;
+  height: fit-content;
+  position: sticky; top: 140px;
+  @include m.respond-to('lg') { position: static; }
+
+  h3 { font-size: 16px; margin-bottom: v.$spacing-lg; }
+}
+
+.filter-group {
+  margin-bottom: v.$spacing-lg;
+  border-bottom: 1px solid v.$glass-border;
+  padding-bottom: v.$spacing-lg;
+
+  & > label:first-child { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: v.$white-60; margin-bottom: 10px; }
+
+  input[type="range"] { width: 100%; accent-color: v.$gold-400; cursor: pointer; }
+}
+
+.checkbox-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: v.$white-70;
+  cursor: pointer; padding: 4px 0;
+  &:hover { color: v.$white; }
+  input[type="checkbox"] { accent-color: v.$gold-400; width: 14px; height: 14px; }
+}
+
+.result-count { font-size: 13px; color: v.$white-60; margin-bottom: v.$spacing-lg; }
+
+.skeleton-card { height: 120px; border-radius: v.$radius-lg; margin-bottom: v.$spacing-md; }
+
+.error-state, .empty-state {
+  padding: v.$spacing-3xl v.$spacing-xl;
+  text-align: center;
+  span { font-size: 48px; display: block; margin-bottom: v.$spacing-lg; }
+  h3 { margin-bottom: v.$spacing-sm; }
+  p  { color: v.$white-60; margin-bottom: v.$spacing-lg; }
+  .btn-gold { padding: 12px 28px; border-radius: v.$radius-full; cursor: pointer; }
+}
+
+.flight-card {
+  margin-bottom: v.$spacing-md;
+  overflow: hidden;
+  transition: v.$transition-base;
+  &:hover { border-color: rgba(212,160,23,0.3); }
+
+  .card-main {
+    display: grid;
+    grid-template-columns: 180px 1fr auto;
+    gap: v.$spacing-lg;
+    align-items: center;
+    padding: v.$spacing-lg;
+    cursor: pointer;
+
+    @include m.respond-to('md') { grid-template-columns: 1fr; gap: v.$spacing-md; }
+  }
+}
+
+.airline-info {
+  display: flex; align-items: center; gap: v.$spacing-sm;
+  .airline-logo {
+    width: 44px; height: 44px;
+    background: rgba(212,160,23,0.1);
+    border: 1px solid rgba(212,160,23,0.2);
+    border-radius: v.$radius-sm;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; font-family: v.$font-mono;
+    color: v.$gold-400;
+  }
+  .airline-name { font-weight: 600; font-size: 14px; }
+  .flight-num   { font-size: 12px; color: v.$white-60; font-family: v.$font-mono; }
+}
+
+.route-times {
+  display: flex; align-items: center; gap: v.$spacing-lg;
+  @include m.respond-to('md') { justify-content: space-between; }
+}
+
+.time-block {
+  text-align: center;
+  .time { font-family: v.$font-display; font-size: 22px; font-weight: 700; }
+  .iata-code { font-family: v.$font-mono; font-size: 14px; font-weight: 700; color: v.$gold-400; }
+  .city { font-size: 11px; color: v.$white-60; }
+}
+
+.duration-block {
+  flex: 1; text-align: center;
+  .dur-line {
+    display: flex; align-items: center; gap: 4px; color: v.$white-40; font-size: 12px;
+    span { flex: 1; height: 1px; background: v.$glass-border; }
+  }
+  .dur-text { font-size: 12px; color: v.$white-60; margin: 4px 0; }
+  .class-badge {
+    background: linear-gradient(135deg, #f5c842, #d4a017);
+    color: #020817;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+}
+
+.price-block {
+  text-align: right;
+  .price { font-family: v.$font-display; font-size: 28px; font-weight: 900; }
+  .seats { font-size: 11px; color: v.$warning; margin: 4px 0 12px; }
+  .book-btn { padding: 10px 22px; border-radius: v.$radius-full; font-size: 13px; font-weight: 700; cursor: pointer; }
+}
+
+.stop-badge {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; padding: 2px 8px;
+  border-radius: v.$radius-full; margin-bottom: 2px;
+  background: rgba(245,158,11,0.15); color: v.$warning;
+  border: 1px solid rgba(245,158,11,0.3);
+  &.direct { background: rgba(34,197,94,0.12); color: v.$success; border-color: rgba(34,197,94,0.3); }
+}
+
+.card-extra {
+  display: flex; flex-wrap: wrap; gap: v.$spacing-md;
+  padding: v.$spacing-md v.$spacing-lg;
+  border-top: 1px solid v.$glass-border;
+  background: rgba(255,255,255,0.03);
+
+  .amenity {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: v.$white-70;
+    span { font-size: 16px; }
+  }
+}
+
+.connection-info {
+  width: 100%;
+  display: flex; flex-direction: column; gap: 4px;
+  padding: v.$spacing-sm v.$spacing-md;
+  background: rgba(245,158,11,0.06);
+  border: 1px solid rgba(245,158,11,0.15);
+  border-radius: v.$radius-sm;
+  margin-bottom: v.$spacing-sm;
+
+  .conn-leg { font-size: 12px; color: v.$white-70; font-family: v.$font-mono; }
+  .conn-layover { font-size: 11px; color: v.$warning; font-weight: 600; padding: 2px 0; }
+}

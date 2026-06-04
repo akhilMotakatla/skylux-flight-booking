@@ -1,0 +1,89 @@
+@use '../../../styles/variables' as v;
+@use '../../../styles/mixins' as m;
+
+.footer {
+  background: v.$navy-950;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: v.$spacing-3xl 0 v.$spacing-xl;
+  margin-top: auto;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: v.$spacing-2xl;
+  margin-bottom: v.$spacing-2xl;
+
+  @include m.respond-to('lg') { grid-template-columns: 1fr 1fr; }
+  @include m.respond-to('sm') { grid-template-columns: 1fr; }
+}
+
+.footer-brand {
+  .logo-text {
+    font-family: v.$font-display;
+    font-size: 28px;
+    font-weight: 700;
+    color: v.$white;
+    margin-bottom: v.$spacing-md;
+    .gold { @include m.gold-text(); }
+  }
+  p {
+    font-size: 14px;
+    color: v.$white-60;
+    line-height: 1.7;
+    margin-bottom: v.$spacing-lg;
+  }
+  .socials {
+    display: flex;
+    gap: v.$spacing-md;
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px; height: 36px;
+      background: v.$glass-bg;
+      border: 1px solid v.$glass-border;
+      border-radius: v.$radius-sm;
+      color: v.$white-70;
+      font-size: 14px;
+      text-decoration: none;
+      transition: v.$transition-fast;
+      &:hover { border-color: v.$gold-400; color: v.$gold-400; }
+    }
+  }
+}
+
+.footer-col {
+  h4 {
+    font-family: v.$font-body;
+    font-size: 13px;
+    font-weight: 600;
+    color: v.$white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: v.$spacing-lg;
+  }
+  a {
+    display: block;
+    font-size: 14px;
+    color: v.$white-60;
+    text-decoration: none;
+    margin-bottom: 10px;
+    transition: v.$transition-fast;
+    &:hover { color: v.$gold-400; padding-left: 4px; }
+  }
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: v.$spacing-lg;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: v.$spacing-md;
+
+  p { font-size: 13px; color: v.$white-40; }
+  .payments { font-size: 12px; color: v.$white-40; }
+
+  @include m.respond-to('sm') { flex-direction: column; text-align: center; }
+}

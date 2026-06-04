@@ -1,0 +1,103 @@
+<div class="dashboard-page">
+  <div class="dash-header">
+    <div class="container">
+      <div class="welcome">
+        <h1>My <span class="gold-text">Dashboard</span></h1>
+        <p>Welcome back, {{ auth.user()?.name }}!</p>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card glass-card">
+          <div class="stat-num gold-text">{{ bookings().length }}</div>
+          <div class="stat-lbl">Total Bookings</div>
+        </div>
+        <div class="stat-card glass-card">
+          <div class="stat-num gold-text">{{ upcoming.length }}</div>
+          <div class="stat-lbl">Upcoming</div>
+        </div>
+        <div class="stat-card glass-card">
+          <div class="stat-num gold-text">{{ past.length }}</div>
+          <div class="stat-lbl">Completed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container dash-body">
+    @if (loading()) {
+      <div class="loading-state"><div class="spinner"></div></div>
+    } @else if (!bookings().length) {
+      <div class="empty-state glass-card">
+        <span>✈️</span>
+        <h3>No bookings yet</h3>
+        <p>Start your journey by searching for flights.</p>
+        <a href="/" class="btn-gold">Search Flights</a>
+      </div>
+    } @else {
+      @if (upcoming.length) {
+        <div class="section-header">
+          <h2>Upcoming <span class="gold-text">Flights</span></h2>
+        </div>
+        @for (b of upcoming; track b.id) {
+          <div class="booking-card glass-card fade-up">
+            <ng-container *ngTemplateOutlet="bookingTpl; context:{b}"></ng-container>
+          </div>
+        }
+      }
+
+      @if (past.length) {
+        <div class="section-header" style="margin-top: 2rem">
+          <h2>Past <span class="gold-text">Trips</span></h2>
+        </div>
+        @for (b of past; track b.id) {
+          <div class="booking-card glass-card fade-up past">
+            <ng-container *ngTemplateOutlet="bookingTpl; context:{b}"></ng-container>
+          </div>
+        }
+      }
+    }
+  </div>
+</div>
+
+<ng-template #bookingTpl let-b="b">
+  <div class="bk-header">
+    <div class="bk-ref">REF: SKY-{{ b.id.toString().padStart(6,'0') }}</div>
+    <div class="bk-status" [class]="'status-' + b.status.toLowerCase()">{{ b.status }}</div>
+  </div>
+  <div class="bk-body">
+    <div class="bk-airline">
+      <span class="airline-code">{{ b.airlineName }}</span>
+      <span class="flight-num">{{ b.flightNumber }}</span>
+    </div>
+    <div class="bk-route">
+      <div class="rt-point">
+        <div class="iata">{{ b.departureIATA }}</div>
+        <div class="city">{{ b.departureCity }}</div>
+        <div class="time">{{ b.departureTime | date:'HH:mm' }}</div>
+        <div class="date">{{ b.departureTime | date:'EEE, MMM d' }}</div>
+      </div>
+      <div class="rt-line">
+        <span></span>✈<span></span>
+        <div class="rt-dur">{{ formatDuration(b.departureTime, b.arrivalTime) }}</div>
+      </div>
+      <div class="rt-point">
+        <div class="iata">{{ b.arrivalIATA }}</div>
+        <div class="city">{{ b.arrivalCity }}</div>
+        <div class="time">{{ b.arrivalTime | date:'HH:mm' }}</div>
+        <div class="date">{{ b.arrivalTime | date:'EEE, MMM d' }}</div>
+      </div>
+    </div>
+    <div class="bk-meta">
+      <div class="meta-item"><span>Class</span><strong>{{ b.class }}</strong></div>
+      <div class="meta-item"><span>Seats</span><strong>{{ b.seatNumbers }}</strong></div>
+      <div class="meta-item"><span>Passengers</span><strong>{{ b.passengers?.length || 1 }}</strong></div>
+      <div class="meta-item"><span>Total</span><strong class="gold-text">${{ b.totalPrice | number:'1.2-2' }}</strong></div>
+    </div>
+  </div>
+  <div class="bk-actions">
+    @if (b.status === 'Confirmed' && !isPast(b)) {
+      <button class="btn-danger" (click)="cancel(b.id)" [disabled]="cancelling()===b.id">
+        {{ cancelling()===b.id ? 'Cancelling…' : 'Cancel Booking' }}
+      </button>
+    }
+  </div>
+</ng-template>

@@ -1,0 +1,168 @@
+@use 'styles/variables' as v;
+@use 'styles/mixins' as m;
+@use 'styles/animations';
+@use 'styles/glassmorphism';
+
+// Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+// ===========================
+// Global Reset & Base
+// ===========================
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: v.$font-body;
+  background-color: v.$navy-950;
+  color: v.$white;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// ===========================
+// Typography
+// ===========================
+h1, h2, h3, h4, h5, h6 {
+  font-family: v.$font-display;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+h1 { font-size: clamp(2rem, 5vw, 4rem); }
+h2 { font-size: clamp(1.5rem, 3vw, 2.5rem); }
+h3 { font-size: clamp(1.2rem, 2.5vw, 1.8rem); }
+
+p { color: v.$white-70; }
+
+a {
+  color: v.$gold-400;
+  text-decoration: none;
+  transition: v.$transition-fast;
+  &:hover { color: v.$gold-300; }
+}
+
+// ===========================
+// Utility Classes
+// ===========================
+.gold-text {
+  @include m.gold-text();
+}
+
+.section-title {
+  font-family: v.$font-display;
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  margin-bottom: v.$spacing-lg;
+
+  .accent { @include m.gold-text(); }
+}
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 v.$spacing-lg;
+
+  @include m.respond-to('md') { padding: 0 v.$spacing-md; }
+}
+
+.section-padding {
+  padding: v.$spacing-3xl 0;
+  @include m.respond-to('md') { padding: v.$spacing-2xl 0; }
+}
+
+// ===========================
+// Form Elements
+// ===========================
+input, select, textarea {
+  font-family: v.$font-body;
+  font-size: 14px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+// ===========================
+// Scrollbar
+// ===========================
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: v.$navy-900; }
+::-webkit-scrollbar-thumb {
+  background: v.$navy-600;
+  border-radius: v.$radius-full;
+  &:hover { background: v.$gold-500; }
+}
+
+// ===========================
+// Loading States
+// ===========================
+.skeleton {
+  background: linear-gradient(90deg, v.$navy-800 25%, v.$navy-700 50%, v.$navy-800 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: v.$radius-sm;
+}
+
+// ===========================
+// NProgress-style Top Bar
+// ===========================
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, v.$gold-400, v.$gold-600);
+  z-index: 9999;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(212,160,23,0.7);
+}
+
+// ===========================
+// Divider
+// ===========================
+.gold-divider {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, v.$gold-400, v.$gold-600);
+  border-radius: v.$radius-full;
+  margin: v.$spacing-md 0;
+}
+
+// ===========================
+// Chips / Tags
+// ===========================
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: v.$radius-full;
+  font-size: 12px;
+  font-weight: 500;
+  background: v.$glass-bg;
+  border: 1px solid v.$glass-border;
+  color: v.$white-70;
+  cursor: pointer;
+  transition: v.$transition-fast;
+  &:hover {
+    background: v.$glass-bg-hover;
+    border-color: v.$gold-400;
+    color: v.$gold-400;
+  }
+  &.active {
+    background: linear-gradient(135deg, rgba(212,160,23,0.2), rgba(245,200,66,0.15));
+    border-color: v.$gold-400;
+    color: v.$gold-400;
+  }
+}

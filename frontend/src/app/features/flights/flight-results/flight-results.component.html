@@ -1,0 +1,128 @@
+<div class="results-page">
+  <!-- Header -->
+  <div class="results-header">
+    <div class="container">
+      <button class="back-btn" (click)="goHome()">← Back</button>
+      <div class="route-info">
+        <span class="iata">{{ from }}</span>
+        <span class="arrow">✈</span>
+        <span class="iata">{{ to }}</span>
+        <span class="meta">{{ date | date:'EEE, MMM d' }} · {{ passengers }} pax · {{ flightClass }}</span>
+      </div>
+      <div class="sort-bar">
+        <span>Sort by:</span>
+        <button [class.active]="sortBy()==='price'"     (click)="sortBy.set('price');    applyFilters()">Price</button>
+        <button [class.active]="sortBy()==='duration'"  (click)="sortBy.set('duration'); applyFilters()">Duration</button>
+        <button [class.active]="sortBy()==='departure'" (click)="sortBy.set('departure');applyFilters()">Departure</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container results-body">
+    <!-- Sidebar Filters -->
+    <aside class="filters glass-card">
+      <h3>Filters</h3>
+
+      <div class="filter-group">
+        <label>Max Price: <span class="gold-text">${{ maxPrice() }}</span></label>
+        <input type="range" min="100" max="5000" step="50"
+               [value]="maxPrice()" (input)="maxPrice.set(+$any($event.target).value); applyFilters()" />
+      </div>
+
+      @if (allAirlines().length) {
+        <div class="filter-group">
+          <label>Airlines</label>
+          @for (airline of allAirlines(); track airline) {
+            <label class="checkbox-label">
+              <input type="checkbox" [checked]="selectedAirlines().includes(airline)" (change)="toggleAirline(airline)" />
+              {{ airline }}
+            </label>
+          }
+        </div>
+      }
+    </aside>
+
+    <!-- Results -->
+    <div class="flights-list">
+      @if (loading()) {
+        <div class="loading-state">
+          @for (i of [1,2,3,4]; track i) {
+            <div class="skeleton-card skeleton"></div>
+          }
+        </div>
+      } @else if (error()) {
+        <div class="error-state glass-card">
+          <span>⚠️</span><p>{{ error() }}</p>
+          <button class="btn-gold" (click)="loadFlights()">Retry</button>
+        </div>
+      } @else if (!filtered().length) {
+        <div class="empty-state glass-card">
+          <span>✈️</span>
+          <h3>No flights found</h3>
+          <p>Try different dates or adjust your filters.</p>
+          <button class="btn-gold" (click)="goHome()">New Search</button>
+        </div>
+      } @else {
+        <p class="result-count">{{ filtered().length }} flights found</p>
+        @for (flight of filtered(); track flight.id) {
+          <div class="flight-card glass-card" [class.expanded]="expandedId()===flight.id">
+            <div class="card-main" (click)="toggleExpand(flight.id)">
+              <div class="airline-info">
+                <div class="airline-logo">{{ flight.airlineCode }}</div>
+                <div>
+                  <div class="airline-name">{{ flight.airlineName }}</div>
+                  <div class="flight-num">{{ flight.flightNumber }}</div>
+                </div>
+              </div>
+
+              <div class="route-times">
+                <div class="time-block">
+                  <div class="time">{{ flight.departureTime | date:'HH:mm' }}</div>
+                  <div class="iata-code">{{ flight.departureIATA }}</div>
+                  <div class="city">{{ flight.departureCity }}</div>
+                </div>
+                <div class="duration-block">
+                  <div class="dur-line"><span></span>✈<span></span></div>
+                  <div class="dur-text">{{ formatDuration(flight.durationMinutes) }}</div>
+                  @if (flight.isConnecting) {
+                    <div class="stop-badge">1 Stop · {{ flight.connectionIATA }}</div>
+                  } @else {
+                    <div class="stop-badge direct">Direct</div>
+                  }
+                  <div class="class-badge">{{ flight.class }}</div>
+                </div>
+                <div class="time-block">
+                  <div class="time">{{ flight.arrivalTime | date:'HH:mm' }}</div>
+                  <div class="iata-code">{{ flight.arrivalIATA }}</div>
+                  <div class="city">{{ flight.arrivalCity }}</div>
+                </div>
+              </div>
+
+              <div class="price-block">
+                <div class="price gold-text">${{ flight.price | number:'1.0-0' }}</div>
+                <div class="seats">{{ flight.availableSeats }} seats left</div>
+                <button class="btn-gold book-btn" (click)="$event.stopPropagation(); book(flight)">Book Now</button>
+              </div>
+            </div>
+
+            @if (expandedId() === flight.id) {
+              <div class="card-extra fade-in">
+                @if (flight.isConnecting) {
+                  <div class="connection-info">
+                    <span class="conn-leg">Leg 1: {{ flight.departureIATA }} → {{ flight.connectionIATA }} · {{ flight.flightNumber.split('/')[0].trim() }}</span>
+                    <span class="conn-layover">⏱ Layover {{ formatDuration(flight.layoverMinutes!) }} at {{ flight.connectionCity }}</span>
+                    <span class="conn-leg">Leg 2: {{ flight.connectionIATA }} → {{ flight.arrivalIATA }} · {{ flight.leg2FlightNumber }}</span>
+                  </div>
+                }
+                <div class="amenity"><span>🍽️</span> Complimentary meal</div>
+                <div class="amenity"><span>📶</span> Wi-Fi available</div>
+                <div class="amenity"><span>🎬</span> In-flight entertainment</div>
+                <div class="amenity"><span>💼</span> {{ flight.class === 'First' ? '3×32kg' : flight.class === 'Business' ? '2×32kg' : '1×23kg' }} baggage</div>
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+  </div>
+</div>

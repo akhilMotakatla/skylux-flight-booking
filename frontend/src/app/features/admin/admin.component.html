@@ -1,0 +1,98 @@
+<div class="admin-page">
+  <div class="admin-header">
+    <div class="container">
+      <h1>Admin <span class="gold-text">Dashboard</span></h1>
+      <div class="tab-bar">
+        <button [class.active]="activeTab()==='flights'"  (click)="switchTab('flights')">✈ Flights</button>
+        <button [class.active]="activeTab()==='users'"    (click)="switchTab('users')">👥 Users</button>
+        <button [class.active]="activeTab()==='bookings'" (click)="switchTab('bookings')">📋 Bookings</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container admin-body">
+    @if (loading()) {
+      <div class="loading-state"><div class="spinner"></div></div>
+    } @else {
+
+      <!-- FLIGHTS TAB -->
+      @if (activeTab() === 'flights') {
+        <div class="table-wrap glass-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Flight</th><th>Route</th><th>Departure</th>
+                <th>Price</th><th>Seats</th><th>Class</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (f of flights(); track f.id) {
+                <tr>
+                  <td><strong>{{ f.flightNumber }}</strong><br><small>{{ f.airline }}</small></td>
+                  <td class="gold-text">{{ f.from }} → {{ f.to }}</td>
+                  <td>{{ f.departureTime | date:'MMM d, HH:mm' }}</td>
+                  <td>${{ f.price | number:'1.0-0' }}</td>
+                  <td>{{ f.availableSeats }}/{{ f.totalSeats }}</td>
+                  <td><span class="gold-badge">{{ f.class }}</span></td>
+                  <td>
+                    <button class="btn-delete" (click)="deleteFlight(f.id)">Delete</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+          @if (!flights().length) {
+            <div class="empty-row">No flights found</div>
+          }
+        </div>
+      }
+
+      <!-- USERS TAB -->
+      @if (activeTab() === 'users') {
+        <div class="table-wrap glass-card">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Bookings</th><th>Joined</th></tr>
+            </thead>
+            <tbody>
+              @for (u of users(); track u.id) {
+                <tr>
+                  <td>{{ u.id }}</td>
+                  <td><strong>{{ u.name }}</strong></td>
+                  <td>{{ u.email }}</td>
+                  <td><span [class]="u.role==='Admin' ? 'gold-badge' : 'chip'">{{ u.role }}</span></td>
+                  <td>{{ u.bookingCount }}</td>
+                  <td>{{ u.createdAt | date:'MMM d, yyyy' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <!-- BOOKINGS TAB -->
+      @if (activeTab() === 'bookings') {
+        <div class="table-wrap glass-card">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>User</th><th>Route</th><th>Departure</th><th>Status</th><th>Total</th></tr>
+            </thead>
+            <tbody>
+              @for (b of bookings(); track b.id) {
+                <tr>
+                  <td>SKY-{{ b.id.toString().padStart(6,'0') }}</td>
+                  <td>{{ b.userName }}<br><small>{{ b.userEmail }}</small></td>
+                  <td class="gold-text">{{ b.route }}</td>
+                  <td>{{ b.departureTime | date:'MMM d, HH:mm' }}</td>
+                  <td><span [class]="'status-' + b.status.toLowerCase()">{{ b.status }}</span></td>
+                  <td>${{ b.totalPrice | number:'1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+    }
+  </div>
+</div>

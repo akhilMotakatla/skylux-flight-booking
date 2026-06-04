@@ -1,0 +1,70 @@
+@use 'variables' as v;
+@use 'mixins' as m;
+
+.glass-card {
+  @include m.glass-card();
+}
+
+.glass-card-dark {
+  background: rgba(2, 8, 23, 0.75);
+  backdrop-filter: v.$glass-blur;
+  -webkit-backdrop-filter: v.$glass-blur;
+  border: 1px solid v.$glass-border;
+  border-radius: v.$radius-lg;
+  box-shadow: v.$card-shadow;
+}
+
+.glass-input {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid v.$glass-border;
+  border-radius: v.$radius-md;
+  color: v.$white;
+  transition: v.$transition-base;
+  outline: none;
+
+  &::placeholder { color: v.$white-40; }
+
+  &:focus {
+    border-color: v.$gold-400;
+    background: rgba(255,255,255,0.1);
+    box-shadow: 0 0 0 3px rgba(212,160,23,0.15);
+  }
+}
+
+.glass-panel {
+  background: rgba(10, 22, 40, 0.8);
+  backdrop-filter: v.$glass-blur-heavy;
+  -webkit-backdrop-filter: v.$glass-blur-heavy;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: v.$radius-xl;
+}
+
+.btn-gold {
+  @include m.btn-gold();
+  padding: 12px 28px;
+  border-radius: v.$radius-full;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+}
+
+.btn-ghost {
+  @include m.btn-ghost();
+  padding: 10px 24px;
+  border-radius: v.$radius-full;
+  font-size: 14px;
+}
+
+.gold-badge {
+  background: linear-gradient(135deg, v.$gold-400, v.$gold-500);
+  color: v.$navy-950;
+  padding: 3px 10px;
+  border-radius: v.$radius-full;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.status-confirmed { color: v.$success; }
+.status-cancelled { color: v.$danger; }
+.status-pending   { color: v.$warning; }

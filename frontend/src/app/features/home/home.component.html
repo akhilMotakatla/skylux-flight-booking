@@ -1,0 +1,215 @@
+<!-- ═══════════════════════════════════════════════════════
+     HERO SECTION
+═══════════════════════════════════════════════════════ -->
+<section class="hero" [style.--scroll]="scrollY()">
+  <canvas #particleCanvas class="particles-layer"></canvas>
+
+  <div class="hero-bg" [style.transform]="'translateY(' + scrollY() * 0.4 + 'px)'"></div>
+
+  <div class="hero-content container">
+    <div class="hero-text fade-up">
+      <span class="tagline">✈ Premium Global Travel</span>
+      <h1 class="hero-title">
+        Where Will<br>
+        <span class="gold-text">You Fly Next?</span>
+      </h1>
+      <p class="hero-sub">Book luxury flights to 200+ destinations worldwide.</p>
+    </div>
+
+    <!-- Search Widget -->
+    <div class="search-widget glass-card fade-up delay-2">
+      <!-- Trip type tabs -->
+      <div class="trip-tabs">
+        <button [class.active]="tripType()==='one-way'"    (click)="tripType.set('one-way')">One Way</button>
+        <button [class.active]="tripType()==='round-trip'" (click)="tripType.set('round-trip')">Round Trip</button>
+      </div>
+
+      <!-- Airport row -->
+      <div class="airport-row">
+        <div class="ap-field">
+          <label>From</label>
+          <app-airport-autocomplete
+            #fromInput
+            placeholder="Departure city or airport"
+            icon="🛫"
+            (selected)="fromAirport.set($event)"
+          />
+        </div>
+
+        <button class="swap-btn" (click)="swapAirports()" title="Swap">⇄</button>
+
+        <div class="ap-field">
+          <label>To</label>
+          <app-airport-autocomplete
+            #toInput
+            placeholder="Destination city or airport"
+            icon="🛬"
+            (selected)="toAirport.set($event)"
+          />
+        </div>
+      </div>
+
+      <!-- Date + Passengers + Class row -->
+      <div class="options-row">
+        <div class="field">
+          <label>Depart</label>
+          <input type="date" class="glass-input field-input" [(ngModel)]="departDate" [ngModelOptions]="{standalone:true}" (ngModelChange)="departDate.set($event)" />
+        </div>
+
+        @if (tripType() === 'round-trip') {
+          <div class="field">
+            <label>Return</label>
+            <input type="date" class="glass-input field-input" [(ngModel)]="returnDate" [ngModelOptions]="{standalone:true}" (ngModelChange)="returnDate.set($event)" />
+          </div>
+        }
+
+        <div class="field">
+          <label>Passengers</label>
+          <div class="stepper">
+            <button (click)="adjustPassengers(-1)">−</button>
+            <span>{{ passengers() }}</span>
+            <button (click)="adjustPassengers(1)">+</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Class</label>
+          <select class="glass-input field-input" [value]="flightClass()" (change)="flightClass.set($any($event.target).value)">
+            <option>Economy</option>
+            <option>Business</option>
+            <option>First</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn-gold search-btn" (click)="search()">
+        <span>Search Flights</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Three.js Globe -->
+  <div class="globe-container" [style.transform]="'translateY(' + scrollY() * 0.2 + 'px)'">
+    <canvas #globeCanvas class="globe-canvas"></canvas>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     STATS STRIP
+═══════════════════════════════════════════════════════ -->
+<section class="stats-strip">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat fade-up delay-1">
+        <span class="stat-num gold-text">200+</span>
+        <span class="stat-label">Destinations</span>
+      </div>
+      <div class="stat fade-up delay-2">
+        <span class="stat-num gold-text">12</span>
+        <span class="stat-label">Partner Airlines</span>
+      </div>
+      <div class="stat fade-up delay-3">
+        <span class="stat-num gold-text">2M+</span>
+        <span class="stat-label">Happy Travellers</span>
+      </div>
+      <div class="stat fade-up delay-4">
+        <span class="stat-num gold-text">24/7</span>
+        <span class="stat-label">Support</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     POPULAR ROUTES
+═══════════════════════════════════════════════════════ -->
+<section class="section-padding popular-section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <h2 class="section-title">Popular <span class="accent">Routes</span></h2>
+      <div class="gold-divider"></div>
+      <p>Explore our most booked flight routes around the world</p>
+    </div>
+
+    <div class="routes-grid">
+      @for (route of popularRoutes; track route.fromIata) {
+        <div class="route-card glass-card fade-up" (click)="quickSearch(route.fromIata, route.toIata)">
+          <div class="route-emoji">{{ route.img }}</div>
+          <div class="route-info">
+            <div class="route-cities">
+              <span class="city">{{ route.from }}</span>
+              <span class="arrow">✈</span>
+              <span class="city">{{ route.to }}</span>
+            </div>
+            <div class="route-iata">{{ route.fromIata }} → {{ route.toIata }}</div>
+          </div>
+          <div class="route-price">
+            <span class="from">from</span>
+            <span class="price gold-text">${{ route.price }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     WHY CHOOSE US
+═══════════════════════════════════════════════════════ -->
+<section class="section-padding features-section">
+  <div class="container">
+    <div class="section-header fade-up">
+      <h2 class="section-title">Why <span class="accent">SkyLux?</span></h2>
+      <div class="gold-divider"></div>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card glass-card fade-up delay-1">
+        <div class="feat-icon">🌐</div>
+        <h3>Global Reach</h3>
+        <p>Flights to 200+ destinations across 6 continents with 12 premium partner airlines.</p>
+      </div>
+      <div class="feature-card glass-card fade-up delay-2">
+        <div class="feat-icon">💎</div>
+        <h3>Luxury Experience</h3>
+        <p>Curated premium cabins, private suites, and exclusive lounge access worldwide.</p>
+      </div>
+      <div class="feature-card glass-card fade-up delay-3">
+        <div class="feat-icon">🔒</div>
+        <h3>Secure Booking</h3>
+        <p>Bank-level encryption and instant confirmation. Your data is always protected.</p>
+      </div>
+      <div class="feature-card glass-card fade-up delay-4">
+        <div class="feat-icon">🤖</div>
+        <h3>AI Assistant</h3>
+        <p>SkyAssist chatbot helps you find flights, manage bookings, and answer queries 24/7.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     AIRLINES STRIP
+═══════════════════════════════════════════════════════ -->
+<section class="airlines-strip section-padding">
+  <div class="container">
+    <p class="strip-label fade-up">Trusted partner airlines</p>
+    <div class="airlines-scroll fade-up">
+      @for (airline of airlines; track airline.name) {
+        <div class="airline-badge">{{ airline.name }}</div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     CTA BANNER
+═══════════════════════════════════════════════════════ -->
+<section class="cta-section">
+  <div class="cta-bg"></div>
+  <div class="container cta-content fade-up">
+    <h2>Ready for Your Next Adventure?</h2>
+    <p>Join millions of travellers who trust SkyLux for their journeys.</p>
+    <button class="btn-gold cta-btn" (click)="search()">Book Your Flight Now</button>
+  </div>
+</section>

@@ -1,0 +1,40 @@
+# ──────────────────────────────────────────────
+# SkyLux — Root .gitignore
+# ──────────────────────────────────────────────
+
+# ── .NET / Backend ────────────────────────────
+backend/**/bin/
+backend/**/obj/
+backend/**/*.db
+backend/**/*.db-shm
+backend/**/*.db-wal
+backend/**/dotnet-out.txt
+backend/**/dotnet-err.txt
+backend/**/build-errors.txt
+backend/**/Properties/launchSettings.json
+backend/**/.vs/
+backend/**/*.user
+backend/**/appsettings.Development.json
+
+# ── Angular / Frontend ────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.cache/
+
+# ── OS / Editor ───────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/settings.json
+*.suo
+*.ncrunch*
+*~
+
+# ── Claude Code (never commit) ────────────────
+.claude/
+
+# ── Secrets / Env ─────────────────────────────
+*.env
+.env.local
+secrets.json

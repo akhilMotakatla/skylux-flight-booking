@@ -1,0 +1,39 @@
+@use '../../../../styles/variables' as v;
+@use '../../../../styles/mixins' as m;
+
+.auth-page {
+  min-height: 100vh; background: v.$navy-950;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  &::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(26,58,110,0.5) 0%, transparent 70%); pointer-events: none; }
+}
+.particles-layer { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.auth-card {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 440px;
+  padding: v.$spacing-2xl;
+  margin: v.$spacing-xl;
+  transition: transform 0.1s ease;
+  @include m.respond-to('sm') { padding: v.$spacing-xl; }
+}
+.auth-logo { font-family: v.$font-display; font-size: 22px; font-weight: 700; margin-bottom: v.$spacing-xl; letter-spacing: 1px; }
+h2 { font-size: 1.8rem; margin-bottom: v.$spacing-sm; }
+.auth-sub { color: v.$white-60; font-size: 14px; margin-bottom: v.$spacing-xl; }
+.auth-error { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); border-radius: v.$radius-sm; padding: 10px 14px; font-size: 13px; color: #fca5a5; margin-bottom: v.$spacing-lg; }
+form { display: flex; flex-direction: column; gap: v.$spacing-lg; }
+.field { display: flex; flex-direction: column; gap: 6px;
+  label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: v.$white-60; }
+  input { padding: 14px; font-size: 14px; border-radius: v.$radius-md; }
+}
+.auth-btn {
+  @include m.btn-gold(); padding: 15px; border-radius: v.$radius-md; font-size: 15px; width: 100%;
+  &:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+}
+.auth-footer { margin-top: v.$spacing-xl; text-align: center;
+  p { font-size: 14px; color: v.$white-60; }
+  a { color: v.$gold-400; font-weight: 600; }
+}
+.demo-creds { margin-top: v.$spacing-lg; padding: v.$spacing-md; background: rgba(255,255,255,0.04); border-radius: v.$radius-md;
+  .hint { font-size: 11px; color: v.$white-40; margin-bottom: 6px; }
+  code { display: block; font-family: v.$font-mono; font-size: 11px; color: v.$gold-400; cursor: pointer; padding: 3px 0; &:hover { color: v.$gold-300; } }
+}
