@@ -1,7 +1,7 @@
 @use '../../../../styles/variables' as v;
 @use '../../../../styles/mixins' as m;
 
-.auth-page { min-height: 100vh; background: v.$navy-950; display: flex; align-items: center; justify-content: center; padding: v.$spacing-xl;
+.auth-page { min-height: 100vh; background: rgba(2,8,23,0.6); display: flex; align-items: center; justify-content: center; padding: v.$spacing-xl;
   &::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(26,58,110,0.4) 0%, transparent 70%); pointer-events: none; }
 }
 .auth-card { position: relative; width: 100%; max-width: 440px; padding: v.$spacing-2xl; transition: transform 0.1s ease; }

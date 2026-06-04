@@ -1,7 +1,7 @@
 @use '../../../../styles/variables' as v;
 @use '../../../../styles/mixins' as m;
 
-.results-page { min-height: 100vh; background: v.$navy-950; padding-bottom: v.$spacing-3xl; }
+.results-page { min-height: 100vh; background: rgba(2,8,23,0.75); padding-bottom: v.$spacing-3xl; }
 
 .results-header {
   background: rgba(10,22,40,0.95);

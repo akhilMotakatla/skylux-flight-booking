@@ -1,7 +1,7 @@
 @use '../../../styles/variables' as v;
 @use '../../../styles/mixins' as m;
 
-.dashboard-page { min-height: 100vh; background: v.$navy-950; }
+.dashboard-page { min-height: 100vh; background: rgba(2,8,23,0.7); }
 
 .dash-header {
   background: linear-gradient(180deg, v.$navy-800 0%, v.$navy-950 100%);

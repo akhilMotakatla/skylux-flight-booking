@@ -8,29 +8,24 @@
   display: flex;
   align-items: center;
   overflow: hidden;
-  background: v.$navy-950;
+  background: transparent; /* 3D airport scene shows through */
 
   &::before {
     content: '';
     position: absolute;
     inset: 0;
+    /* Subtle overlay so text is readable over the 3D scene */
     background:
-      radial-gradient(ellipse 80% 60% at 70% 50%, rgba(26,58,110,0.5) 0%, transparent 70%),
-      radial-gradient(ellipse 50% 50% at 20% 80%, rgba(212,160,23,0.08) 0%, transparent 60%),
-      linear-gradient(180deg, rgba(2,8,23,0.3) 0%, rgba(2,8,23,0.8) 100%);
+      radial-gradient(ellipse 80% 60% at 70% 50%, rgba(26,58,110,0.25) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 50% at 20% 80%, rgba(212,160,23,0.05) 0%, transparent 60%),
+      linear-gradient(180deg, rgba(2,8,23,0.15) 0%, rgba(2,8,23,0.55) 100%);
     z-index: 1;
     pointer-events: none;
   }
 }
 
 .hero-bg {
-  position: absolute;
-  inset: -20%; z-index: 0;
-  background:
-    url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1920&q=80') center/cover,
-    v.$navy-900;
-  opacity: 0.18;
-  will-change: transform;
+  display: none; /* 3D airport background replaces this */
 }
 
 .particles-layer {
@@ -255,7 +250,7 @@
 
 // ─── Stats ──────────────────────────────────────────────────────────────────
 .stats-strip {
-  background: linear-gradient(180deg, v.$navy-950 0%, v.$navy-900 100%);
+  background: linear-gradient(180deg, rgba(2,8,23,0.82) 0%, rgba(10,22,40,0.78) 100%);
   border-top: 1px solid rgba(212,160,23,0.15);
   border-bottom: 1px solid rgba(212,160,23,0.15);
   padding: v.$spacing-2xl 0;
@@ -287,7 +282,7 @@
 }
 
 // ─── Popular Routes ─────────────────────────────────────────────────────────
-.popular-section { background: v.$navy-900; }
+.popular-section { background: rgba(10,22,40,0.72); }
 
 .section-header {
   text-align: center;
@@ -335,7 +330,7 @@
 }
 
 // ─── Features ───────────────────────────────────────────────────────────────
-.features-section { background: v.$navy-950; }
+.features-section { background: rgba(2,8,23,0.68); }
 
 .features-grid {
   display: grid;
@@ -358,7 +353,7 @@
 
 // ─── Airlines ───────────────────────────────────────────────────────────────
 .airlines-strip {
-  background: v.$navy-900;
+  background: rgba(10,22,40,0.70);
   .strip-label {
     text-align: center;
     font-size: 12px; font-weight: 600;

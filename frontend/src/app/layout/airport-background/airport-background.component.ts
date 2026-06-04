@@ -9,7 +9,7 @@ import * as THREE from 'three';
     .airport-bg {
       position: fixed; top: 0; left: 0;
       width: 100vw; height: 100vh;
-      z-index: 0; pointer-events: none;
+      z-index: -1; pointer-events: none;
       display: block;
     }
   `]

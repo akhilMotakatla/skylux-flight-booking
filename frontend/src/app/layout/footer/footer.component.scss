@@ -2,7 +2,7 @@
 @use '../../../styles/mixins' as m;
 
 .footer {
-  background: v.$navy-950;
+  background: rgba(2,8,23,0.88);
   border-top: 1px solid rgba(255,255,255,0.08);
   padding: v.$spacing-3xl 0 v.$spacing-xl;
   margin-top: auto;
