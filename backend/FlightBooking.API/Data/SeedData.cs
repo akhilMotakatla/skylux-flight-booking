@@ -403,7 +403,7 @@ public static class SeedData
             new(){IATA="POA",Name="Salgado Filho Intl Airport",City="Porto Alegre",Country="Brazil",Latitude=-29.9944,Longitude=-51.1714},
             new(){IATA="SSA",Name="Deputado Luís Eduardo Magalhães Intl",City="Salvador",Country="Brazil",Latitude=-12.9086,Longitude=-38.3225},
             new(){IATA="PMW",Name="Brigadeiro Lysias Rodrigues Airport",City="Palmas",Country="Brazil",Latitude=-10.2913,Longitude=-48.3569},
-            new(){IATA="BGF",Name="Bangui M'Poko Intl Airport",City="Bogotá",Country="Colombia",Latitude=4.4919,Longitude=-74.1469},
+            new(){IATA="SMR",Name="Simón Bolívar Intl Airport",City="Santa Marta",Country="Colombia",Latitude=11.1196,Longitude=-74.2306},
             new(){IATA="CLO",Name="Alfonso Bonilla Aragón Intl",City="Cali",Country="Colombia",Latitude=3.5432,Longitude=-76.3816},
             new(){IATA="BAQ",Name="Ernesto Cortissoz Intl",City="Barranquilla",Country="Colombia",Latitude=10.8896,Longitude=-74.7808},
             new(){IATA="AQP",Name="Rodríguez Ballón Intl",City="Arequipa",Country="Peru",Latitude=-16.3411,Longitude=-71.5830},
@@ -417,9 +417,6 @@ public static class SeedData
             new(){IATA="VCP",Name="Campinas Viracopos Intl",City="Campinas",Country="Brazil",Latitude=-23.0074,Longitude=-47.1345},
 
             // ── MORE EUROPE ───────────────────────────────────────────────────
-            new(){IATA="AGP",Name="Málaga-Costa del Sol Airport",City="Málaga",Country="Spain",Latitude=36.6749,Longitude=-4.4991},
-            new(){IATA="ALC",Name="Alicante-Elche Miguel Hernández",City="Alicante",Country="Spain",Latitude=38.2822,Longitude=-0.5582},
-            new(){IATA="PMI",Name="Palma de Mallorca Airport",City="Palma",Country="Spain",Latitude=39.5517,Longitude=2.7388},
             new(){IATA="IBZ",Name="Ibiza Airport",City="Ibiza",Country="Spain",Latitude=38.8729,Longitude=1.3733},
             new(){IATA="TFS",Name="Tenerife South Airport",City="Tenerife",Country="Spain",Latitude=28.0445,Longitude=-16.5725},
             new(){IATA="LPA",Name="Gran Canaria Airport",City="Las Palmas",Country="Spain",Latitude=27.9319,Longitude=-15.3866},
@@ -463,10 +460,8 @@ public static class SeedData
             new(){IATA="EVN",Name="Zvartnots Intl Airport",City="Yerevan",Country="Armenia",Latitude=40.1473,Longitude=44.3959},
             new(){IATA="TBS",Name="Tbilisi Intl Airport",City="Tbilisi",Country="Georgia",Latitude=41.6693,Longitude=44.9547},
             new(){IATA="MSQ",Name="Minsk Intl Airport 2",City="Minsk",Country="Belarus",Latitude=53.8825,Longitude=28.0307},
-            new(){IATA="RIX",Name="Riga Intl Airport",City="Riga",Country="Latvia",Latitude=56.9236,Longitude=23.9711},
             new(){IATA="KUN",Name="Kaunas Airport",City="Kaunas",Country="Lithuania",Latitude=54.9639,Longitude=24.0848},
             new(){IATA="PLQ",Name="Palanga Intl Airport",City="Palanga",Country="Lithuania",Latitude=55.9733,Longitude=21.0939},
-            new(){IATA="TLL",Name="Tallinn Airport",City="Tallinn",Country="Estonia",Latitude=59.4133,Longitude=24.8328},
             new(){IATA="TMP",Name="Tampere-Pirkkala Airport",City="Tampere",Country="Finland",Latitude=61.4141,Longitude=23.6044},
             new(){IATA="OUL",Name="Oulu Airport",City="Oulu",Country="Finland",Latitude=64.9301,Longitude=25.3546},
             new(){IATA="TRD",Name="Trondheim Vaernes Airport",City="Trondheim",Country="Norway",Latitude=63.4578,Longitude=10.9239},
@@ -486,7 +481,6 @@ public static class SeedData
             new(){IATA="MHD",Name="Mashhad Intl Airport",City="Mashhad",Country="Iran",Latitude=36.2352,Longitude=59.6410},
             new(){IATA="SYZ",Name="Shiraz Intl Airport",City="Shiraz",Country="Iran",Latitude=29.5392,Longitude=52.5898},
             new(){IATA="AWZ",Name="Ahvaz Intl Airport",City="Ahvaz",Country="Iran",Latitude=31.3374,Longitude=48.7620},
-            new(){IATA="GYD",Name="Heydar Aliyev Intl Airport",City="Baku",Country="Azerbaijan",Latitude=40.4675,Longitude=50.0467},
             new(){IATA="SAH",Name="Sana'a Intl Airport",City="Sana'a",Country="Yemen",Latitude=15.4763,Longitude=44.2197},
             new(){IATA="ADE",Name="Aden Intl Airport",City="Aden",Country="Yemen",Latitude=12.8295,Longitude=45.0288},
 
