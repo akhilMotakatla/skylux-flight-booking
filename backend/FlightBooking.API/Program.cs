@@ -9,9 +9,19 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
-// Database
+// Database — WAL mode for faster bulk inserts during seeding
 builder.Services.AddDbContext<AppDbContext>(opts =>
-    opts.UseSqlite(config.GetConnectionString("DefaultConnection")));
+    opts.UseSqlite(config.GetConnectionString("DefaultConnection") + ";Mode=ReadWriteCreate"));
+
+// Enable WAL journal mode at startup for much faster writes
+var connStr = config.GetConnectionString("DefaultConnection")!;
+using (var conn = new Microsoft.Data.Sqlite.SqliteConnection(connStr))
+{
+    conn.Open();
+    using var cmd = conn.CreateCommand();
+    cmd.CommandText = "PRAGMA journal_mode=WAL; PRAGMA synchronous=NORMAL; PRAGMA cache_size=-65536;";
+    cmd.ExecuteNonQuery();
+}
 
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

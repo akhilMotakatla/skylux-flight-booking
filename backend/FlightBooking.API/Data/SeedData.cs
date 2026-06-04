@@ -685,11 +685,11 @@ public static class SeedData
             decimal basePx  = (decimal)(distKm * 0.06 + 90);
             int flightMins  = (int)(distKm / 820 * 60) + 55;
 
-            // 5 flights per route per day  (3 classes distributed)
-            for (int day = 1; day <= 14; day++)
+            // 3 flights per route per day (Economy/Business/First), 10 days ahead
+            for (int day = 1; day <= 10; day++)
             {
                 var depDate = DateTime.UtcNow.Date.AddDays(day);
-                for (int slot = 0; slot < 5; slot++)
+                for (int slot = 0; slot < 3; slot++)
                 {
                     var flightClass = classes[slot % 3];
                     var airline     = allAirlines[rng.Next(allAirlines.Count)];
@@ -718,7 +718,7 @@ public static class SeedData
         }
 
         // Insert in batches to avoid SQLite locking
-        const int batchSize = 500;
+        const int batchSize = 2000;
         for (int i = 0; i < flights.Count; i += batchSize)
         {
             await db.Flights.AddRangeAsync(flights.Skip(i).Take(batchSize));
@@ -956,7 +956,7 @@ public static class SeedData
             if (megaHubs.ContainsKey(ap.IATA)) continue;
             var nearest = megaHubs
                 .OrderBy(h => Haversine(ap.Latitude, ap.Longitude, h.Value.lat, h.Value.lon))
-                .Take(3)
+                .Take(2)
                 .Select(h => h.Key)
                 .ToList();
             foreach (var hub in nearest) SafeAdd(ap.IATA, hub);
