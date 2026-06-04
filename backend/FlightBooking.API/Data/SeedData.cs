@@ -324,6 +324,296 @@ public static class SeedData
             new(){IATA="APW",Name="Faleolo Intl Airport",City="Apia",Country="Samoa",Latitude=-13.8300,Longitude=-172.0083},
             new(){IATA="PPT",Name="Faa'a Intl Airport",City="Papeete",Country="French Polynesia",Latitude=-17.5534,Longitude=-149.6063},
             new(){IATA="GUM",Name="Antonio B. Won Pat Intl",City="Hagåtña",Country="Guam",Latitude=13.4834,Longitude=144.7980},
+
+            // ── MORE USA ──────────────────────────────────────────────────────
+            new(){IATA="ABQ",Name="Albuquerque Intl",City="Albuquerque",Country="United States",Latitude=35.0402,Longitude=-106.6091},
+            new(){IATA="BDL",Name="Bradley Intl",City="Hartford",Country="United States",Latitude=41.9389,Longitude=-72.6832},
+            new(){IATA="BUF",Name="Buffalo Niagara Intl",City="Buffalo",Country="United States",Latitude=42.9405,Longitude=-78.7322},
+            new(){IATA="CHS",Name="Charleston Intl",City="Charleston",Country="United States",Latitude=32.8987,Longitude=-80.0405},
+            new(){IATA="DAY",Name="Dayton Intl Airport",City="Dayton",Country="United States",Latitude=39.9024,Longitude=-84.2194},
+            new(){IATA="ELP",Name="El Paso Intl",City="El Paso",Country="United States",Latitude=31.8072,Longitude=-106.3779},
+            new(){IATA="FAT",Name="Fresno Yosemite Intl",City="Fresno",Country="United States",Latitude=36.7762,Longitude=-119.7182},
+            new(){IATA="FLL",Name="Fort Lauderdale-Hollywood Intl",City="Fort Lauderdale",Country="United States",Latitude=26.0726,Longitude=-80.1527},
+            new(){IATA="GEG",Name="Spokane Intl",City="Spokane",Country="United States",Latitude=47.6199,Longitude=-117.5338},
+            new(){IATA="GRR",Name="Gerald R. Ford Intl",City="Grand Rapids",Country="United States",Latitude=42.8808,Longitude=-85.5228},
+            new(){IATA="ICT",Name="Wichita Eisenhower National",City="Wichita",Country="United States",Latitude=37.6499,Longitude=-97.4331},
+            new(){IATA="JAX",Name="Jacksonville Intl",City="Jacksonville",Country="United States",Latitude=30.4941,Longitude=-81.6879},
+            new(){IATA="LEX",Name="Blue Grass Airport",City="Lexington",Country="United States",Latitude=38.0365,Longitude=-84.6059},
+            new(){IATA="MEM",Name="Memphis Intl",City="Memphis",Country="United States",Latitude=35.0424,Longitude=-89.9767},
+            new(){IATA="OKC",Name="Will Rogers World Airport",City="Oklahoma City",Country="United States",Latitude=35.3931,Longitude=-97.6007},
+            new(){IATA="OMA",Name="Eppley Airfield",City="Omaha",Country="United States",Latitude=41.3032,Longitude=-95.8941},
+            new(){IATA="PBI",Name="Palm Beach Intl",City="West Palm Beach",Country="United States",Latitude=26.6832,Longitude=-80.0956},
+            new(){IATA="RNO",Name="Reno-Tahoe Intl",City="Reno",Country="United States",Latitude=39.4991,Longitude=-119.7681},
+            new(){IATA="SAT",Name="San Antonio Intl",City="San Antonio",Country="United States",Latitude=29.5337,Longitude=-98.4698},
+            new(){IATA="SAV",Name="Savannah/Hilton Head Intl",City="Savannah",Country="United States",Latitude=32.1276,Longitude=-81.2021},
+            new(){IATA="SNA",Name="John Wayne Airport",City="Orange County",Country="United States",Latitude=33.6762,Longitude=-117.8682},
+            new(){IATA="TUS",Name="Tucson Intl",City="Tucson",Country="United States",Latitude=32.1161,Longitude=-110.9410},
+            new(){IATA="TYS",Name="McGhee Tyson Airport",City="Knoxville",Country="United States",Latitude=35.8110,Longitude=-83.9940},
+            new(){IATA="XNA",Name="Northwest Arkansas National",City="Fayetteville",Country="United States",Latitude=36.2819,Longitude=-94.3068},
+            new(){IATA="BHM",Name="Birmingham-Shuttlesworth Intl",City="Birmingham",Country="United States",Latitude=33.5629,Longitude=-86.7535},
+            new(){IATA="BOI",Name="Boise Airport",City="Boise",Country="United States",Latitude=43.5644,Longitude=-116.2228},
+            new(){IATA="CID",Name="The Eastern Iowa Airport",City="Cedar Rapids",Country="United States",Latitude=41.8847,Longitude=-91.7108},
+            new(){IATA="COS",Name="Colorado Springs Airport",City="Colorado Springs",Country="United States",Latitude=38.8058,Longitude=-104.7008},
+            new(){IATA="DSM",Name="Des Moines Intl",City="Des Moines",Country="United States",Latitude=41.5340,Longitude=-93.6631},
+            new(){IATA="GRB",Name="Green Bay Austin Straubel Intl",City="Green Bay",Country="United States",Latitude=44.4851,Longitude=-88.1296},
+            new(){IATA="GSP",Name="Greenville-Spartanburg Intl",City="Greenville",Country="United States",Latitude=34.8957,Longitude=-82.2190},
+            new(){IATA="HSV",Name="Huntsville Intl",City="Huntsville",Country="United States",Latitude=34.6372,Longitude=-86.7751},
+            new(){IATA="LFT",Name="Lafayette Regional",City="Lafayette",Country="United States",Latitude=30.2053,Longitude=-91.9876},
+            new(){IATA="LGB",Name="Long Beach Airport",City="Long Beach",Country="United States",Latitude=33.8177,Longitude=-118.1516},
+            new(){IATA="MHT",Name="Manchester-Boston Regional",City="Manchester",Country="United States",Latitude=42.9326,Longitude=-71.4357},
+            new(){IATA="MKE",Name="Milwaukee Mitchell Intl",City="Milwaukee",Country="United States",Latitude=42.9472,Longitude=-87.8966},
+            new(){IATA="MOB",Name="Mobile Regional Airport",City="Mobile",Country="United States",Latitude=30.6913,Longitude=-88.2428},
+            new(){IATA="MSN",Name="Dane County Regional",City="Madison",Country="United States",Latitude=43.1399,Longitude=-89.3375},
+            new(){IATA="MTJ",Name="Montrose Regional Airport",City="Montrose",Country="United States",Latitude=38.5098,Longitude=-107.8938},
+            new(){IATA="PFN",Name="Panama City-Bay County Intl",City="Panama City",Country="United States",Latitude=30.2121,Longitude=-85.6828},
+            new(){IATA="ROC",Name="Greater Rochester Intl",City="Rochester",Country="United States",Latitude=43.1189,Longitude=-77.6724},
+            new(){IATA="SBN",Name="South Bend Intl",City="South Bend",Country="United States",Latitude=41.7087,Longitude=-86.3173},
+            new(){IATA="SGF",Name="Springfield-Branson National",City="Springfield",Country="United States",Latitude=37.2457,Longitude=-93.3886},
+            new(){IATA="SYR",Name="Syracuse Hancock Intl",City="Syracuse",Country="United States",Latitude=43.1112,Longitude=-76.1062},
+
+            // ── MORE CANADA ───────────────────────────────────────────────────
+            new(){IATA="YQB",Name="Quebec City Jean Lesage Intl",City="Quebec City",Country="Canada",Latitude=46.7911,Longitude=-71.3933},
+            new(){IATA="YWG",Name="Winnipeg James Armstrong Richardson Intl",City="Winnipeg",Country="Canada",Latitude=49.9100,Longitude=-97.2399},
+            new(){IATA="YXE",Name="Saskatoon John G. Diefenbaker Intl",City="Saskatoon",Country="Canada",Latitude=52.1708,Longitude=-106.6997},
+            new(){IATA="YXU",Name="London International Airport",City="London",Country="Canada",Latitude=43.0356,Longitude=-81.1531},
+            new(){IATA="YQR",Name="Regina International Airport",City="Regina",Country="Canada",Latitude=50.4319,Longitude=-104.6658},
+            new(){IATA="YKF",Name="Region of Waterloo International Airport",City="Waterloo",Country="Canada",Latitude=43.4608,Longitude=-80.3786},
+            new(){IATA="YXY",Name="Erik Nielsen Whitehorse Intl",City="Whitehorse",Country="Canada",Latitude=60.7096,Longitude=-135.0674},
+            new(){IATA="YZF",Name="Yellowknife Airport",City="Yellowknife",Country="Canada",Latitude=62.4628,Longitude=-114.4403},
+            new(){IATA="YFC",Name="Fredericton International Airport",City="Fredericton",Country="Canada",Latitude=45.8689,Longitude=-66.5372},
+            new(){IATA="YQM",Name="Greater Moncton Roméo LeBlanc Intl",City="Moncton",Country="Canada",Latitude=46.1122,Longitude=-64.6786},
+
+            // ── CARIBBEAN EXTRA ───────────────────────────────────────────────
+            new(){IATA="ANU",Name="V.C. Bird Intl Airport",City="Antigua",Country="Antigua and Barbuda",Latitude=17.1367,Longitude=-61.7927},
+            new(){IATA="BGI",Name="Grantley Adams Intl Airport",City="Bridgetown",Country="Barbados",Latitude=13.0746,Longitude=-59.4925},
+            new(){IATA="GEO",Name="Cheddi Jagan Intl Airport",City="Georgetown",Country="Guyana",Latitude=6.4985,Longitude=-58.2541},
+            new(){IATA="POS",Name="Piarco Intl Airport",City="Port of Spain",Country="Trinidad and Tobago",Latitude=10.5954,Longitude=-61.3372},
+            new(){IATA="PTP",Name="Pointe-à-Pitre Le Raizet",City="Pointe-à-Pitre",Country="Guadeloupe",Latitude=16.2653,Longitude=-61.5318},
+            new(){IATA="SXM",Name="Princess Juliana Intl Airport",City="Saint Martin",Country="Sint Maarten",Latitude=18.0410,Longitude=-63.1089},
+            new(){IATA="UVF",Name="Hewanorra Intl Airport",City="Vieux Fort",Country="Saint Lucia",Latitude=13.7332,Longitude=-60.9526},
+            new(){IATA="AUA",Name="Queen Beatrix Intl Airport",City="Oranjestad",Country="Aruba",Latitude=12.5014,Longitude=-70.0152},
+            new(){IATA="CUR",Name="Hato Intl Airport",City="Willemstad",Country="Curaçao",Latitude=12.1889,Longitude=-68.9598},
+
+            // ── MORE SOUTH AMERICA ────────────────────────────────────────────
+            new(){IATA="BEL",Name="Val de Cans Intl Airport",City="Belém",Country="Brazil",Latitude=-1.3792,Longitude=-48.4763},
+            new(){IATA="CWB",Name="Afonso Pena Intl Airport",City="Curitiba",Country="Brazil",Latitude=-25.5285,Longitude=-49.1758},
+            new(){IATA="FLN",Name="Hercílio Luz Intl Airport",City="Florianópolis",Country="Brazil",Latitude=-27.6703,Longitude=-48.5525},
+            new(){IATA="MAO",Name="Eduardo Gomes Intl Airport",City="Manaus",Country="Brazil",Latitude=-3.0386,Longitude=-60.0497},
+            new(){IATA="NAT",Name="Governador Aluízio Alves Intl",City="Natal",Country="Brazil",Latitude=-5.9111,Longitude=-35.2478},
+            new(){IATA="POA",Name="Salgado Filho Intl Airport",City="Porto Alegre",Country="Brazil",Latitude=-29.9944,Longitude=-51.1714},
+            new(){IATA="SSA",Name="Deputado Luís Eduardo Magalhães Intl",City="Salvador",Country="Brazil",Latitude=-12.9086,Longitude=-38.3225},
+            new(){IATA="PMW",Name="Brigadeiro Lysias Rodrigues Airport",City="Palmas",Country="Brazil",Latitude=-10.2913,Longitude=-48.3569},
+            new(){IATA="BGF",Name="Bangui M'Poko Intl Airport",City="Bogotá",Country="Colombia",Latitude=4.4919,Longitude=-74.1469},
+            new(){IATA="CLO",Name="Alfonso Bonilla Aragón Intl",City="Cali",Country="Colombia",Latitude=3.5432,Longitude=-76.3816},
+            new(){IATA="BAQ",Name="Ernesto Cortissoz Intl",City="Barranquilla",Country="Colombia",Latitude=10.8896,Longitude=-74.7808},
+            new(){IATA="AQP",Name="Rodríguez Ballón Intl",City="Arequipa",Country="Peru",Latitude=-16.3411,Longitude=-71.5830},
+            new(){IATA="CUZ",Name="Alejandro Velasco Astete Intl",City="Cusco",Country="Peru",Latitude=-13.5357,Longitude=-71.9388},
+            new(){IATA="IQT",Name="Coronel Francisco Secada Vignetta Intl",City="Iquitos",Country="Peru",Latitude=-3.7847,Longitude=-73.3088},
+            new(){IATA="MHC",Name="Mocopulli Airport",City="Castro",Country="Chile",Latitude=-42.3408,Longitude=-73.7159},
+            new(){IATA="IQQ",Name="Diego Aracena Intl Airport",City="Iquique",Country="Chile",Latitude=-20.5352,Longitude=-70.1813},
+            new(){IATA="ANF",Name="Cerro Moreno Intl Airport",City="Antofagasta",Country="Chile",Latitude=-23.4445,Longitude=-70.4451},
+            new(){IATA="CBB",Name="Jorge Wilstermann Intl",City="Cochabamba",Country="Bolivia",Latitude=-17.4211,Longitude=-66.1771},
+            new(){IATA="SUC",Name="Sucre Airport",City="Sucre",Country="Bolivia",Latitude=-19.0071,Longitude=-65.2885},
+            new(){IATA="VCP",Name="Campinas Viracopos Intl",City="Campinas",Country="Brazil",Latitude=-23.0074,Longitude=-47.1345},
+
+            // ── MORE EUROPE ───────────────────────────────────────────────────
+            new(){IATA="AGP",Name="Málaga-Costa del Sol Airport",City="Málaga",Country="Spain",Latitude=36.6749,Longitude=-4.4991},
+            new(){IATA="ALC",Name="Alicante-Elche Miguel Hernández",City="Alicante",Country="Spain",Latitude=38.2822,Longitude=-0.5582},
+            new(){IATA="PMI",Name="Palma de Mallorca Airport",City="Palma",Country="Spain",Latitude=39.5517,Longitude=2.7388},
+            new(){IATA="IBZ",Name="Ibiza Airport",City="Ibiza",Country="Spain",Latitude=38.8729,Longitude=1.3733},
+            new(){IATA="TFS",Name="Tenerife South Airport",City="Tenerife",Country="Spain",Latitude=28.0445,Longitude=-16.5725},
+            new(){IATA="LPA",Name="Gran Canaria Airport",City="Las Palmas",Country="Spain",Latitude=27.9319,Longitude=-15.3866},
+            new(){IATA="FUE",Name="Fuerteventura Airport",City="Fuerteventura",Country="Spain",Latitude=28.4527,Longitude=-13.8638},
+            new(){IATA="ACE",Name="Lanzarote Airport",City="Lanzarote",Country="Spain",Latitude=28.9455,Longitude=-13.6052},
+            new(){IATA="SVQ",Name="Seville Airport",City="Seville",Country="Spain",Latitude=37.4180,Longitude=-5.8931},
+            new(){IATA="VLC",Name="Valencia Airport",City="Valencia",Country="Spain",Latitude=39.4893,Longitude=-0.4816},
+            new(){IATA="BIO",Name="Bilbao Airport",City="Bilbao",Country="Spain",Latitude=43.3011,Longitude=-2.9106},
+            new(){IATA="SDR",Name="Santander Airport",City="Santander",Country="Spain",Latitude=43.4272,Longitude=-3.8200},
+            new(){IATA="FAO",Name="Faro Airport",City="Faro",Country="Portugal",Latitude=37.0144,Longitude=-7.9659},
+            new(){IATA="FNC",Name="Madeira Airport",City="Funchal",Country="Portugal",Latitude=32.6979,Longitude=-16.7745},
+            new(){IATA="PDL",Name="João Paulo II Airport",City="Ponta Delgada",Country="Portugal",Latitude=37.7412,Longitude=-25.6979},
+            new(){IATA="TER",Name="Lajes Airport",City="Terceira",Country="Portugal",Latitude=38.7620,Longitude=-27.0908},
+            new(){IATA="CFU",Name="Ioannis Kapodistrias Intl",City="Corfu",Country="Greece",Latitude=39.6019,Longitude=19.9117},
+            new(){IATA="RHO",Name="Diagoras Airport",City="Rhodes",Country="Greece",Latitude=36.4054,Longitude=28.0862},
+            new(){IATA="KGS",Name="Kos Island Intl Airport",City="Kos",Country="Greece",Latitude=36.7933,Longitude=27.0917},
+            new(){IATA="MJT",Name="Mytilene Intl Airport",City="Mytilene",Country="Greece",Latitude=39.0567,Longitude=26.5983},
+            new(){IATA="JMK",Name="Mikonos Airport",City="Mykonos",Country="Greece",Latitude=37.4351,Longitude=25.3481},
+            new(){IATA="JTR",Name="Thira Airport",City="Santorini",Country="Greece",Latitude=36.3992,Longitude=25.4793},
+            new(){IATA="CHQ",Name="Chania Intl Airport",City="Chania",Country="Greece",Latitude=35.5317,Longitude=24.1497},
+            new(){IATA="MLA",Name="Malta Intl Airport",City="Valletta",Country="Malta",Latitude=35.8574,Longitude=14.4775},
+            new(){IATA="LCA",Name="Larnaca Intl Airport",City="Larnaca",Country="Cyprus",Latitude=34.8751,Longitude=33.6249},
+            new(){IATA="PFO",Name="Paphos Intl Airport",City="Paphos",Country="Cyprus",Latitude=34.7180,Longitude=32.4857},
+            new(){IATA="TGD",Name="Podgorica Airport",City="Podgorica",Country="Montenegro",Latitude=42.3594,Longitude=19.2519},
+            new(){IATA="TIV",Name="Tivat Airport",City="Tivat",Country="Montenegro",Latitude=42.4047,Longitude=18.7233},
+            new(){IATA="DBV",Name="Dubrovnik Airport",City="Dubrovnik",Country="Croatia",Latitude=42.5614,Longitude=18.2682},
+            new(){IATA="SPU",Name="Split Airport",City="Split",Country="Croatia",Latitude=43.5389,Longitude=16.2980},
+            new(){IATA="ZAG",Name="Zagreb Airport",City="Zagreb",Country="Croatia",Latitude=45.7429,Longitude=16.0688},
+            new(){IATA="LJU",Name="Ljubljana Jože Pučnik Airport",City="Ljubljana",Country="Slovenia",Latitude=46.2237,Longitude=14.4576},
+            new(){IATA="BTS",Name="Bratislava Airport",City="Bratislava",Country="Slovakia",Latitude=48.1702,Longitude=17.2127},
+            new(){IATA="KSC",Name="Kosice Airport",City="Kosice",Country="Slovakia",Latitude=48.6631,Longitude=21.2411},
+            new(){IATA="CLJ",Name="Cluj-Napoca International Airport",City="Cluj-Napoca",Country="Romania",Latitude=46.7852,Longitude=23.6862},
+            new(){IATA="TSR",Name="Timisoara Traian Vuia Intl",City="Timisoara",Country="Romania",Latitude=45.8099,Longitude=21.3379},
+            new(){IATA="IAS",Name="Iasi Intl Airport",City="Iași",Country="Romania",Latitude=47.1783,Longitude=27.6206},
+            new(){IATA="VAR",Name="Varna Airport",City="Varna",Country="Bulgaria",Latitude=43.2321,Longitude=27.8251},
+            new(){IATA="BOJ",Name="Burgas Airport",City="Burgas",Country="Bulgaria",Latitude=42.5696,Longitude=27.5152},
+            new(){IATA="LWO",Name="Lviv Danylo Halytskyi Intl",City="Lviv",Country="Ukraine",Latitude=49.8125,Longitude=23.9561},
+            new(){IATA="ODS",Name="Odessa Intl Airport",City="Odessa",Country="Ukraine",Latitude=46.4268,Longitude=30.6765},
+            new(){IATA="HRK",Name="Kharkiv Intl Airport",City="Kharkiv",Country="Ukraine",Latitude=49.9248,Longitude=36.2900},
+            new(){IATA="GYD",Name="Heydar Aliyev Intl Airport",City="Baku",Country="Azerbaijan",Latitude=40.4675,Longitude=50.0467},
+            new(){IATA="EVN",Name="Zvartnots Intl Airport",City="Yerevan",Country="Armenia",Latitude=40.1473,Longitude=44.3959},
+            new(){IATA="TBS",Name="Tbilisi Intl Airport",City="Tbilisi",Country="Georgia",Latitude=41.6693,Longitude=44.9547},
+            new(){IATA="MSQ",Name="Minsk Intl Airport 2",City="Minsk",Country="Belarus",Latitude=53.8825,Longitude=28.0307},
+            new(){IATA="RIX",Name="Riga Intl Airport",City="Riga",Country="Latvia",Latitude=56.9236,Longitude=23.9711},
+            new(){IATA="KUN",Name="Kaunas Airport",City="Kaunas",Country="Lithuania",Latitude=54.9639,Longitude=24.0848},
+            new(){IATA="PLQ",Name="Palanga Intl Airport",City="Palanga",Country="Lithuania",Latitude=55.9733,Longitude=21.0939},
+            new(){IATA="TLL",Name="Tallinn Airport",City="Tallinn",Country="Estonia",Latitude=59.4133,Longitude=24.8328},
+            new(){IATA="TMP",Name="Tampere-Pirkkala Airport",City="Tampere",Country="Finland",Latitude=61.4141,Longitude=23.6044},
+            new(){IATA="OUL",Name="Oulu Airport",City="Oulu",Country="Finland",Latitude=64.9301,Longitude=25.3546},
+            new(){IATA="TRD",Name="Trondheim Vaernes Airport",City="Trondheim",Country="Norway",Latitude=63.4578,Longitude=10.9239},
+            new(){IATA="TRF",Name="Oslo Torp Sandefjord Airport",City="Tønsberg",Country="Norway",Latitude=59.1867,Longitude=10.2586},
+            new(){IATA="SVG",Name="Stavanger Airport",City="Stavanger",Country="Norway",Latitude=58.8768,Longitude=5.6378},
+            new(){IATA="MMX",Name="Malmö Airport",City="Malmö",Country="Sweden",Latitude=55.5363,Longitude=13.3762},
+            new(){IATA="LLA",Name="Luleå Airport",City="Luleå",Country="Sweden",Latitude=65.5438,Longitude=22.1220},
+
+            // ── MORE MIDDLE EAST ──────────────────────────────────────────────
+            new(){IATA="SHJ",Name="Sharjah Intl Airport",City="Sharjah",Country="UAE",Latitude=25.3286,Longitude=55.5172},
+            new(){IATA="AAN",Name="Al Ain Intl Airport",City="Al Ain",Country="UAE",Latitude=24.2617,Longitude=55.6092},
+            new(){IATA="GWD",Name="Gwadar Intl Airport",City="Gwadar",Country="Pakistan",Latitude=25.2333,Longitude=62.3295},
+            new(){IATA="NJF",Name="Al Najaf Intl Airport",City="Najaf",Country="Iraq",Latitude=31.9891,Longitude=44.3966},
+            new(){IATA="BSR",Name="Basra Intl Airport",City="Basra",Country="Iraq",Latitude=30.5491,Longitude=47.6621},
+            new(){IATA="ERB",Name="Erbil Intl Airport",City="Erbil",Country="Iraq",Latitude=36.2376,Longitude=43.9632},
+            new(){IATA="ALP",Name="Aleppo Intl Airport",City="Aleppo",Country="Syria",Latitude=36.1807,Longitude=37.2244},
+            new(){IATA="MHD",Name="Mashhad Intl Airport",City="Mashhad",Country="Iran",Latitude=36.2352,Longitude=59.6410},
+            new(){IATA="SYZ",Name="Shiraz Intl Airport",City="Shiraz",Country="Iran",Latitude=29.5392,Longitude=52.5898},
+            new(){IATA="AWZ",Name="Ahvaz Intl Airport",City="Ahvaz",Country="Iran",Latitude=31.3374,Longitude=48.7620},
+            new(){IATA="GYD",Name="Heydar Aliyev Intl Airport",City="Baku",Country="Azerbaijan",Latitude=40.4675,Longitude=50.0467},
+            new(){IATA="SAH",Name="Sana'a Intl Airport",City="Sana'a",Country="Yemen",Latitude=15.4763,Longitude=44.2197},
+            new(){IATA="ADE",Name="Aden Intl Airport",City="Aden",Country="Yemen",Latitude=12.8295,Longitude=45.0288},
+
+            // ── MORE AFRICA ───────────────────────────────────────────────────
+            new(){IATA="ABM",Name="Bamako-Sénou Intl Airport",City="Bamako",Country="Mali",Latitude=12.5335,Longitude=-7.9499},
+            new(){IATA="OUA",Name="Ouagadougou Airport",City="Ouagadougou",Country="Burkina Faso",Latitude=12.3532,Longitude=-1.5124},
+            new(){IATA="MLW",Name="Spriggs Payne Airport",City="Monrovia",Country="Liberia",Latitude=6.2890,Longitude=-10.7587},
+            new(){IATA="FNA",Name="Lungi Intl Airport",City="Freetown",Country="Sierra Leone",Latitude=8.6164,Longitude=-13.1956},
+            new(){IATA="ROB",Name="Roberts Intl Airport",City="Monrovia",Country="Liberia",Latitude=6.2338,Longitude=-10.3623},
+            new(){IATA="SSG",Name="Santa Isabel Airport",City="Malabo",Country="Equatorial Guinea",Latitude=3.7553,Longitude=8.7087},
+            new(){IATA="LBV",Name="Libreville Intl Airport",City="Libreville",Country="Gabon",Latitude=0.4586,Longitude=9.4123},
+            new(){IATA="BZV",Name="Maya-Maya Airport",City="Brazzaville",Country="Republic of the Congo",Latitude=-4.2517,Longitude=15.2531},
+            new(){IATA="FIH",Name="N'Djili Intl Airport",City="Kinshasa",Country="DR Congo",Latitude=-4.3857,Longitude=15.4446},
+            new(){IATA="FBM",Name="Lubumbashi Intl Airport",City="Lubumbashi",Country="DR Congo",Latitude=-11.5913,Longitude=27.5308},
+            new(){IATA="BGF",Name="Bangui M'Poko Intl Airport",City="Bangui",Country="Central African Republic",Latitude=4.3985,Longitude=18.5188},
+            new(){IATA="NDJ",Name="Hassan Djamous Intl Airport",City="N'Djamena",Country="Chad",Latitude=12.1337,Longitude=15.0340},
+            new(){IATA="NIM",Name="Diori Hamani Intl Airport",City="Niamey",Country="Niger",Latitude=13.4815,Longitude=2.1836},
+            new(){IATA="BKO",Name="Modibo Keïta Intl Airport",City="Bamako",Country="Mali",Latitude=12.5335,Longitude=-7.9499},
+            new(){IATA="CKY",Name="Conakry Intl Airport",City="Conakry",Country="Guinea",Latitude=9.5769,Longitude=-13.6120},
+            new(){IATA="BXO",Name="Burao Airport",City="Burao",Country="Somalia",Latitude=9.5253,Longitude=45.5550},
+            new(){IATA="BBO",Name="Berbera Airport",City="Berbera",Country="Somalia",Latitude=10.3892,Longitude=44.9411},
+            new(){IATA="BJL",Name="Banjul Intl Airport",City="Banjul",Country="Gambia",Latitude=13.3380,Longitude=-16.6522},
+            new(){IATA="OXB",Name="Osvaldo Vieira Intl Airport",City="Bissau",Country="Guinea-Bissau",Latitude=11.8948,Longitude=-15.6536},
+            new(){IATA="ISL",Name="Sal Intl Airport",City="Espargos",Country="Cape Verde",Latitude=16.7415,Longitude=-22.9495},
+            new(){IATA="RAI",Name="Francisco Mendes Intl Airport",City="Praia",Country="Cape Verde",Latitude=14.9245,Longitude=-23.4935},
+            new(){IATA="SID",Name="Amílcar Cabral Intl Airport",City="Sal",Country="Cape Verde",Latitude=16.7415,Longitude=-22.9495},
+            new(){IATA="ARE",Name="Antisiranana Airport",City="Antsiranana",Country="Madagascar",Latitude=-12.3532,Longitude=49.2916},
+            new(){IATA="RUN",Name="Roland Garros Airport",City="Saint-Denis",Country="Réunion",Latitude=-20.8871,Longitude=55.5103},
+            new(){IATA="ETA",Name="Eldoret International Airport",City="Eldoret",Country="Kenya",Latitude=0.4045,Longitude=35.2389},
+            new(){IATA="KIS",Name="Kisumu Intl Airport",City="Kisumu",Country="Kenya",Latitude=-0.0861,Longitude=34.7289},
+            new(){IATA="LKO",Name="Chaudhary Charan Singh Intl",City="Lucknow",Country="India",Latitude=26.7606,Longitude=80.8893},
+            new(){IATA="BDQ",Name="Vadodara Airport",City="Vadodara",Country="India",Latitude=22.3362,Longitude=73.2263},
+            new(){IATA="IXC",Name="Shaheed Bhagat Singh Intl",City="Chandigarh",Country="India",Latitude=30.6735,Longitude=76.7885},
+            new(){IATA="JAI",Name="Jaipur Intl Airport",City="Jaipur",Country="India",Latitude=26.8242,Longitude=75.8122},
+            new(){IATA="NAG",Name="Dr. Babasaheb Ambedkar Intl",City="Nagpur",Country="India",Latitude=21.0922,Longitude=79.0472},
+            new(){IATA="PAT",Name="Jay Prakash Narayan Intl Airport",City="Patna",Country="India",Latitude=25.5913,Longitude=85.0880},
+            new(){IATA="BHO",Name="Raja Bhoj Airport",City="Bhopal",Country="India",Latitude=23.2875,Longitude=77.3374},
+            new(){IATA="GAU",Name="Lokpriya Gopinath Bordoloi Intl",City="Guwahati",Country="India",Latitude=26.1061,Longitude=91.5859},
+            new(){IATA="IXJ",Name="Jammu Airport",City="Jammu",Country="India",Latitude=32.6891,Longitude=74.8374},
+            new(){IATA="SXR",Name="Sheikh ul-Alam Intl Airport",City="Srinagar",Country="India",Latitude=33.9871,Longitude=74.7742},
+            new(){IATA="IXB",Name="Bagdogra Airport",City="Siliguri",Country="India",Latitude=26.6812,Longitude=88.3286},
+            new(){IATA="VNS",Name="Lal Bahadur Shastri Intl Airport",City="Varanasi",Country="India",Latitude=25.4524,Longitude=82.8593},
+            new(){IATA="VGA",Name="Vijayawada Airport",City="Vijayawada",Country="India",Latitude=16.5303,Longitude=80.7968},
+            new(){IATA="TRZ",Name="Tiruchirappalli Intl Airport",City="Tiruchirappalli",Country="India",Latitude=10.7654,Longitude=78.7097},
+            new(){IATA="IXZ",Name="Veer Savarkar Intl Airport",City="Port Blair",Country="India",Latitude=11.6412,Longitude=92.7296},
+            new(){IATA="UDR",Name="Maharana Pratap Airport",City="Udaipur",Country="India",Latitude=24.6177,Longitude=73.8961},
+
+            // ── MORE SOUTHEAST ASIA ───────────────────────────────────────────
+            new(){IATA="LGK",Name="Langkawi Intl Airport",City="Langkawi",Country="Malaysia",Latitude=6.3296,Longitude=99.7287},
+            new(){IATA="JHB",Name="Senai Intl Airport",City="Johor Bahru",Country="Malaysia",Latitude=1.6413,Longitude=103.6698},
+            new(){IATA="BKI",Name="Kota Kinabalu Intl Airport",City="Kota Kinabalu",Country="Malaysia",Latitude=5.9372,Longitude=116.0512},
+            new(){IATA="KCH",Name="Kuching Intl Airport",City="Kuching",Country="Malaysia",Latitude=1.4847,Longitude=110.3469},
+            new(){IATA="MYY",Name="Miri Airport",City="Miri",Country="Malaysia",Latitude=4.3220,Longitude=113.9869},
+            new(){IATA="TGG",Name="Sultan Mahmud Airport",City="Kuala Terengganu",Country="Malaysia",Latitude=5.3826,Longitude=103.1034},
+            new(){IATA="UTH",Name="Udon Thani Intl Airport",City="Udon Thani",Country="Thailand",Latitude=17.3864,Longitude=102.7883},
+            new(){IATA="KKC",Name="Khon Kaen Airport",City="Khon Kaen",Country="Thailand",Latitude=16.4666,Longitude=102.7836},
+            new(){IATA="USM",Name="Samui Airport",City="Koh Samui",Country="Thailand",Latitude=9.5479,Longitude=100.0629},
+            new(){IATA="KBV",Name="Krabi Airport",City="Krabi",Country="Thailand",Latitude=8.0992,Longitude=98.9862},
+            new(){IATA="NAW",Name="Narathiwat Airport",City="Narathiwat",Country="Thailand",Latitude=6.5199,Longitude=101.7432},
+            new(){IATA="BPN",Name="Sultan Aji Muhammad Sulaiman Sepinggan",City="Balikpapan",Country="Indonesia",Latitude=-1.2683,Longitude=116.8942},
+            new(){IATA="MDC",Name="Sam Ratulangi Intl Airport",City="Manado",Country="Indonesia",Latitude=1.5493,Longitude=124.9260},
+            new(){IATA="AMQ",Name="Pattimura Airport",City="Ambon",Country="Indonesia",Latitude=-3.7103,Longitude=128.0890},
+            new(){IATA="TIM",Name="Moses Kilangin Airport",City="Timika",Country="Indonesia",Latitude=-4.5283,Longitude=136.8870},
+            new(){IATA="DJJ",Name="Sentani Airport",City="Jayapura",Country="Indonesia",Latitude=-2.5769,Longitude=140.5163},
+            new(){IATA="PKU",Name="Sultan Syarif Kasim II Intl",City="Pekanbaru",Country="Indonesia",Latitude=0.4608,Longitude=101.4449},
+            new(){IATA="PLM",Name="Sultan Mahmud Badaruddin II Intl",City="Palembang",Country="Indonesia",Latitude=-2.8983,Longitude=104.6999},
+            new(){IATA="PDG",Name="Minangkabau Intl Airport",City="Padang",Country="Indonesia",Latitude=-0.7869,Longitude=100.2808},
+            new(){IATA="GTO",Name="Jalaluddin Airport",City="Gorontalo",Country="Indonesia",Latitude=0.6372,Longitude=122.8498},
+            new(){IATA="CXB",Name="Cox's Bazar Airport",City="Cox's Bazar",Country="Bangladesh",Latitude=21.4522,Longitude=91.9639},
+            new(){IATA="ZYL",Name="Sylhet Osmani Intl Airport",City="Sylhet",Country="Bangladesh",Latitude=24.9632,Longitude=91.8676},
+            new(){IATA="CGP",Name="Shah Amanat Intl Airport",City="Chittagong",Country="Bangladesh",Latitude=22.2496,Longitude=91.8133},
+            new(){IATA="RJH",Name="Shah Makhdum Airport",City="Rajshahi",Country="Bangladesh",Latitude=24.4372,Longitude=88.6165},
+            new(){IATA="VCA",Name="Can Tho Intl Airport",City="Cần Thơ",Country="Vietnam",Latitude=10.0851,Longitude=105.7119},
+            new(){IATA="HPH",Name="Cat Bi Intl Airport",City="Hai Phong",Country="Vietnam",Latitude=20.8194,Longitude=106.7249},
+            new(){IATA="PQC",Name="Phu Quoc Intl Airport",City="Phú Quốc",Country="Vietnam",Latitude=10.2270,Longitude=103.9669},
+            new(){IATA="CXR",Name="Cam Ranh Intl Airport",City="Nha Trang",Country="Vietnam",Latitude=11.9982,Longitude=109.2194},
+
+            // ── MORE EAST ASIA ────────────────────────────────────────────────
+            new(){IATA="TAO",Name="Qingdao Jiaodong Intl Airport",City="Qingdao",Country="China",Latitude=36.3661,Longitude=120.0882},
+            new(){IATA="HGH",Name="Hangzhou Xiaoshan Intl Airport",City="Hangzhou",Country="China",Latitude=30.2295,Longitude=120.4340},
+            new(){IATA="XMN",Name="Xiamen Gaoqi Intl Airport",City="Xiamen",Country="China",Latitude=24.5440,Longitude=118.1277},
+            new(){IATA="SHE",Name="Shenyang Taoxian Intl Airport",City="Shenyang",Country="China",Latitude=41.6398,Longitude=123.4832},
+            new(){IATA="DLC",Name="Dalian Zhoushuizi Intl Airport",City="Dalian",Country="China",Latitude=38.9657,Longitude=121.5386},
+            new(){IATA="HRB",Name="Harbin Taiping Intl Airport",City="Harbin",Country="China",Latitude=45.6234,Longitude=126.2501},
+            new(){IATA="CGQ",Name="Changchun Longjia Intl Airport",City="Changchun",Country="China",Latitude=43.9962,Longitude=125.6845},
+            new(){IATA="TNA",Name="Jinan Yaoqiang Intl Airport",City="Jinan",Country="China",Latitude=36.8572,Longitude=117.2158},
+            new(){IATA="CGO",Name="Zhengzhou Xinzheng Intl Airport",City="Zhengzhou",Country="China",Latitude=34.5197,Longitude=113.8409},
+            new(){IATA="NKG",Name="Nanjing Lukou Intl Airport",City="Nanjing",Country="China",Latitude=31.7420,Longitude=118.8620},
+            new(){IATA="NNG",Name="Nanning Wuxu Intl Airport",City="Nanning",Country="China",Latitude=22.6083,Longitude=108.1722},
+            new(){IATA="HAK",Name="Haikou Meilan Intl Airport",City="Haikou",Country="China",Latitude=19.9349,Longitude=110.4589},
+            new(){IATA="SYX",Name="Sanya Phoenix Intl Airport",City="Sanya",Country="China",Latitude=18.3029,Longitude=109.4122},
+            new(){IATA="LHW",Name="Lanzhou Zhongchuan Intl Airport",City="Lanzhou",Country="China",Latitude=36.5152,Longitude=103.6204},
+            new(){IATA="XNN",Name="Xining Caojiabu Airport",City="Xining",Country="China",Latitude=36.5275,Longitude=102.0430},
+            new(){IATA="INC",Name="Yinchuan Hedong Intl Airport",City="Yinchuan",Country="China",Latitude=38.3228,Longitude=106.0093},
+            new(){IATA="HFE",Name="Hefei Xinqiao Intl Airport",City="Hefei",Country="China",Latitude=31.9799,Longitude=116.9968},
+            new(){IATA="KWE",Name="Guiyang Longdongbao Intl Airport",City="Guiyang",Country="China",Latitude=26.5385,Longitude=106.8010},
+            new(){IATA="KWL",Name="Guilin Liangjiang Intl Airport",City="Guilin",Country="China",Latitude=25.2181,Longitude=110.0391},
+            new(){IATA="WNZ",Name="Wenzhou Longwan Intl Airport",City="Wenzhou",Country="China",Latitude=27.9122,Longitude=120.8522},
+            new(){IATA="TXN",Name="Huangshan Tunxi Intl Airport",City="Huangshan",Country="China",Latitude=29.7333,Longitude=118.2556},
+            new(){IATA="MXZ",Name="Meizhou Airport",City="Meizhou",Country="China",Latitude=24.3500,Longitude=116.1333},
+            new(){IATA="OKJ",Name="Okayama Airport",City="Okayama",Country="Japan",Latitude=34.7569,Longitude=133.8551},
+            new(){IATA="HIJ",Name="Hiroshima Airport",City="Hiroshima",Country="Japan",Latitude=34.4361,Longitude=132.9192},
+            new(){IATA="MYJ",Name="Matsuyama Airport",City="Matsuyama",Country="Japan",Latitude=33.8272,Longitude=132.7000},
+            new(){IATA="KMQ",Name="Komatsu Airport",City="Komatsu",Country="Japan",Latitude=36.3946,Longitude=136.4066},
+            new(){IATA="AOJ",Name="Aomori Airport",City="Aomori",Country="Japan",Latitude=40.7347,Longitude=140.6909},
+            new(){IATA="KOJ",Name="Kagoshima Airport",City="Kagoshima",Country="Japan",Latitude=31.8034,Longitude=130.7194},
+            new(){IATA="KMI",Name="Miyazaki Airport",City="Miyazaki",Country="Japan",Latitude=31.8772,Longitude=131.4493},
+            new(){IATA="TYO",Name="Tokyo (all airports)",City="Tokyo",Country="Japan",Latitude=35.6762,Longitude=139.6503},
+            new(){IATA="WUX",Name="Wuxi Sunan Shuofang Intl Airport",City="Wuxi",Country="China",Latitude=31.4944,Longitude=120.4291},
+            new(){IATA="YNJ",Name="Yanji Chaoyangchuan Intl Airport",City="Yanji",Country="China",Latitude=42.8828,Longitude=129.4512},
+            new(){IATA="KHN",Name="Nanchang Changbei Intl Airport",City="Nanchang",Country="China",Latitude=28.8650,Longitude=115.9000},
+
+            // ── MORE PACIFIC & OCEANIA ────────────────────────────────────────
+            new(){IATA="INU",Name="Nauru Intl Airport",City="Yaren",Country="Nauru",Latitude=-0.5470,Longitude=166.9191},
+            new(){IATA="MNI",Name="John A. Osborne Airport",City="Brades",Country="Montserrat",Latitude=16.7914,Longitude=-62.1933},
+            new(){IATA="RAR",Name="Rarotonga Intl Airport",City="Avarua",Country="Cook Islands",Latitude=-21.2026,Longitude=-159.8056},
+            new(){IATA="TBU",Name="Fua'amotu Intl Airport",City="Nukuʻalofa",Country="Tonga",Latitude=-21.2412,Longitude=-175.1496},
+            new(){IATA="VLI",Name="Bauerfield Intl Airport",City="Port Vila",Country="Vanuatu",Latitude=-17.6993,Longitude=168.3201},
+            new(){IATA="HIR",Name="Honiara Intl Airport",City="Honiara",Country="Solomon Islands",Latitude=-9.4280,Longitude=160.0548},
+            new(){IATA="POM",Name="Port Moresby Jackson Intl",City="Port Moresby",Country="Papua New Guinea",Latitude=-9.4434,Longitude=147.2200},
+            new(){IATA="LAE",Name="Nadzab Airport",City="Lae",Country="Papua New Guinea",Latitude=-6.5699,Longitude=146.7260},
+            new(){IATA="MAJ",Name="Marshall Islands Intl Airport",City="Majuro",Country="Marshall Islands",Latitude=7.0648,Longitude=171.2723},
+            new(){IATA="TRW",Name="Bonriki Intl Airport",City="Tarawa",Country="Kiribati",Latitude=1.3816,Longitude=173.1468},
+            new(){IATA="FUN",Name="Funafuti Intl Airport",City="Funafuti",Country="Tuvalu",Latitude=-8.5250,Longitude=179.1960},
+            new(){IATA="SUV",Name="Nausori Intl Airport",City="Suva",Country="Fiji",Latitude=-18.0433,Longitude=178.5590},
+            new(){IATA="CXI",Name="Cassidy Intl Airport",City="Kiritimati",Country="Kiribati",Latitude=1.9861,Longitude=-157.3500},
+            new(){IATA="PHO",Name="Point Hope Airport",City="Point Hope",Country="United States",Latitude=68.3488,Longitude=-166.7987},
         };
 
         await db.Airports.AddRangeAsync(airports);
@@ -371,11 +661,19 @@ public static class SeedData
             await db.SaveChangesAsync();
         }
 
-        // ─── ROUTES ───────────────────────────────────────────────────────────
-        var routes = BuildRoutes();
-
         // ─── GENERATE FLIGHTS ─────────────────────────────────────────────────
         var allAirports = await db.Airports.ToListAsync();
+
+        // ─── ROUTES ───────────────────────────────────────────────────────────
+        var routes = BuildRoutes();
+        // Add hub-spoke routes for every airport not already covered
+        var hubRoutes = BuildHubRoutes(allAirports);
+        var existingSet = new HashSet<string>(routes.Select(r => $"{r.Item1}|{r.Item2}"));
+        foreach (var hr in hubRoutes)
+        {
+            var key = $"{hr.Item1}|{hr.Item2}";
+            if (!existingSet.Contains(key)) { routes.Add(hr); existingSet.Add(key); }
+        }
         var allAirlines = await db.Airlines.ToListAsync();
         var rng = new Random(42);
         var airportMap = allAirports.ToDictionary(a => a.IATA);
@@ -627,6 +925,48 @@ public static class SeedData
         };
         foreach (var (a,b) in longHaul) Add(a,b);
 
+        return r;
+    }
+
+    // ── Algorithmic hub routing: every airport → nearest 3 mega-hubs ──────────
+    public static List<(string, string)> BuildHubRoutes(List<Airport> airports)
+    {
+        var megaHubs = new Dictionary<string, (double lat, double lon)>
+        {
+            ["JFK"]=(40.64,-73.78), ["LAX"]=(33.94,-118.41), ["ORD"]=(41.97,-87.91),
+            ["ATL"]=(33.64,-84.43), ["DFW"]=(32.90,-97.04),  ["MIA"]=(25.80,-80.29),
+            ["SFO"]=(37.62,-122.38),["LHR"]=(51.47,-0.45),   ["CDG"]=(49.01,2.55),
+            ["AMS"]=(52.31,4.77),   ["FRA"]=(50.04,8.56),    ["MUC"]=(48.35,11.78),
+            ["MAD"]=(40.49,-3.57),  ["IST"]=(41.28,28.75),   ["DXB"]=(25.25,55.37),
+            ["DOH"]=(25.27,51.61),  ["SIN"]=(1.36,103.99),   ["HKG"]=(22.31,113.92),
+            ["NRT"]=(35.77,140.39), ["ICN"]=(37.46,126.44),  ["PEK"]=(40.08,116.60),
+            ["BKK"]=(13.69,100.75), ["SYD"]=(-33.94,151.18), ["JNB"]=(-26.14,28.24),
+            ["NBO"]=(-1.32,36.93),  ["ADD"]=(8.98,38.80),    ["GRU"]=(-23.44,-46.47),
+            ["DEL"]=(28.57,77.10),  ["BOM"]=(19.09,72.87),   ["AUH"]=(24.43,54.65),
+            ["KUL"]=(2.75,101.71),  ["YYZ"]=(43.68,-79.62),  ["LIM"]=(-12.02,-77.11),
+            ["BOG"]=(4.70,-74.15),  ["EZE"]=(-34.82,-58.54), ["CAI"]=(30.12,31.41),
+            ["FCO"]=(41.80,12.25),  ["ZRH"]=(47.46,8.55),    ["VIE"]=(48.11,16.57),
+        };
+
+        var r = new List<(string, string)>();
+        var existing = new HashSet<string>();
+        void SafeAdd(string a, string b) {
+            var key1 = $"{a}|{b}"; var key2 = $"{b}|{a}";
+            if (!existing.Contains(key1) && !existing.Contains(key2)) {
+                existing.Add(key1); r.Add((a,b)); r.Add((b,a));
+            }
+        }
+
+        foreach (var ap in airports)
+        {
+            if (megaHubs.ContainsKey(ap.IATA)) continue;
+            var nearest = megaHubs
+                .OrderBy(h => Haversine(ap.Latitude, ap.Longitude, h.Value.lat, h.Value.lon))
+                .Take(3)
+                .Select(h => h.Key)
+                .ToList();
+            foreach (var hub in nearest) SafeAdd(ap.IATA, hub);
+        }
         return r;
     }
 

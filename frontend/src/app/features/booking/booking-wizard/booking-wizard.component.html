@@ -1,222 +1,281 @@
 <div class="wizard-page">
-  <div class="container">
+  <div class="wizard-shell">
 
-    @if (loading()) {
-      <div class="loading-state">
-        <div class="spinner"></div>
-        <p>Loading flight details…</p>
+    <!-- Air Hostess (desktop only, fixed right) -->
+    @if (!loading() && step() < 4) {
+      <div class="hostess-panel">
+        <app-air-hostess [step]="hostessStep" />
       </div>
-    } @else if (error() && !flight()) {
-      <div class="error-state glass-card">
-        <p>{{ error() }}</p>
-        <button class="btn-gold" (click)="goHome()">Back to Search</button>
-      </div>
-    } @else {
+    }
 
-      <!-- Flight Summary Bar -->
-      @if (flight(); as f) {
-        <div class="flight-summary glass-card fade-up">
-          <div class="sum-route">
-            <span class="iata">{{ f.departureIATA }}</span>
-            <span class="arr">✈</span>
-            <span class="iata">{{ f.arrivalIATA }}</span>
-          </div>
-          <div class="sum-meta">
-            {{ f.departureTime | date:'EEE, MMM d · HH:mm' }} → {{ f.arrivalTime | date:'HH:mm' }}
-            · {{ formatDuration(f.durationMinutes) }} · {{ f.airlineName }} {{ f.flightNumber }}
-          </div>
-          <div class="sum-price gold-text">${{ f.price | number:'1.0-0' }} <span>/ pax</span></div>
+    <!-- Main Form -->
+    <div class="wizard-main container">
+
+      @if (loading()) {
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Loading flight details…</p>
         </div>
-      }
-
-      <!-- Step indicator -->
-      @if (step() < 4) {
-        <div class="step-indicator fade-up">
-          @for (s of [1,2,3]; track s) {
-            <div class="step" [class.active]="step()===s" [class.done]="step()>s">
-              <div class="step-circle">{{ step()>s ? '✓' : s }}</div>
-              <div class="step-label">{{ ['Seats','Passengers','Payment'][s-1] }}</div>
-            </div>
-            @if (s < 3) { <div class="step-line" [class.done]="step()>s"></div> }
-          }
+      } @else if (error() && !flight()) {
+        <div class="error-state glass-card">
+          <p>{{ error() }}</p>
+          <button class="btn-gold" (click)="goHome()">Back to Search</button>
         </div>
-      }
+      } @else {
 
-      <!-- STEP 1: Seat Selection -->
-      @if (step() === 1) {
-        <div class="wizard-step fade-up">
-          <h2>Select Your Seat<span class="gold-text">s</span></h2>
-          <p class="step-sub">Choose {{ passengerCount }} seat(s) · Selected: {{ selectedSeats().length }}/{{ passengerCount }}</p>
-
-          <div class="seat-map glass-card">
-            <div class="cabin-label">Cabin</div>
-            <div class="seat-cols">
-              @for (c of cols; track c) {
-                <span class="col-label">{{ c }}</span>
-              }
+        <!-- Flight Summary Bar -->
+        @if (flight(); as f) {
+          <div class="flight-summary glass-card fade-up">
+            <div class="sum-route">
+              <span class="iata">{{ f.departureIATA }}</span>
+              <span class="arr">✈</span>
+              <span class="iata">{{ f.arrivalIATA }}</span>
             </div>
-            @for (row of rows; track row) {
-              <div class="seat-row">
-                <span class="row-num">{{ row }}</span>
-                @for (col of cols; track col) {
-                  <button
-                    class="seat"
-                    [class.occupied]="isSeatOccupied(row+col)"
-                    [class.selected]="isSeatSelected(row+col)"
-                    [disabled]="isSeatOccupied(row+col)"
-                    (click)="toggleSeat(row+col)"
-                    [title]="row+col"
-                  >{{ row }}{{ col }}</button>
-                }
+            <div class="sum-meta">
+              {{ f.departureTime | date:'EEE, MMM d · HH:mm' }} → {{ f.arrivalTime | date:'HH:mm' }}
+              · {{ formatDuration(f.durationMinutes) }} · {{ f.airlineName }} {{ f.flightNumber }}
+            </div>
+            <div class="sum-price gold-text">${{ f.price | number:'1.0-0' }} <span>/ pax</span></div>
+          </div>
+        }
+
+        <!-- Step indicator -->
+        @if (step() < 4) {
+          <div class="step-indicator fade-up">
+            @for (s of [1,2,3]; track s) {
+              <div class="step" [class.active]="step()===s" [class.done]="step()>s">
+                <div class="step-circle">{{ step()>s ? '✓' : s }}</div>
+                <div class="step-label">{{ ['Seats','Passengers','Payment'][s-1] }}</div>
               </div>
+              @if (s < 3) { <div class="step-line" [class.done]="step()>s"></div> }
             }
           </div>
+        }
 
-          <div class="seat-legend">
-            <div class="leg-item"><div class="leg-dot available"></div> Available</div>
-            <div class="leg-item"><div class="leg-dot selected"></div> Selected</div>
-            <div class="leg-item"><div class="leg-dot occupied"></div> Occupied</div>
-          </div>
+        <!-- ══ STEP 1 — Seat Selection ══════════════════════════════════ -->
+        @if (step() === 1) {
+          <div class="wizard-step fade-up">
+            <h2>Select Your Seat<span class="gold-text">s</span></h2>
+            <p class="step-sub">Choose {{ passengerCount }} seat(s) · Selected: {{ selectedSeats().length }}/{{ passengerCount }}</p>
 
-          <div class="step-actions">
-            <button class="btn-ghost" (click)="goHome()">Cancel</button>
-            <button class="btn-gold" (click)="nextStep()">Continue →</button>
-          </div>
-        </div>
-      }
-
-      <!-- STEP 2: Passenger Details -->
-      @if (step() === 2) {
-        <div class="wizard-step fade-up">
-          <h2>Passenger <span class="gold-text">Details</span></h2>
-          <form [formGroup]="form">
-            <div formArrayName="passengers">
-              @for (pg of passengerGroups; track $index) {
-                <div [formGroupName]="$index" class="passenger-card glass-card">
-                  <div class="pax-header">
-                    <span class="pax-num">Passenger {{ $index + 1 }}</span>
-                    <span class="seat-tag">Seat: {{ selectedSeats()[$index] || '—' }}</span>
-                  </div>
-                  <div class="pax-grid">
-                    <div class="field">
-                      <label>First Name *</label>
-                      <input formControlName="firstName" placeholder="John" class="glass-input" />
-                    </div>
-                    <div class="field">
-                      <label>Last Name *</label>
-                      <input formControlName="lastName" placeholder="Doe" class="glass-input" />
-                    </div>
-                    <div class="field">
-                      <label>Passport Number *</label>
-                      <input formControlName="passportNumber" placeholder="AB1234567" class="glass-input" />
-                    </div>
-                    <div class="field">
-                      <label>Date of Birth *</label>
-                      <input formControlName="dateOfBirth" type="date" class="glass-input" />
-                    </div>
-                    <div class="field">
-                      <label>Nationality *</label>
-                      <input formControlName="nationality" placeholder="American" class="glass-input" />
-                    </div>
-                  </div>
+            <div class="seat-map glass-card">
+              <div class="cabin-label">✈ CABIN LAYOUT</div>
+              <div class="seat-header">
+                <span class="row-spacer"></span>
+                @for (c of cols; track c) {
+                  <span class="col-lbl">{{ c }}</span>
+                  @if (c === 'C') { <span class="aisle"></span> }
+                }
+              </div>
+              @for (row of rows; track row) {
+                <div class="seat-row">
+                  <span class="row-num">{{ row }}</span>
+                  @for (col of cols; track col) {
+                    <button
+                      class="seat"
+                      [class.occupied]="isSeatOccupied(row+col)"
+                      [class.selected]="isSeatSelected(row+col)"
+                      [disabled]="isSeatOccupied(row+col)"
+                      (click)="toggleSeat(row+col)"
+                    >{{ row }}{{ col }}</button>
+                    @if (col === 'C') { <span class="aisle-gap"></span> }
+                  }
                 </div>
               }
             </div>
-          </form>
-          <div class="step-actions">
-            <button class="btn-ghost" (click)="prevStep()">← Back</button>
-            <button class="btn-gold" (click)="nextStep()">Continue →</button>
-          </div>
-        </div>
-      }
 
-      <!-- STEP 3: Payment -->
-      @if (step() === 3) {
-        <div class="wizard-step fade-up">
-          <h2>Confirm & <span class="gold-text">Pay</span></h2>
-
-          @if (flight(); as f) {
-            <div class="order-summary glass-card">
-              <h3>Order Summary</h3>
-              <div class="sum-row"><span>{{ f.airlineName }} {{ f.flightNumber }}</span><span>{{ f.class }}</span></div>
-              <div class="sum-row"><span>{{ f.departureIATA }} → {{ f.arrivalIATA }}</span><span>{{ f.departureTime | date:'MMM d, HH:mm' }}</span></div>
-              <div class="sum-row"><span>Seats</span><span>{{ selectedSeats().join(', ') }}</span></div>
-              <div class="sum-row"><span>Passengers</span><span>{{ passengerCount }}</span></div>
-              <div class="sum-row total"><span>Total</span><span class="gold-text">${{ (f.price * passengerCount) | number:'1.2-2' }}</span></div>
-            </div>
-          }
-
-          <!-- Mock Credit Card -->
-          <div class="card-form glass-card" (mouseenter)="cardFlipped.set(false)">
-            <div class="credit-card" [class.flipped]="cardFlipped()">
-              <div class="card-front">
-                <div class="card-chip">💳</div>
-                <div class="card-num">{{ cardNumber || '•••• •••• •••• ••••' }}</div>
-                <div class="card-info">
-                  <span>{{ cardName || 'CARD HOLDER' }}</span>
-                  <span>{{ cardExpiry || 'MM/YY' }}</span>
-                </div>
-              </div>
-              <div class="card-back">
-                <div class="mag-strip"></div>
-                <div class="cvv-area"><span>CVV</span><span class="cvv-val">{{ cardCvv || '•••' }}</span></div>
-              </div>
+            <div class="seat-legend">
+              <div class="leg"><div class="dot available"></div>Available</div>
+              <div class="leg"><div class="dot selected"></div>Selected</div>
+              <div class="leg"><div class="dot occupied"></div>Occupied</div>
             </div>
 
-            <div class="card-inputs">
-              <div class="field"><label>Card Number</label>
-                <input [(ngModel)]="cardNumber" placeholder="1234 5678 9012 3456" class="glass-input" maxlength="19" />
-              </div>
-              <div class="field"><label>Cardholder Name</label>
-                <input [(ngModel)]="cardName" placeholder="John Doe" class="glass-input" />
-              </div>
-              <div class="field-row">
-                <div class="field"><label>Expiry</label>
-                  <input [(ngModel)]="cardExpiry" placeholder="MM/YY" class="glass-input" maxlength="5" />
-                </div>
-                <div class="field"><label>CVV</label>
-                  <input [(ngModel)]="cardCvv" placeholder="•••" class="glass-input" maxlength="3"
-                         (focus)="cardFlipped.set(true)" (blur)="cardFlipped.set(false)" />
-                </div>
-              </div>
+            <div class="step-actions">
+              <button class="btn-ghost" (click)="goHome()">Cancel</button>
+              <button class="btn-gold" (click)="nextStep()">Continue →</button>
             </div>
           </div>
+        }
 
-          @if (error()) {
-            <div class="error-msg">⚠️ {{ error() }}</div>
-          }
-
-          <div class="step-actions">
-            <button class="btn-ghost" (click)="prevStep()">← Back</button>
-            <button class="btn-gold confirm-btn" (click)="confirm()" [disabled]="submitting()">
-              {{ submitting() ? 'Processing…' : '🔒 Confirm Booking' }}
-            </button>
+        <!-- ══ STEP 2 — Passenger Details ══════════════════════════════ -->
+        @if (step() === 2) {
+          <div class="wizard-step fade-up">
+            <h2>Passenger <span class="gold-text">Details</span></h2>
+            <form [formGroup]="form">
+              <div formArrayName="passengers">
+                @for (pg of passengerGroups; track $index) {
+                  <div [formGroupName]="$index" class="pax-card glass-card">
+                    <div class="pax-header">
+                      <span class="pax-num">Passenger {{ $index + 1 }}</span>
+                      <span class="seat-tag">Seat: <strong>{{ selectedSeats()[$index] || '—' }}</strong></span>
+                    </div>
+                    <div class="pax-grid">
+                      <div class="field">
+                        <label>First Name *</label>
+                        <input formControlName="firstName" placeholder="John" class="glass-input" />
+                      </div>
+                      <div class="field">
+                        <label>Last Name *</label>
+                        <input formControlName="lastName" placeholder="Doe" class="glass-input" />
+                      </div>
+                      <div class="field">
+                        <label>Passport Number *</label>
+                        <input formControlName="passportNumber" placeholder="AB1234567" class="glass-input" />
+                      </div>
+                      <div class="field">
+                        <label>Date of Birth *</label>
+                        <input formControlName="dateOfBirth" type="date" class="glass-input" />
+                      </div>
+                      <div class="field">
+                        <label>Nationality *</label>
+                        <input formControlName="nationality" placeholder="American" class="glass-input" />
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </form>
+            <div class="step-actions">
+              <button class="btn-ghost" (click)="prevStep()">← Back</button>
+              <button class="btn-gold" (click)="nextStep()">Continue →</button>
+            </div>
           </div>
-        </div>
+        }
+
+        <!-- ══ STEP 3 — Payment ═════════════════════════════════════════ -->
+        @if (step() === 3) {
+          <div class="wizard-step fade-up">
+            <h2>Confirm & <span class="gold-text">Pay</span></h2>
+
+            @if (flight(); as f) {
+              <div class="order-summary glass-card">
+                <h3>Order Summary</h3>
+                <div class="sum-row"><span>{{ f.airlineName }} {{ f.flightNumber }}</span><span>{{ f.class }}</span></div>
+                <div class="sum-row"><span>{{ f.departureIATA }} → {{ f.arrivalIATA }}</span><span>{{ f.departureTime | date:'MMM d, HH:mm' }}</span></div>
+                <div class="sum-row"><span>Seats</span><span>{{ selectedSeats().join(', ') }}</span></div>
+                <div class="sum-row"><span>{{ passengerCount }} Passenger{{ passengerCount > 1 ? 's' : '' }}</span><span>${{ f.price | number:'1.0-0' }} × {{ passengerCount }}</span></div>
+                <div class="sum-row total"><span>Total</span><span class="gold-text">${{ (f.price * passengerCount) | number:'1.2-2' }}</span></div>
+              </div>
+            }
+
+            <!-- Credit Card -->
+            <div class="card-section glass-card">
+              <!-- Visual Card -->
+              <div class="credit-card-wrap" (mouseenter)="cardFlipped.set(false)">
+                <div class="credit-card" [class.flipped]="cardFlipped()">
+                  <div class="card-front">
+                    <div class="card-brand">{{ cardTypeIcon }}</div>
+                    <div class="card-chip">
+                      <div class="chip-line"></div><div class="chip-line"></div><div class="chip-line"></div>
+                    </div>
+                    <div class="card-num">{{ cardNumber || '•••• •••• •••• ••••' }}</div>
+                    <div class="card-info">
+                      <div><span class="card-label">CARD HOLDER</span><br>{{ cardName || '—' }}</div>
+                      <div><span class="card-label">EXPIRES</span><br>{{ cardExpiry || 'MM/YY' }}</div>
+                    </div>
+                  </div>
+                  <div class="card-back">
+                    <div class="mag-strip"></div>
+                    <div class="sig-strip">
+                      <span>AUTHORISED SIGNATURE</span>
+                      <span class="cvv-val">{{ cardCvv || '•••' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card Inputs -->
+              <div class="card-inputs">
+                <div class="field">
+                  <label>Card Number</label>
+                  <input
+                    [value]="cardNumber"
+                    (input)="onCardNumberInput($event)"
+                    placeholder="1234 5678 9012 3456"
+                    class="glass-input"
+                    inputmode="numeric"
+                    maxlength="19"
+                    autocomplete="cc-number"
+                  />
+                </div>
+                <div class="field">
+                  <label>Cardholder Name</label>
+                  <input
+                    [value]="cardName"
+                    (input)="onNameInput($event)"
+                    placeholder="JOHN DOE"
+                    class="glass-input"
+                    autocomplete="cc-name"
+                  />
+                </div>
+                <div class="field-row">
+                  <div class="field">
+                    <label>Expiry Date</label>
+                    <input
+                      [value]="cardExpiry"
+                      (input)="onExpiryInput($event)"
+                      placeholder="MM/YY"
+                      class="glass-input"
+                      inputmode="numeric"
+                      maxlength="5"
+                      autocomplete="cc-exp"
+                    />
+                  </div>
+                  <div class="field">
+                    <label>CVV</label>
+                    <input
+                      [value]="cardCvv"
+                      (input)="onCvvInput($event)"
+                      placeholder="{{ cardType === 'amex' ? '••••' : '•••' }}"
+                      class="glass-input"
+                      inputmode="numeric"
+                      [attr.maxlength]="cardType === 'amex' ? 4 : 3"
+                      (focus)="cardFlipped.set(true)"
+                      (blur)="cardFlipped.set(false)"
+                      autocomplete="cc-csc"
+                    />
+                  </div>
+                </div>
+                <p class="secure-note">🔒 Payments secured with 256-bit SSL encryption</p>
+              </div>
+            </div>
+
+            @if (error()) {
+              <div class="error-msg">⚠️ {{ error() }}</div>
+            }
+
+            <div class="step-actions">
+              <button class="btn-ghost" (click)="prevStep()">← Back</button>
+              <button class="btn-gold confirm-btn" (click)="confirm()" [disabled]="submitting()">
+                {{ submitting() ? 'Processing…' : '🔒 Confirm & Pay' }}
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- ══ STEP 4 — Confirmation ════════════════════════════════════ -->
+        @if (step() === 4) {
+          <div class="wizard-step confirmation fade-up">
+            <div class="check-circle">
+              <svg viewBox="0 0 52 52" class="checkmark">
+                <circle cx="26" cy="26" r="25" fill="none"/>
+                <path class="check" fill="none" d="M14 27l7 7 17-17"/>
+              </svg>
+            </div>
+            <h2>Booking <span class="gold-text">Confirmed!</span></h2>
+            <p>Your booking is confirmed. A confirmation email is on its way!</p>
+            <div class="booking-ref glass-card">
+              <div class="ref-label">Booking Reference</div>
+              <div class="ref-num gold-text">{{ bookingRef() }}</div>
+            </div>
+            <div class="conf-actions">
+              <button class="btn-ghost" (click)="goToDashboard()">View My Bookings</button>
+              <button class="btn-gold" (click)="goHome()">Book Another Flight</button>
+            </div>
+          </div>
+        }
+
       }
-
-      <!-- STEP 4: Confirmation -->
-      @if (step() === 4) {
-        <div class="wizard-step confirmation fade-up">
-          <div class="check-circle">
-            <svg viewBox="0 0 52 52" class="checkmark">
-              <circle cx="26" cy="26" r="25" fill="none"/>
-              <path class="check" fill="none" d="M14 27l7 7 17-17"/>
-            </svg>
-          </div>
-          <h2>Booking <span class="gold-text">Confirmed!</span></h2>
-          <p>Your booking has been confirmed. A confirmation email has been sent.</p>
-          <div class="booking-ref glass-card">
-            <div class="ref-label">Booking Reference</div>
-            <div class="ref-num gold-text">{{ bookingRef() }}</div>
-          </div>
-          <div class="conf-actions">
-            <button class="btn-ghost" (click)="goToDashboard()">View My Bookings</button>
-            <button class="btn-gold" (click)="goHome()">Book Another Flight</button>
-          </div>
-        </div>
-      }
-
-    }
+    </div>
   </div>
 </div>

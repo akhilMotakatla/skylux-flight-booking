@@ -22,7 +22,7 @@ html {
 
 body {
   font-family: v.$font-body;
-  background-color: v.$navy-950;
+  background-color: v.$navy-950; /* fallback — 3D bg canvas sits on top */
   color: v.$white;
   line-height: 1.6;
   overflow-x: hidden;

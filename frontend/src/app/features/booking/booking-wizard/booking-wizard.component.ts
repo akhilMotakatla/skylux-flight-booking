@@ -5,11 +5,12 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { FlightService } from '../../../core/services/flight.service';
 import { BookingService } from '../../../core/services/booking.service';
 import { Flight } from '../../../core/models/flight.model';
+import { AirHostessComponent } from '../../../layout/air-hostess/air-hostess.component';
 
 @Component({
   selector: 'app-booking-wizard',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, DatePipe, DecimalPipe],
+  imports: [ReactiveFormsModule, FormsModule, DatePipe, DecimalPipe, AirHostessComponent],
   templateUrl: './booking-wizard.component.html',
   styleUrl: './booking-wizard.component.scss'
 })
@@ -26,13 +27,35 @@ export class BookingWizardComponent implements OnInit {
   passengerCount = 1;
   form!: FormGroup;
 
-  // Seat map
-  readonly rows = Array.from({length: 30}, (_, i) => i + 1);
-  readonly cols = ['A','B','C','D','E','F'];
-  readonly occupiedSeats = signal<string[]>([]);
+  readonly rows = Array.from({ length: 30 }, (_, i) => i + 1);
+  readonly cols = ['A', 'B', 'C', 'D', 'E', 'F'];
+  occupiedSeats = signal<string[]>([]);
 
-  // Mock card
-  cardNumber = ''; cardExpiry = ''; cardCvv = ''; cardName = '';
+  // Card fields (validated)
+  cardNumber = '';
+  cardExpiry = '';
+  cardCvv = '';
+  cardName = '';
+
+  get cardType(): 'visa' | 'mastercard' | 'amex' | 'discover' | '' {
+    const d = this.cardNumber.replace(/\s/g, '');
+    if (!d) return '';
+    if (d[0] === '4') return 'visa';
+    if (d[0] === '5') return 'mastercard';
+    if (d[0] === '3') return 'amex';
+    if (d[0] === '6') return 'discover';
+    return '';
+  }
+
+  get cardTypeIcon() {
+    const icons: Record<string, string> = { visa: '💳 VISA', mastercard: '💳 MC', amex: '💳 AMEX', discover: '💳 DISC' };
+    return icons[this.cardType] || '💳';
+  }
+
+  get hostessStep(): number {
+    if (!this.flight()) return 0;
+    return this.step();
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -59,17 +82,16 @@ export class BookingWizardComponent implements OnInit {
   }
 
   private generateOccupied(available: number, total: number) {
-    const occupied: string[] = [];
-    const occupiedCount = total - available;
     const allSeats = this.rows.flatMap(r => this.cols.map(c => `${r}${c}`));
-    const shuffled = allSeats.sort(() => Math.random() - 0.5);
-    this.occupiedSeats.set(shuffled.slice(0, Math.min(occupiedCount, allSeats.length - 5)));
+    const occupied = allSeats.sort(() => Math.random() - 0.5)
+      .slice(0, Math.min(total - available, allSeats.length - 6));
+    this.occupiedSeats.set(occupied);
   }
 
   private buildForm(count: number) {
     this.form = this.fb.group({
       passengers: this.fb.array(
-        Array.from({length: count}, () => this.fb.group({
+        Array.from({ length: count }, () => this.fb.group({
           firstName:      ['', Validators.required],
           lastName:       ['', Validators.required],
           passportNumber: ['', Validators.required],
@@ -103,15 +125,74 @@ export class BookingWizardComponent implements OnInit {
     if (this.step() === 2 && this.form.invalid) {
       this.form.markAllAsTouched(); return;
     }
+    if (this.step() === 3) {
+      if (!this.isCardValid()) return;
+    }
     this.step.update(s => s + 1);
   }
 
   prevStep() { this.step.update(s => Math.max(1, s - 1)); }
 
+  // ── Card validation ──────────────────────────────────────────────────────
+  onCardNumberInput(e: Event) {
+    const el = e.target as HTMLInputElement;
+    const raw = el.value.replace(/\D/g, '').slice(0, 16);
+    const formatted = raw.replace(/(.{4})/g, '$1 ').trim();
+    this.cardNumber = formatted;
+    el.value = formatted;
+  }
+
+  onExpiryInput(e: Event) {
+    const el = e.target as HTMLInputElement;
+    const prev = this.cardExpiry;
+    let raw = el.value.replace(/\D/g, '');
+    if (raw.length > 4) raw = raw.slice(0, 4);
+    if (raw.length >= 2) {
+      let mm = parseInt(raw.slice(0, 2));
+      if (mm > 12) mm = 12;
+      if (mm < 1 && raw.length >= 2) mm = 1;
+      const mmStr = mm.toString().padStart(2, '0');
+      raw = mmStr + raw.slice(2);
+      raw = raw.slice(0, 2) + '/' + raw.slice(2);
+    }
+    // Handle backspace over slash
+    if (prev.length === 3 && el.value.length === 2) raw = raw.slice(0, 1);
+    this.cardExpiry = raw;
+    el.value = raw;
+  }
+
+  onCvvInput(e: Event) {
+    const el = e.target as HTMLInputElement;
+    const raw = el.value.replace(/\D/g, '').slice(0, this.cardType === 'amex' ? 4 : 3);
+    this.cardCvv = raw;
+    el.value = raw;
+  }
+
+  onNameInput(e: Event) {
+    const el = e.target as HTMLInputElement;
+    // Allow only letters and spaces
+    const raw = el.value.replace(/[^a-zA-Z\s]/g, '').toUpperCase();
+    this.cardName = raw;
+    el.value = raw;
+  }
+
+  isCardValid(): boolean {
+    const num = this.cardNumber.replace(/\s/g, '');
+    if (num.length < 13) { this.error.set('Please enter a valid card number (13–16 digits).'); return false; }
+    if (!/^\d{2}\/\d{2}$/.test(this.cardExpiry)) { this.error.set('Please enter expiry as MM/YY.'); return false; }
+    const cvvLen = this.cardType === 'amex' ? 4 : 3;
+    if (this.cardCvv.length < cvvLen) { this.error.set(`CVV must be ${cvvLen} digits.`); return false; }
+    if (!this.cardName.trim()) { this.error.set('Please enter the cardholder name.'); return false; }
+    this.error.set('');
+    return true;
+  }
+
   confirm() {
+    if (!this.isCardValid()) return;
     const f = this.flight();
     if (!f) return;
     this.submitting.set(true);
+    this.error.set('');
     const passengers = this.passengerGroups.map(g => ({
       firstName: g.value.firstName, lastName: g.value.lastName,
       passportNumber: g.value.passportNumber,
@@ -121,7 +202,7 @@ export class BookingWizardComponent implements OnInit {
       flightId: f.id, passengers, seatNumbers: this.selectedSeats(), paymentMethod: 'mock'
     }).subscribe({
       next: b => {
-        this.bookingRef.set(`SKY-${b.id.toString().padStart(6,'0')}`);
+        this.bookingRef.set(`SKY-${b.id.toString().padStart(6, '0')}`);
         this.step.set(4);
         this.submitting.set(false);
       },
@@ -132,8 +213,7 @@ export class BookingWizardComponent implements OnInit {
     });
   }
 
-  formatDuration(mins: number) { return `${Math.floor(mins/60)}h ${mins%60}m`; }
-
+  formatDuration(mins: number) { return `${Math.floor(mins / 60)}h ${mins % 60}m`; }
   goToDashboard() { this.router.navigate(['/dashboard']); }
-  goHome()        { this.router.navigate(['/']); }
+  goHome() { this.router.navigate(['/']); }
 }
