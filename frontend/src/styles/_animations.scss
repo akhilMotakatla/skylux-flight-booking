@@ -1,26 +1,8 @@
-@keyframes particle-float {
-  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.4; }
-  33%       { transform: translateY(-30px) translateX(15px); opacity: 0.8; }
-  66%       { transform: translateY(-15px) translateX(-10px); opacity: 0.6; }
-}
+// ============================================================
+// SkyLux Animation Library — 3D / 4D Luxury Edition
+// ============================================================
 
-@keyframes flight-streak {
-  0%   { transform: translateX(-10%) scaleX(0.2); opacity: 0; }
-  15%  { opacity: 0.7; scaleX: 1; }
-  85%  { opacity: 0.5; }
-  100% { transform: translateX(110%) scaleX(0.5); opacity: 0; }
-}
-
-@keyframes shimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
-@keyframes pulse-gold {
-  0%, 100% { box-shadow: 0 0 8px rgba(212,160,23,0.3); }
-  50%       { box-shadow: 0 0 30px rgba(212,160,23,0.8), 0 0 60px rgba(212,160,23,0.3); }
-}
-
+// ── Entry animations ─────────────────────────────────────────
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(40px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -41,6 +23,100 @@
   to   { opacity: 1; transform: translateY(0) scaleY(1); }
 }
 
+@keyframes luxury-enter {
+  from {
+    opacity: 0;
+    transform: translateY(32px) scale(0.96);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes warp-in {
+  from {
+    opacity: 0;
+    transform: perspective(1000px) rotateX(12deg) translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(1000px) rotateX(0deg) translateY(0);
+  }
+}
+
+// ── Text effects ─────────────────────────────────────────────
+@keyframes text-shimmer-gold {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+// ── Glow / pulse ─────────────────────────────────────────────
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 8px rgba(212,160,23,0.3); }
+  50%       { box-shadow: 0 0 30px rgba(212,160,23,0.8), 0 0 60px rgba(212,160,23,0.3); }
+}
+
+@keyframes neon-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 5px rgba(212,160,23,0.3),
+      0 0 15px rgba(212,160,23,0.15),
+      inset 0 0 8px rgba(212,160,23,0.04);
+  }
+  50% {
+    box-shadow:
+      0 0 12px rgba(212,160,23,0.7),
+      0 0 30px rgba(212,160,23,0.45),
+      0 0 60px rgba(212,160,23,0.2),
+      inset 0 0 12px rgba(212,160,23,0.08);
+  }
+}
+
+@keyframes glow-ring-expand {
+  0%   { box-shadow: 0 0 0 0 rgba(212,160,23,0.55); }
+  100% { box-shadow: 0 0 0 18px rgba(212,160,23,0); }
+}
+
+@keyframes aurora-hero-shift {
+  0% {
+    background-position: 0% 50%;
+    opacity: 0.85;
+  }
+  50% {
+    background-position: 100% 50%;
+    opacity: 1;
+  }
+  100% {
+    background-position: 0% 50%;
+    opacity: 0.85;
+  }
+}
+
+// ── Motion ───────────────────────────────────────────────────
+@keyframes float-luxury {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25%       { transform: translateY(-8px) rotate(0.4deg); }
+  75%       { transform: translateY(-4px) rotate(-0.4deg); }
+}
+
+@keyframes float-plane {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%       { transform: translateY(-12px) rotate(2deg); }
+}
+
+@keyframes scale-breathe {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.06); }
+}
+
 @keyframes rotate-slow {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
@@ -51,28 +127,72 @@
   to   { transform: rotateY(360deg); }
 }
 
-@keyframes draw-check {
-  from { stroke-dashoffset: 100; }
-  to   { stroke-dashoffset: 0; }
+@keyframes particle-float {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.4; }
+  33%       { transform: translateY(-30px) translateX(15px); opacity: 0.8; }
+  66%       { transform: translateY(-15px) translateX(-10px); opacity: 0.6; }
 }
 
+@keyframes particle-sparkle {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50%       { transform: scale(2.5); opacity: 1; }
+}
+
+@keyframes flight-streak {
+  0%   { transform: translateX(-10%) scaleX(0.2); opacity: 0; }
+  15%  { opacity: 0.7; }
+  85%  { opacity: 0.5; }
+  100% { transform: translateX(110%) scaleX(0.5); opacity: 0; }
+}
+
+// ── 3D / card effects ────────────────────────────────────────
 @keyframes card-flip {
   0%   { transform: perspective(1000px) rotateY(0deg); }
   100% { transform: perspective(1000px) rotateY(180deg); }
 }
 
-@keyframes float-plane {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50%       { transform: translateY(-12px) rotate(2deg); }
+@keyframes card-reveal {
+  from {
+    opacity: 0;
+    transform: perspective(800px) rotateX(8deg) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(800px) rotateX(0deg) translateY(0);
+  }
 }
 
-// Utility animation classes
-.fade-up    { animation: fade-up 0.7s ease both; }
-.fade-in    { animation: fade-in 0.5s ease both; }
-.slide-right { animation: slide-in-right 0.5s ease both; }
+// ── Draw / SVG ───────────────────────────────────────────────
+@keyframes draw-check {
+  from { stroke-dashoffset: 100; }
+  to   { stroke-dashoffset: 0; }
+}
+
+// ── Border animations ─────────────────────────────────────────
+@keyframes border-sweep {
+  0%   { border-color: rgba(212,160,23,0.2); }
+  50%  { border-color: rgba(212,160,23,0.6); }
+  100% { border-color: rgba(212,160,23,0.2); }
+}
+
+@keyframes gradient-border-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// ── Utility animation classes ─────────────────────────────────
+.fade-up        { animation: fade-up 0.7s ease both; }
+.fade-in        { animation: fade-in 0.5s ease both; }
+.slide-right    { animation: slide-in-right 0.5s ease both; }
+.luxury-enter   { animation: luxury-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.float-luxury   { animation: float-luxury 5s ease-in-out infinite; }
+.neon-btn       { animation: neon-pulse 2.5s ease-in-out infinite; }
+.scale-breathe  { animation: scale-breathe 3.5s ease-in-out infinite; }
 
 .delay-1 { animation-delay: 0.1s; }
 .delay-2 { animation-delay: 0.2s; }
 .delay-3 { animation-delay: 0.3s; }
 .delay-4 { animation-delay: 0.4s; }
 .delay-5 { animation-delay: 0.5s; }
+.delay-6 { animation-delay: 0.7s; }
+.delay-7 { animation-delay: 0.9s; }

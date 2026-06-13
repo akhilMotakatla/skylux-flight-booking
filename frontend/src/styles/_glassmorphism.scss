@@ -68,3 +68,66 @@
 .status-confirmed { color: v.$success; }
 .status-cancelled { color: v.$danger; }
 .status-pending   { color: v.$warning; }
+
+// ── Luxury glass card with animated gold border ──────────────────────────
+.glass-luxury {
+  position: relative;
+  background: rgba(8, 18, 38, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(212,160,23,0.2);
+  border-radius: v.$radius-lg;
+  box-shadow:
+    0 8px 40px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+
+  &:hover {
+    border-color: rgba(212,160,23,0.5);
+    box-shadow:
+      0 20px 60px rgba(0,0,0,0.7),
+      0 0 30px rgba(212,160,23,0.12),
+      inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+}
+
+// ── Luxury gold button ────────────────────────────────────────────────────
+.btn-luxury {
+  @include m.btn-gold();
+  padding: 14px 36px;
+  border-radius: v.$radius-full;
+  font-size: 15px;
+  letter-spacing: 0.8px;
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(212,160,23,0.35);
+
+  &:hover {
+    box-shadow: 0 10px 35px rgba(212,160,23,0.6), 0 0 0 1px rgba(212,160,23,0.25);
+    transform: translateY(-3px) scale(1.02);
+  }
+}
+
+// ── Neon border input ─────────────────────────────────────────────────────
+.glass-input-luxury {
+  @extend .glass-input;
+  border-color: rgba(212,160,23,0.2);
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+
+  &:focus {
+    border-color: v.$gold-400;
+    background: rgba(255,255,255,0.09);
+    box-shadow:
+      0 0 0 3px rgba(212,160,23,0.15),
+      0 0 20px rgba(212,160,23,0.1);
+  }
+}
+
+// ── Iridescent section divider ────────────────────────────────────────────
+.luxury-divider {
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, v.$gold-400, v.$gold-300, v.$gold-400, transparent);
+  border-radius: v.$radius-full;
+  margin: v.$spacing-md auto;
+  box-shadow: 0 0 12px rgba(212,160,23,0.4);
+}

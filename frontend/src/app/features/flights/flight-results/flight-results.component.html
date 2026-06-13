@@ -64,11 +64,15 @@
         </div>
       } @else {
         <p class="result-count">{{ filtered().length }} flights found</p>
-        @for (flight of filtered(); track flight.id) {
+        @for (flight of filtered(); track flight.flightNumber) {
           <div class="flight-card glass-card" [class.expanded]="expandedId()===flight.id">
             <div class="card-main" (click)="toggleExpand(flight.id)">
               <div class="airline-info">
-                <div class="airline-logo">{{ flight.airlineCode }}</div>
+                <div class="airline-badge">
+                  <img [src]="logoUrl(flight.airlineCode)" [alt]="flight.airlineName" class="badge-img"
+                       (error)="onLogoError($event)">
+                  <span class="badge-code hidden">{{ flight.airlineCode }}</span>
+                </div>
                 <div>
                   <div class="airline-name">{{ flight.airlineName }}</div>
                   <div class="flight-num">{{ flight.flightNumber }}</div>

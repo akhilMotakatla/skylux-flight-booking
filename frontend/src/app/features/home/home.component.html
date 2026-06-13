@@ -4,8 +4,6 @@
 <section class="hero" [style.--scroll]="scrollY()">
   <canvas #particleCanvas class="particles-layer"></canvas>
 
-  <div class="hero-bg" [style.transform]="'translateY(' + scrollY() * 0.4 + 'px)'"></div>
-
   <div class="hero-content container">
     <div class="hero-text fade-up">
       <span class="tagline">✈ Premium Global Travel</span>
@@ -13,85 +11,158 @@
         Where Will<br>
         <span class="gold-text">You Fly Next?</span>
       </h1>
-      <p class="hero-sub">Book luxury flights to 200+ destinations worldwide.</p>
+      <p class="hero-sub">Book flights, rent cars, and explore 200+ destinations worldwide.</p>
     </div>
 
-    <!-- Search Widget -->
-    <div class="search-widget glass-card fade-up delay-2">
-      <!-- Trip type tabs -->
-      <div class="trip-tabs">
-        <button [class.active]="tripType()==='one-way'"    (click)="tripType.set('one-way')">One Way</button>
-        <button [class.active]="tripType()==='round-trip'" (click)="tripType.set('round-trip')">Round Trip</button>
+    <!-- ─── Unified Search Widget ────────────────────────────────────────── -->
+    <div class="search-widget fade-up delay-2">
+
+      <!-- Top-level booking type tabs -->
+      <div class="booking-type-tabs">
+        <button class="btt-btn" [class.active]="bookingTab()==='flights'"
+                (click)="bookingTab.set('flights')">
+          <span class="btt-icon">✈</span>
+          <span>Flights</span>
+        </button>
+        <button class="btt-btn" [class.active]="bookingTab()==='cars'"
+                (click)="bookingTab.set('cars')">
+          <span class="btt-icon">🚗</span>
+          <span>Car Rental</span>
+          <span class="btt-badge">New</span>
+        </button>
+        <button class="btt-btn btt-btn--soon" disabled>
+          <span class="btt-icon">🏨</span>
+          <span>Hotels</span>
+          <span class="btt-badge btt-badge--soon">Soon</span>
+        </button>
       </div>
 
-      <!-- Airport row -->
-      <div class="airport-row">
-        <div class="ap-field">
-          <label>From</label>
-          <app-airport-autocomplete
-            #fromInput
-            placeholder="Departure city or airport"
-            icon="🛫"
-            (selected)="fromAirport.set($event)"
-          />
-        </div>
-
-        <button class="swap-btn" (click)="swapAirports()" title="Swap">⇄</button>
-
-        <div class="ap-field">
-          <label>To</label>
-          <app-airport-autocomplete
-            #toInput
-            placeholder="Destination city or airport"
-            icon="🛬"
-            (selected)="toAirport.set($event)"
-          />
-        </div>
-      </div>
-
-      <!-- Date + Passengers + Class row -->
-      <div class="options-row">
-        <div class="field">
-          <label>Depart</label>
-          <input type="date" class="glass-input field-input" [(ngModel)]="departDate" [ngModelOptions]="{standalone:true}" (ngModelChange)="departDate.set($event)" />
-        </div>
-
-        @if (tripType() === 'round-trip') {
-          <div class="field">
-            <label>Return</label>
-            <input type="date" class="glass-input field-input" [(ngModel)]="returnDate" [ngModelOptions]="{standalone:true}" (ngModelChange)="returnDate.set($event)" />
+      <!-- ─── FLIGHTS FORM ────────────────────────────────────────────────── -->
+      @if (bookingTab() === 'flights') {
+        <div class="form-panel">
+          <!-- Trip type -->
+          <div class="trip-tabs">
+            <button [class.active]="tripType()==='one-way'"    (click)="tripType.set('one-way')">One Way</button>
+            <button [class.active]="tripType()==='round-trip'" (click)="tripType.set('round-trip')">Round Trip</button>
           </div>
-        }
 
-        <div class="field">
-          <label>Passengers</label>
-          <div class="stepper">
-            <button (click)="adjustPassengers(-1)">−</button>
-            <span>{{ passengers() }}</span>
-            <button (click)="adjustPassengers(1)">+</button>
+          <!-- Airport row -->
+          <div class="airport-row">
+            <div class="ap-field">
+              <label>From</label>
+              <app-airport-autocomplete #fromInput placeholder="Departure city or airport"
+                icon="🛫" (selected)="fromAirport.set($event)"/>
+            </div>
+            <button class="swap-btn" (click)="swapAirports()" title="Swap">⇄</button>
+            <div class="ap-field">
+              <label>To</label>
+              <app-airport-autocomplete #toInput placeholder="Destination city or airport"
+                icon="🛬" (selected)="toAirport.set($event)"/>
+            </div>
           </div>
-        </div>
 
-        <div class="field">
-          <label>Class</label>
-          <select class="glass-input field-input" [value]="flightClass()" (change)="flightClass.set($any($event.target).value)">
-            <option>Economy</option>
-            <option>Business</option>
-            <option>First</option>
-          </select>
-        </div>
-      </div>
+          <!-- Options row -->
+          <div class="options-row">
+            <div class="field">
+              <label>Depart</label>
+              <input type="date" class="glass-input field-input"
+                [ngModel]="departDate()" [ngModelOptions]="{standalone:true}"
+                (ngModelChange)="departDate.set($event)"/>
+            </div>
+            @if (tripType() === 'round-trip') {
+              <div class="field">
+                <label>Return</label>
+                <input type="date" class="glass-input field-input"
+                  [ngModel]="returnDate()" [ngModelOptions]="{standalone:true}"
+                  (ngModelChange)="returnDate.set($event)"/>
+              </div>
+            }
+            <div class="field">
+              <label>Passengers</label>
+              <div class="stepper">
+                <button (click)="adjustPassengers(-1)">−</button>
+                <span>{{ passengers() }}</span>
+                <button (click)="adjustPassengers(1)">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <label>Class</label>
+              <select class="glass-input field-input" [value]="flightClass()"
+                (change)="flightClass.set($any($event.target).value)">
+                <option>Economy</option>
+                <option>Business</option>
+                <option>First</option>
+              </select>
+            </div>
+          </div>
 
-      <button class="btn-gold search-btn" (click)="search()">
-        <span>Search Flights</span>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-      </button>
+          <button class="btn-gold search-btn" (click)="search()">
+            <span>Search Flights</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </button>
+        </div>
+      }
+
+      <!-- ─── CARS FORM ───────────────────────────────────────────────────── -->
+      @if (bookingTab() === 'cars') {
+        <div class="form-panel car-form">
+
+          <!-- Pickup / Dropoff -->
+          <div class="car-loc-row">
+            <div class="car-field">
+              <label>🛫 Pickup Airport / Location</label>
+              <input type="text" class="glass-input field-input" placeholder="e.g. Dubai Airport (DXB)"
+                [(ngModel)]="carPickup" [ngModelOptions]="{standalone:true}"/>
+            </div>
+            <button class="swap-btn" (click)="swapCarLocations()" title="Swap">⇄</button>
+            <div class="car-field">
+              <label>🛬 Drop-off Location</label>
+              <input type="text" class="glass-input field-input" placeholder="e.g. Hotel, Downtown, Airport"
+                [(ngModel)]="carDropoff" [ngModelOptions]="{standalone:true}"/>
+            </div>
+          </div>
+
+          <!-- Dates + car type -->
+          <div class="options-row">
+            <div class="field">
+              <label>Pickup Date</label>
+              <input type="date" class="glass-input field-input"
+                [(ngModel)]="carPickupDate" [ngModelOptions]="{standalone:true}"/>
+            </div>
+            <div class="field">
+              <label>Return Date</label>
+              <input type="date" class="glass-input field-input"
+                [(ngModel)]="carReturnDate" [ngModelOptions]="{standalone:true}"/>
+            </div>
+            <div class="field">
+              <label>Car Type</label>
+              <select class="glass-input field-input" [value]="carType()"
+                (change)="carType.set($any($event.target).value)">
+                <option>Economy</option>
+                <option>Compact</option>
+                <option>SUV</option>
+                <option>Business</option>
+                <option>Luxury</option>
+                <option>Sports</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Passengers</label>
+              <div class="stepper">
+                <button (click)="adjustPassengers(-1)">−</button>
+                <span>{{ passengers() }}</span>
+                <button (click)="adjustPassengers(1)">+</button>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-gold search-btn search-btn--cars" (click)="searchCars()">
+            <span>Find Available Cars</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="18.5" cy="17.5" r="2.5"/><path d="M15 17.5H8M3.5 17.5H2V10l3-5h10l3 5h1.5V17.5H21"/><path d="M5 10h14"/></svg>
+          </button>
+        </div>
+      }
     </div>
-  </div>
-
-  <!-- Three.js Globe -->
-  <div class="globe-container" [style.transform]="'translateY(' + scrollY() * 0.2 + 'px)'">
-    <canvas #globeCanvas class="globe-canvas"></canvas>
   </div>
 </section>
 
@@ -131,7 +202,6 @@
       <div class="gold-divider"></div>
       <p>Explore our most booked flight routes around the world</p>
     </div>
-
     <div class="routes-grid">
       @for (route of popularRoutes; track route.fromIata) {
         <div class="route-card glass-card fade-up" (click)="quickSearch(route.fromIata, route.toIata)">
@@ -150,6 +220,46 @@
           </div>
         </div>
       }
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     CAR RENTAL FEATURE PROMO
+═══════════════════════════════════════════════════════ -->
+<section class="section-padding car-promo-section">
+  <div class="container">
+    <div class="car-promo-grid">
+      <div class="car-promo-text fade-up">
+        <span class="promo-label">✨ New Feature</span>
+        <h2 class="section-title">Airport <span class="accent">Car Rental</span></h2>
+        <div class="gold-divider"></div>
+        <p class="promo-desc">Land and go. Rent premium cars from any major airport worldwide. Economy to ultra-luxury — all at your fingertips.</p>
+        <ul class="promo-features">
+          <li><span class="pf-icon">✅</span>Free cancellation up to 24h</li>
+          <li><span class="pf-icon">✅</span>No hidden fees</li>
+          <li><span class="pf-icon">✅</span>Luxury & business fleet</li>
+          <li><span class="pf-icon">✅</span>Meet & greet service</li>
+        </ul>
+        <button class="btn-gold cta-btn" (click)="goToCars()">
+          Explore Car Rentals →
+        </button>
+      </div>
+      <div class="car-promo-cards fade-up delay-2">
+        @for (car of featuredCars; track car.name) {
+          <div class="mini-car-card">
+            <div class="mcc-emoji">{{ car.emoji }}</div>
+            <div class="mcc-info">
+              <div class="mcc-name">{{ car.name }}</div>
+              <div class="mcc-type">{{ car.type }}</div>
+            </div>
+            <div class="mcc-price">
+              <span class="mcc-from">from</span>
+              <span class="mcc-amount gold-text">${{ car.price }}<small>/day</small></span>
+            </div>
+          </div>
+        }
+      </div>
     </div>
   </div>
 </section>
@@ -175,14 +285,14 @@
         <p>Curated premium cabins, private suites, and exclusive lounge access worldwide.</p>
       </div>
       <div class="feature-card glass-card fade-up delay-3">
-        <div class="feat-icon">🔒</div>
-        <h3>Secure Booking</h3>
-        <p>Bank-level encryption and instant confirmation. Your data is always protected.</p>
+        <div class="feat-icon">🚗</div>
+        <h3>Airport Transfers</h3>
+        <p>Seamless car rentals from any major airport. Economy, business or ultra-luxury fleet.</p>
       </div>
       <div class="feature-card glass-card fade-up delay-4">
         <div class="feat-icon">🤖</div>
         <h3>AI Assistant</h3>
-        <p>SkyAssist chatbot helps you find flights, manage bookings, and answer queries 24/7.</p>
+        <p>SkyAssist chatbot helps you find flights, rent cars, manage bookings 24/7.</p>
       </div>
     </div>
   </div>
@@ -209,7 +319,10 @@
   <div class="cta-bg"></div>
   <div class="container cta-content fade-up">
     <h2>Ready for Your Next Adventure?</h2>
-    <p>Join millions of travellers who trust SkyLux for their journeys.</p>
-    <button class="btn-gold cta-btn" (click)="search()">Book Your Flight Now</button>
+    <p>Join millions of travellers who trust SkyLux for flights and car rentals worldwide.</p>
+    <div class="cta-btns">
+      <button class="btn-gold cta-btn" (click)="search()">Search Flights</button>
+      <button class="btn-secondary cta-btn" (click)="goToCars()">Rent a Car</button>
+    </div>
   </div>
 </section>

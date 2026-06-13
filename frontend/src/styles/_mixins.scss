@@ -11,11 +11,14 @@
 }
 
 @mixin glass-card-hover {
-  transition: v.$transition-base;
+  transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
   &:hover {
-    transform: translateY(-4px);
+    transform: perspective(1000px) rotateX(-2deg) translateY(-6px);
     border-color: v.$glass-border-gold;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.5), v.$gold-glow;
+    box-shadow:
+      0 20px 60px rgba(0,0,0,0.6),
+      v.$gold-glow,
+      inset 0 1px 0 rgba(255,255,255,0.08);
     background: v.$glass-bg-hover;
   }
 }
@@ -69,12 +72,22 @@
   @if $bp == 'xl'  { @media (max-width: v.$bp-xl)  { @content; } }
 }
 
-// Gold text gradient
+// Gold text gradient with shimmer animation
 @mixin gold-text {
-  background: linear-gradient(135deg, v.$gold-300, v.$gold-500);
+  background: linear-gradient(90deg,
+    v.$gold-700 0%,
+    v.$gold-500 15%,
+    v.$gold-400 30%,
+    v.$gold-300 50%,
+    v.$gold-400 70%,
+    v.$gold-500 85%,
+    v.$gold-700 100%
+  );
+  background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: text-shimmer-gold 4s linear infinite;
 }
 
 // Scrollbar styling

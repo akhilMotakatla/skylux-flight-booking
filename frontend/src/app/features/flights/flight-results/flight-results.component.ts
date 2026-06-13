@@ -97,4 +97,15 @@ export class FlightResultsComponent implements OnInit {
   }
 
   goHome() { this.router.navigate(['/']); }
+
+  logoUrl(code: string): string {
+    return `https://www.gstatic.com/flights/airline_logos/70px/${code}.png`;
+  }
+
+  onLogoError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.classList.add('hidden');
+    const fallback = img.nextElementSibling as HTMLElement;
+    if (fallback) fallback.classList.remove('hidden');
+  }
 }
