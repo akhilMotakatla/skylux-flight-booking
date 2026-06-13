@@ -6,7 +6,6 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AirportAutocompleteComponent } from '../../shared/components/airport-autocomplete/airport-autocomplete.component';
 import { Airport } from '../../core/models/airport.model';
-import * as THREE from 'three';
 
 @Component({
   selector: 'app-home',
@@ -17,10 +16,13 @@ import * as THREE from 'three';
 })
 export class HomeComponent implements AfterViewInit, OnDestroy {
   @ViewChild('particleCanvas') particleCanvas!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('globeCanvas')    globeCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('fromInput') fromRef!: AirportAutocompleteComponent;
   @ViewChild('toInput')   toRef!: AirportAutocompleteComponent;
 
+  // ─── Top-level booking tab ─────────────────────────────────────────────────
+  bookingTab = signal<'flights'|'cars'>('flights');
+
+  // ─── Flight form state ─────────────────────────────────────────────────────
   tripType    = signal<'one-way'|'round-trip'>('one-way');
   flightClass = signal('Economy');
   passengers  = signal(1);
@@ -28,18 +30,23 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   returnDate  = signal('');
   fromAirport = signal<Airport | null>(null);
   toAirport   = signal<Airport | null>(null);
-  scrollY     = signal(0);
 
-  private renderer!: THREE.WebGLRenderer;
-  private scene!: THREE.Scene;
-  private camera!: THREE.PerspectiveCamera;
-  private globe!: THREE.Mesh;
-  private wireGlobe!: THREE.Mesh;
-  private animFrameId!: number;
+  // ─── Car form state (plain properties — easier with ngModel) ──────────────
+  carPickup      = '';
+  carDropoff     = '';
+  carPickupDate  = '';
+  carReturnDate  = '';
+  carType        = signal('Economy');
+
+  scrollY = signal(0);
+
+  // ─── Particles ─────────────────────────────────────────────────────────────
   private pCtx!: CanvasRenderingContext2D;
-  private particles: Array<{x:number;y:number;vx:number;vy:number;r:number;op:number;gold:boolean}> = [];
+  private particles: Array<{x:number;y:number;vx:number;vy:number;r:number;op:number;gold:boolean;sparkle:number;phase:number}> = [];
   private pAnimId!: number;
+  private pTick = 0;
 
+  // ─── Static data ───────────────────────────────────────────────────────────
   readonly airlines = [
     { name: 'Emirates' },     { name: 'Qatar Airways' },
     { name: 'Singapore Air' }, { name: 'Lufthansa' },
@@ -58,18 +65,22 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     { from:'Singapore',to:'Tokyo',     fromIata:'SIN', toIata:'NRT', price:259, img:'🌸' },
   ] as const;
 
+  readonly featuredCars = [
+    { name: 'Economy Compact', type: 'Economy', emoji: '🚗', price: 29 },
+    { name: 'Honda CR-V',      type: 'SUV',     emoji: '🚙', price: 59 },
+    { name: 'BMW 5 Series',    type: 'Business',emoji: '🚘', price: 99 },
+    { name: 'Rolls Royce',     type: 'Luxury',  emoji: '🏎️', price: 349 },
+  ];
+
   constructor(private router: Router) {}
 
   ngAfterViewInit() {
     this.setMinDate();
     this.initParticles();
-    this.initGlobe();
   }
 
   ngOnDestroy() {
-    cancelAnimationFrame(this.animFrameId);
     cancelAnimationFrame(this.pAnimId);
-    this.renderer?.dispose();
   }
 
   @HostListener('window:scroll')
@@ -78,118 +89,84 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   @HostListener('window:resize')
   onResize() { this.resizeParticleCanvas(); }
 
-  // ─── Globe ──────────────────────────────────────────────────────────────────
-  initGlobe() {
-    try {
-      const canvas = this.globeCanvas.nativeElement;
-      const W = canvas.offsetWidth  || 500;
-      const H = canvas.offsetHeight || 500;
-
-      this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-      this.renderer.setSize(W, H);
-      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-      this.scene  = new THREE.Scene();
-      this.camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 100);
-      this.camera.position.z = 3;
-
-      const geo  = new THREE.SphereGeometry(1, 64, 64);
-      const mat  = new THREE.MeshPhongMaterial({ color:0x0d2240, emissive:0x051428, specular:0x1a3a6e, shininess:25 });
-      this.globe = new THREE.Mesh(geo, mat);
-      this.scene.add(this.globe);
-
-      const wireMat    = new THREE.MeshBasicMaterial({ color:0x1a3a6e, wireframe:true, transparent:true, opacity:0.25 });
-      this.wireGlobe   = new THREE.Mesh(new THREE.SphereGeometry(1.001, 20, 20), wireMat);
-      this.scene.add(this.wireGlobe);
-
-      const atmMat = new THREE.MeshPhongMaterial({ color:0x1a5fad, transparent:true, opacity:0.1, side:THREE.BackSide });
-      this.scene.add(new THREE.Mesh(new THREE.SphereGeometry(1.18, 32, 32), atmMat));
-
-      this.scene.add(new THREE.AmbientLight(0x334466, 1.5));
-      const sun = new THREE.DirectionalLight(0xffd080, 2.5);
-      sun.position.set(3, 2, 3);
-      this.scene.add(sun);
-
-      this.addFlightArcs();
-
-      const animate = () => {
-        this.animFrameId = requestAnimationFrame(animate);
-        this.globe.rotation.y      += 0.002;
-        this.wireGlobe.rotation.y  += 0.002;
-        this.renderer.render(this.scene, this.camera);
-      };
-      animate();
-    } catch (e) {
-      console.warn('WebGL unavailable, skipping globe:', e);
-    }
-  }
-
-  private ll2v3(lat: number, lon: number, r = 1): THREE.Vector3 {
-    const phi   = (90 - lat) * (Math.PI / 180);
-    const theta = (lon + 180) * (Math.PI / 180);
-    return new THREE.Vector3(
-      -r * Math.sin(phi) * Math.cos(theta),
-       r * Math.cos(phi),
-       r * Math.sin(phi) * Math.sin(theta)
-    );
-  }
-
-  private addFlightArcs() {
-    const routes: [number,number,number,number][] = [
-      [40.64,-73.78, 51.47,-0.45],
-      [25.25,55.37,  1.36,103.99],
-      [33.94,-118.41, 35.77,140.39],
-      [51.47,-0.45, -33.94,151.18],
-      [49.01,2.55,   25.25,55.37],
-      [37.62,-122.38, 37.46,126.44],
-    ];
-
-    routes.forEach(([la1,lo1,la2,lo2]) => {
-      const v1  = this.ll2v3(la1, lo1, 1.02);
-      const v2  = this.ll2v3(la2, lo2, 1.02);
-      const mid = v1.clone().add(v2).multiplyScalar(0.5).normalize().multiplyScalar(1.55);
-      const curve = new THREE.QuadraticBezierCurve3(v1, mid, v2);
-      const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(60));
-      this.scene.add(new THREE.Line(geo, new THREE.LineBasicMaterial({ color:0xd4a017, transparent:true, opacity:0.55 })));
-
-      const dot = new THREE.Mesh(
-        new THREE.SphereGeometry(0.014, 8, 8),
-        new THREE.MeshBasicMaterial({ color:0xf5c842 })
-      );
-      dot.position.copy(v1);
-      this.scene.add(dot);
-    });
-  }
-
-  // ─── Particles ──────────────────────────────────────────────────────────────
+  // ─── Particles ─────────────────────────────────────────────────────────────
   initParticles() {
     const canvas = this.particleCanvas.nativeElement;
     this.pCtx = canvas.getContext('2d')!;
     this.resizeParticleCanvas();
-    for (let i = 0; i < 130; i++) {
+
+    for (let i = 0; i < 180; i++) {
+      const layer = i < 60 ? 0 : i < 130 ? 1 : 2;
+      const speed = [0.15, 0.28, 0.45][layer];
       this.particles.push({
-        x: Math.random() * canvas.width,  y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.3,  vy: (Math.random() - 0.5) * 0.3,
-        r: Math.random() * 1.5 + 0.3,
-        op: Math.random() * 0.5 + 0.15,
-        gold: Math.random() > 0.65
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * speed,
+        vy: (Math.random() - 0.5) * speed,
+        r:  [0.4, 1.0, 1.8][layer] + Math.random() * [0.6, 0.8, 1.2][layer],
+        op: [0.18, 0.35, 0.55][layer] + Math.random() * 0.15,
+        gold: Math.random() > (layer === 0 ? 0.8 : 0.55),
+        sparkle: 0,
+        phase: Math.random() * Math.PI * 2,
       });
     }
-    let tick = 0;
+
     const draw = () => {
       this.pAnimId = requestAnimationFrame(draw);
       const { width: W, height: H } = canvas;
       this.pCtx.clearRect(0, 0, W, H);
+      this.pTick++;
+
+      this.pCtx.lineWidth = 0.5;
+      for (let i = 0; i < this.particles.length; i++) {
+        for (let j = i + 1; j < this.particles.length; j++) {
+          const dx = this.particles[i].x - this.particles[j].x;
+          const dy = this.particles[i].y - this.particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 90) {
+            const alpha = (1 - dist / 90) * 0.12;
+            this.pCtx.strokeStyle = `rgba(212,160,23,${alpha})`;
+            this.pCtx.beginPath();
+            this.pCtx.moveTo(this.particles[i].x, this.particles[i].y);
+            this.pCtx.lineTo(this.particles[j].x, this.particles[j].y);
+            this.pCtx.stroke();
+          }
+        }
+      }
+
+      const waveT = this.pTick * 0.008;
       this.particles.forEach(p => {
-        p.x += p.vx; p.y += p.vy;
+        p.x += p.vx + Math.sin(waveT + p.phase) * 0.18;
+        p.y += p.vy + Math.cos(waveT * 0.7 + p.phase * 1.3) * 0.14;
         if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
         if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
-        this.pCtx.beginPath();
-        this.pCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        this.pCtx.fillStyle = p.gold ? `rgba(212,160,23,${p.op})` : `rgba(255,255,255,${p.op * 0.6})`;
-        this.pCtx.fill();
+
+        if (Math.random() < 0.0008) p.sparkle = 1;
+        if (p.sparkle > 0) p.sparkle -= 0.04;
+
+        const radius  = p.r * (1 + Math.max(0, p.sparkle) * 2.5);
+        const opacity = p.op * (1 + Math.max(0, p.sparkle) * 0.8);
+
+        if (p.gold) {
+          this.pCtx.beginPath();
+          this.pCtx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+          this.pCtx.fillStyle = `rgba(212,160,23,${opacity})`;
+          this.pCtx.fill();
+          if (p.sparkle > 0.3) {
+            this.pCtx.beginPath();
+            this.pCtx.arc(p.x, p.y, radius * 2.5, 0, Math.PI * 2);
+            this.pCtx.fillStyle = `rgba(245,200,66,${p.sparkle * 0.15})`;
+            this.pCtx.fill();
+          }
+        } else {
+          this.pCtx.beginPath();
+          this.pCtx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+          this.pCtx.fillStyle = `rgba(255,255,255,${opacity * 0.55})`;
+          this.pCtx.fill();
+        }
       });
-      if (++tick % 200 === 0) this.spawnStreak(W, H);
+
+      if (this.pTick % 180 === 0) this.spawnStreak(W, H);
     };
     draw();
   }
@@ -206,8 +183,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       this.pCtx.strokeStyle = g;
       this.pCtx.lineWidth = 1;
       this.pCtx.beginPath();
-      this.pCtx.moveTo(x, y);
-      this.pCtx.lineTo(x + len, y);
+      this.pCtx.moveTo(x, y); this.pCtx.lineTo(x + len, y);
       this.pCtx.stroke();
       x += 10;
       requestAnimationFrame(step);
@@ -220,10 +196,13 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     c.width = window.innerWidth; c.height = window.innerHeight;
   }
 
-  // ─── Form ───────────────────────────────────────────────────────────────────
+  // ─── Flight form ───────────────────────────────────────────────────────────
   setMinDate() {
     const d = new Date(); d.setDate(d.getDate() + 1);
     this.departDate.set(d.toISOString().split('T')[0]);
+    this.carPickupDate = d.toISOString().split('T')[0];
+    const r = new Date(d); r.setDate(r.getDate() + 3);
+    this.carReturnDate = r.toISOString().split('T')[0];
   }
 
   swapAirports() {
@@ -253,5 +232,27 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       date: d.toISOString().split('T')[0],
       passengers: 1, class: 'Economy'
     }});
+  }
+
+  // ─── Car form ──────────────────────────────────────────────────────────────
+  swapCarLocations() {
+    const tmp = this.carPickup;
+    this.carPickup = this.carDropoff;
+    this.carDropoff = tmp;
+  }
+
+  searchCars() {
+    this.router.navigate(['/cars'], { queryParams: {
+      pickup:   this.carPickup  || 'Airport',
+      dropoff:  this.carDropoff || 'Hotel',
+      from:     this.carPickupDate,
+      to:       this.carReturnDate,
+      type:     this.carType(),
+      pax:      this.passengers(),
+    }});
+  }
+
+  goToCars() {
+    this.router.navigate(['/cars']);
   }
 }

@@ -34,5 +34,9 @@ export const routes: Routes = [
     loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent),
     canActivate: [authGuard, adminGuard]
   },
+  {
+    path: 'cars',
+    loadComponent: () => import('./features/cars/car-search.component').then(m => m.CarSearchComponent)
+  },
   { path: '**', redirectTo: '' }
 ];

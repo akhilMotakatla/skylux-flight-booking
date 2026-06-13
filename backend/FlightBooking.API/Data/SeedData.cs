@@ -672,10 +672,16 @@ public static class SeedData
         var rng = new Random(42);
         var airportMap = allAirports.ToDictionary(a => a.IATA);
 
-        var classes     = new[] { "Economy", "Business", "First" };
         var classMul    = new Dictionary<string, decimal> { ["Economy"]=1m, ["Business"]=3.2m, ["First"]=5.5m };
         var flights     = new List<Flight>();
 
+        // 10 departure slots spread across 24h so no two overlap badly
+        var depSlots = new[] { 0, 2, 5, 7, 9, 11, 13, 16, 19, 22 };
+        // Class distribution across 10 slots: 5 Economy, 3 Business, 2 First
+        var slotClass = new[] { "Economy","Economy","Economy","Economy","Economy",
+                                "Business","Business","Business","First","First" };
+
+        int routeIdx = 0;
         foreach (var (fromIata, toIata) in routes)
         {
             if (!airportMap.TryGetValue(fromIata, out var dep)) continue;
@@ -685,36 +691,38 @@ public static class SeedData
             decimal basePx  = (decimal)(distKm * 0.06 + 90);
             int flightMins  = (int)(distKm / 820 * 60) + 55;
 
-            // 3 flights per route per day (Economy/Business/First), 10 days ahead
+            // 10 flights per route per day across all airlines, 10 days ahead
             for (int day = 1; day <= 10; day++)
             {
                 var depDate = DateTime.UtcNow.Date.AddDays(day);
-                for (int slot = 0; slot < 3; slot++)
+                for (int slot = 0; slot < 10; slot++)
                 {
-                    var flightClass = classes[slot % 3];
-                    var airline     = allAirlines[rng.Next(allAirlines.Count)];
-                    var depHour     = new[] { 0, 4, 8, 13, 18, 21 }[slot % 6];
-                    var depTime     = depDate.AddHours(depHour).AddMinutes(rng.Next(0, 4) * 15);
-                    var arrTime     = depTime.AddMinutes(flightMins + rng.Next(-15, 30));
+                    var flightClass = slotClass[slot];
+                    // Rotate airlines deterministically: each route+slot gets a different airline
+                    var airline     = allAirlines[(routeIdx + slot) % allAirlines.Count];
+                    var depHour     = depSlots[slot];
+                    var depTime     = depDate.AddHours(depHour).AddMinutes(rng.Next(0, 12) * 5);
+                    var arrTime     = depTime.AddMinutes(flightMins + rng.Next(-10, 20));
                     int seats       = new[] { 150, 180, 220, 300 }[rng.Next(4)];
-                    int avail       = rng.Next(seats / 4, seats);
-                    decimal priceMul= 0.80m + (decimal)(rng.NextDouble() * 0.40);
+                    int avail       = rng.Next(seats / 5, seats);
+                    decimal priceMul= 0.75m + (decimal)(rng.NextDouble() * 0.50);
 
                     flights.Add(new Flight
                     {
-                        FlightNumber     = $"{airline.Code}{rng.Next(100, 9999)}",
-                        AirlineId        = airline.Id,
+                        FlightNumber       = $"{airline.Code}{rng.Next(100, 9999)}",
+                        AirlineId          = airline.Id,
                         DepartureAirportId = dep.Id,
                         ArrivalAirportId   = arr.Id,
-                        DepartureTime    = depTime,
-                        ArrivalTime      = arrTime,
-                        Price            = Math.Round(basePx * classMul[flightClass] * priceMul, 2),
-                        TotalSeats       = seats,
-                        AvailableSeats   = avail,
-                        Class            = flightClass
+                        DepartureTime      = depTime,
+                        ArrivalTime        = arrTime,
+                        Price              = Math.Round(basePx * classMul[flightClass] * priceMul, 2),
+                        TotalSeats         = seats,
+                        AvailableSeats     = avail,
+                        Class              = flightClass
                     });
                 }
             }
+            routeIdx++;
         }
 
         // Insert in batches to avoid SQLite locking

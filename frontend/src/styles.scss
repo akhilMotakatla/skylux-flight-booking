@@ -3,8 +3,8 @@
 @use 'styles/animations';
 @use 'styles/glassmorphism';
 
-// Google Fonts
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+// Google Fonts — luxury typography
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,400&display=swap');
 
 // ===========================
 // Global Reset & Base
@@ -22,7 +22,7 @@ html {
 
 body {
   font-family: v.$font-body;
-  background-color: transparent; /* 3D airport canvas provides background */
+  background-color: #020814; /* world map canvas provides background */
   color: v.$white;
   line-height: 1.6;
   overflow-x: hidden;
@@ -96,14 +96,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 // ===========================
-// Scrollbar
+// Scrollbar — luxury gold
 // ===========================
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: v.$navy-900; }
-::-webkit-scrollbar-thumb {
-  background: v.$navy-600;
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track {
+  background: rgba(2, 8, 23, 0.8);
   border-radius: v.$radius-full;
-  &:hover { background: v.$gold-500; }
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, v.$gold-400, v.$gold-600);
+  border-radius: v.$radius-full;
+  &:hover { background: linear-gradient(180deg, v.$gold-300, v.$gold-500); }
 }
 
 // ===========================
@@ -135,10 +138,38 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .gold-divider {
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, v.$gold-400, v.$gold-600);
+  background: linear-gradient(90deg, transparent, v.$gold-400, v.$gold-300, v.$gold-400, transparent);
   border-radius: v.$radius-full;
   margin: v.$spacing-md 0;
+  box-shadow: 0 0 12px rgba(212,160,23,0.45);
 }
+
+// ===========================
+// Luxury utility classes
+// ===========================
+.shimmer-text {
+  background: linear-gradient(90deg,
+    #9a6800 0%, #d4a017 15%, #f5c842 30%, #fde68a 50%, #f5c842 70%, #d4a017 85%, #9a6800 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: text-shimmer-gold 3.5s linear infinite;
+}
+
+.luxury-glow {
+  box-shadow: 0 0 30px rgba(212,160,23,0.35), 0 0 60px rgba(212,160,23,0.12);
+}
+
+.glass-border-gold {
+  border: 1px solid rgba(212,160,23,0.35);
+}
+
+// Section backgrounds — dark glass over world map
+.section-dark  { background: rgba(2,8,20,0.82); }
+.section-navy  { background: rgba(6,14,32,0.85); }
+.section-deep  { background: rgba(2,8,18,0.90); }
 
 // ===========================
 // Chips / Tags

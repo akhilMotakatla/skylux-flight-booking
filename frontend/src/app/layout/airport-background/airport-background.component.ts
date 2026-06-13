@@ -1,479 +1,371 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, HostListener } from '@angular/core';
-import * as THREE from 'three';
+
+interface Airport { code: string; name: string; lon: number; lat: number; }
+interface Flight {
+  fromIdx: number; toIdx: number;
+  progress: number; speed: number;
+  trail: Array<{ x: number; y: number }>;
+  r: number; g: number; b: number;
+}
 
 @Component({
   selector: 'app-airport-background',
   standalone: true,
-  template: `<canvas #bgCanvas class="airport-bg"></canvas>`,
+  template: `<canvas #bgCanvas class="world-map-bg"></canvas>`,
   styles: [`
-    .airport-bg {
+    .world-map-bg {
       position: fixed; top: 0; left: 0;
       width: 100vw; height: 100vh;
       z-index: -1; pointer-events: none;
-      display: block;
+      display: block; background: #020814;
     }
   `]
 })
 export class AirportBackgroundComponent implements AfterViewInit, OnDestroy {
   @ViewChild('bgCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
 
-  private renderer!: THREE.WebGLRenderer;
-  private scene!: THREE.Scene;
-  private camera!: THREE.PerspectiveCamera;
-  private clock = new THREE.Clock();
+  private canvas!: HTMLCanvasElement;
+  private ctx!: CanvasRenderingContext2D;
+  private staticCanvas!: HTMLCanvasElement;
   private animId!: number;
+  private tick = 0;
+  private flights: Flight[] = [];
 
-  private plane1!: THREE.Group;
-  private plane2!: THREE.Group;
-  private beaconMeshes: THREE.Mesh[] = [];
-  private runwayLights: THREE.Mesh[] = [];
-  private stars!: THREE.Points;
+  private readonly AIRPORTS: Airport[] = [
+    { code: 'JFK', name: 'New York',     lon: -73.78, lat:  40.64 },
+    { code: 'LHR', name: 'London',       lon:  -0.45, lat:  51.47 },
+    { code: 'CDG', name: 'Paris',        lon:   2.55, lat:  49.01 },
+    { code: 'DXB', name: 'Dubai',        lon:  55.37, lat:  25.25 },
+    { code: 'SIN', name: 'Singapore',    lon: 103.99, lat:   1.36 },
+    { code: 'NRT', name: 'Tokyo',        lon: 140.39, lat:  35.77 },
+    { code: 'LAX', name: 'Los Angeles',  lon:-118.41, lat:  33.94 },
+    { code: 'SYD', name: 'Sydney',       lon: 151.18, lat: -33.94 },
+    { code: 'HKG', name: 'Hong Kong',    lon: 113.92, lat:  22.31 },
+    { code: 'ICN', name: 'Seoul',        lon: 126.45, lat:  37.46 },
+    { code: 'BOM', name: 'Mumbai',       lon:  72.87, lat:  19.09 },
+    { code: 'GRU', name: 'São Paulo',    lon: -46.47, lat: -23.43 },
+    { code: 'JNB', name: 'Johannesburg', lon:  28.25, lat: -26.13 },
+    { code: 'YYZ', name: 'Toronto',      lon: -79.63, lat:  43.68 },
+    { code: 'ORD', name: 'Chicago',      lon: -87.90, lat:  41.98 },
+    { code: 'AMS', name: 'Amsterdam',    lon:   4.76, lat:  52.31 },
+    { code: 'IST', name: 'Istanbul',     lon:  28.75, lat:  40.98 },
+    { code: 'SVO', name: 'Moscow',       lon:  37.41, lat:  55.97 },
+    { code: 'PEK', name: 'Beijing',      lon: 116.58, lat:  40.07 },
+    { code: 'DEL', name: 'Delhi',        lon:  77.10, lat:  28.57 },
+    { code: 'MIA', name: 'Miami',        lon: -80.29, lat:  25.79 },
+    { code: 'MAD', name: 'Madrid',       lon:  -3.57, lat:  40.47 },
+    { code: 'DOH', name: 'Doha',         lon:  51.61, lat:  25.27 },
+    { code: 'BKK', name: 'Bangkok',      lon: 100.75, lat:  13.69 },
+    { code: 'FCO', name: 'Rome',         lon:  12.25, lat:  41.80 },
+    { code: 'FRA', name: 'Frankfurt',    lon:   8.57, lat:  50.03 },
+    { code: 'CPT', name: 'Cape Town',    lon:  18.60, lat: -33.97 },
+    { code: 'MEX', name: 'Mexico City',  lon: -99.07, lat:  19.44 },
+    { code: 'KUL', name: 'Kuala Lumpur', lon: 101.71, lat:   2.75 },
+    { code: 'CGK', name: 'Jakarta',      lon: 106.65, lat:  -6.13 },
+    { code: 'ZRH', name: 'Zurich',       lon:   8.55, lat:  47.46 },
+    { code: 'BCN', name: 'Barcelona',    lon:   2.07, lat:  41.30 },
+  ];
 
-  ngAfterViewInit() { this.init(); }
-  ngOnDestroy() { cancelAnimationFrame(this.animId); this.renderer?.dispose(); }
+  // [r, g, b] — gold, cyan, purple, amber, emerald, rose
+  private readonly COLORS = [
+    [212, 160,  23],
+    [ 34, 211, 238],
+    [139,  92, 246],
+    [245, 158,  11],
+    [ 16, 185, 129],
+    [248, 113, 113],
+  ];
 
-  @HostListener('window:resize') onResize() {
-    if (!this.renderer) return;
-    this.camera.aspect = window.innerWidth / window.innerHeight;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+  // Simplified world land masses — each entry is [[lon, lat], ...]
+  private readonly LAND: number[][][] = [
+    // North America
+    [[-168,72],[-162,60],[-152,59],[-147,60],[-136,56],[-132,56],
+     [-126,50],[-124,47],[-122,37],[-118,33],[-117,32],[-110,24],
+     [-90,16],[-83,10],[-78,8],[-67,12],[-61,11],
+     [-65,13],[-67,18],[-78,22],[-82,24],[-82,26],
+     [-80,26],[-81,31],[-77,35],[-75,38],[-70,43],[-64,44],
+     [-60,46],[-64,46],[-66,47],[-70,48],[-75,47],[-80,47],
+     [-84,46],[-88,47],[-90,47],[-97,49],[-110,49],[-123,49],
+     [-132,56],[-136,58],[-140,59],[-152,59],[-162,60],[-168,63],[-168,72]],
+    // Greenland
+    [[-46,84],[-17,83],[-18,77],[-22,71],[-26,70],[-30,72],
+     [-44,65],[-52,66],[-55,70],[-53,77],[-46,84]],
+    // South America
+    [[-78,8],[-66,12],[-61,11],[-52,5],[-50,2],
+     [-44,-2],[-35,-5],[-35,-9],[-38,-15],[-38,-20],
+     [-41,-22],[-47,-24],[-49,-30],[-52,-34],[-58,-38],
+     [-65,-42],[-67,-49],[-69,-55],[-69,-57],
+     [-66,-51],[-65,-47],[-70,-42],[-72,-36],
+     [-72,-30],[-71,-25],[-70,-18],[-70,-14],[-73,-5],
+     [-77,0],[-79,2],[-78,8]],
+    // Europe
+    [[-10,36],[-7,37],[-9,39],[-9,44],[-2,44],[1,43],[5,43],
+     [7,44],[10,44],[13,45],[15,45],[16,47],[19,47],[22,46],
+     [25,44],[27,44],[29,46],[29,60],[27,60],[25,65],
+     [20,65],[18,70],[14,70],[12,65],[9,63],[5,62],
+     [4,58],[5,55],[8,55],[10,55],[12,56],[15,57],[18,58],
+     [22,59],[25,60],[26,60],[28,57],[26,55],[22,54],
+     [18,54],[14,54],[10,54],[8,55],[4,54],[2,51],
+     [-2,51],[-5,48],[-5,44],[-8,42],[-10,40],[-10,36]],
+    // Scandinavia
+    [[5,58],[6,57],[8,57],[10,58],[12,56],[14,55],[16,55],
+     [18,57],[20,60],[22,60],[25,65],[28,69],[30,70],
+     [28,72],[25,70],[22,70],[20,70],[18,68],[16,66],
+     [14,65],[12,63],[10,63],[8,62],[6,60],[5,58]],
+    // Africa
+    [[-17,15],[-15,12],[-12,9],[-10,7],[-8,5],[-5,4],
+     [-2,5],[2,5],[5,6],[8,4],[10,2],[9,-2],
+     [12,-5],[13,-8],[13,-17],[15,-23],[17,-28],[19,-34],
+     [22,-34],[26,-34],[30,-30],[34,-24],[37,-17],[40,-10],
+     [42,-1],[44,3],[42,12],[40,17],[38,22],[37,27],
+     [34,30],[32,30],[25,22],[15,22],[10,22],[5,18],
+     [0,15],[-5,15],[-12,15],[-17,15]],
+    // Russia + Asia (combined simplified)
+    [[30,67],[36,72],[42,70],[50,72],[60,72],[70,73],
+     [80,74],[90,78],[100,77],[110,76],[120,73],[130,72],
+     [140,70],[145,60],[140,55],[135,47],[130,44],[127,38],
+     [130,33],[122,32],[120,24],[110,22],[100,21],[100,13],
+     [104,2],[108,-2],[116,-8],[120,-10],[125,-8],
+     [130,-2],[135,6],[140,10],[145,15],[150,20],[150,30],
+     [140,35],[135,38],[130,42],[130,47],[135,52],[140,56],
+     [140,60],[145,60],[150,55],[155,52],[163,58],[170,65],
+     [168,72],[160,73],[150,74],[140,74],[130,72],[120,75],
+     [110,74],[90,78],[80,74],[70,73],[60,72],[50,72],
+     [40,70],[30,67]],
+    // Indian Subcontinent
+    [[66,24],[68,24],[70,23],[72,22],[74,20],[74,16],
+     [76,14],[79,11],[80,9],[78,8],[80,10],[82,14],
+     [80,18],[78,22],[76,25],[72,24],[68,24],[66,24]],
+    // SE Asia Peninsula
+    [[100,20],[104,20],[106,18],[106,15],[104,13],[102,11],
+     [100,9],[100,6],[103,4],[104,4],[103,2],[104,0],
+     [105,5],[107,12],[108,14],[110,16],[108,18],[106,20],[100,20]],
+    // Australia
+    [[114,-22],[116,-20],[122,-18],[126,-14],[130,-12],
+     [133,-12],[136,-12],[138,-14],[140,-18],[142,-18],
+     [144,-14],[146,-16],[148,-20],[150,-22],[152,-24],
+     [154,-28],[152,-32],[150,-36],[148,-38],[146,-39],
+     [144,-38],[142,-38],[140,-36],[138,-35],[136,-36],
+     [132,-32],[130,-30],[128,-33],[122,-34],[120,-34],
+     [118,-32],[116,-30],[114,-24],[114,-22]],
+    // Japan
+    [[130,32],[131,34],[133,35],[136,36],[138,37],
+     [140,38],[142,40],[143,42],[144,44],[143,43],
+     [141,41],[139,38],[136,35],[134,34],[132,33],[130,32]],
+    // UK
+    [[-5,50],[-1,50],[2,51],[0,53],[-2,54],[-4,54],
+     [-5,56],[-3,58],[-1,59],[0,57],[-1,55],[-3,54],[-3,51],[-5,50]],
+    // Ireland
+    [[-10,52],[-8,51],[-7,52],[-6,54],[-8,55],[-10,54],[-10,52]],
+    // Iceland
+    [[-25,64],[-20,63],[-13,63],[-14,65],[-17,66],[-23,66],[-25,64]],
+    // Madagascar
+    [[44,-12],[47,-12],[50,-18],[50,-24],[46,-25],[44,-22],[44,-12]],
+    // Arabian Peninsula
+    [[36,30],[38,22],[44,12],[46,15],[50,17],[56,23],[57,26],
+     [58,28],[56,30],[52,30],[46,30],[42,30],[36,30]],
+    // New Zealand (North Island)
+    [[172,-34],[174,-36],[176,-38],[178,-38],[178,-41],
+     [175,-42],[172,-40],[170,-38],[172,-34]],
+    // Borneo
+    [[109,-2],[116,-2],[118,2],[118,7],[116,7],[114,6],[112,4],[109,2],[109,-2]],
+    // Sumatra
+    [[95,6],[104,4],[107,1],[107,-4],[105,-5],[100,-4],[96,-2],[95,2],[95,6]],
+    // Philippines (Luzon)
+    [[118,18],[120,18],[122,16],[122,14],[121,12],[120,14],[118,16],[118,18]],
+    // Cuba
+    [[-85,22],[-82,22],[-76,20],[-74,20],[-77,22],[-82,23],[-85,22]],
+    // Sri Lanka
+    [[80,10],[81,9],[82,8],[81,7],[80,8],[80,10]],
+    // Taiwan
+    [[121,25],[122,25],[122,23],[121,22],[120,23],[121,25]],
+    // Korea
+    [[124,38],[126,36],[128,35],[130,37],[129,38],[127,38],[124,38]],
+    // Java
+    [[106,-6],[108,-7],[111,-8],[113,-8],[115,-8],[112,-9],[108,-8],[106,-7],[106,-6]],
+  ];
+
+  ngAfterViewInit() {
+    this.canvas = this.canvasRef.nativeElement;
+    this.ctx    = this.canvas.getContext('2d')!;
+    this.resize();
+    this.buildStaticLayer();
+    this.initFlights();
+    this.animate();
   }
 
-  private init() {
-    const canvas = this.canvasRef.nativeElement;
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: false });
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  ngOnDestroy() { cancelAnimationFrame(this.animId); }
 
-    this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0x05080f, 0.012);
-    this.scene.background = new THREE.Color(0x050810);
+  @HostListener('window:resize')
+  onResize() {
+    this.resize();
+    this.buildStaticLayer();
+  }
 
-    this.camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.1, 1000);
-    this.camera.position.set(0, 3, 22);
-    this.camera.lookAt(0, 6, 0);
+  private resize() {
+    this.canvas.width  = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+  }
 
-    this.buildSky();
-    this.buildGround();
-    this.buildRunway();
-    this.buildTerminals();
-    this.buildControlTower();
-    this.buildCityLine();
-    this.buildStars();
-    this.buildMoon();
-    this.buildLights();
+  private proj(lon: number, lat: number, W: number, H: number) {
+    return { x: (lon + 180) / 360 * W, y: (90 - lat) / 180 * H };
+  }
 
-    this.plane1 = this.makePlane(1.0);
-    this.scene.add(this.plane1);
-    this.plane2 = this.makePlane(0.85);
-    this.plane2.rotation.y = Math.PI;
-    this.scene.add(this.plane2);
+  private buildStaticLayer() {
+    if (!this.staticCanvas) this.staticCanvas = document.createElement('canvas');
+    const W = this.canvas.width, H = this.canvas.height;
+    this.staticCanvas.width = W; this.staticCanvas.height = H;
+    const ctx = this.staticCanvas.getContext('2d')!;
 
-    const loop = () => {
-      this.animId = requestAnimationFrame(loop);
-      this.tick();
-      this.renderer.render(this.scene, this.camera);
+    // Ocean gradient
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0,   '#020814');
+    bg.addColorStop(0.5, '#030d1c');
+    bg.addColorStop(1,   '#010610');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Faint lat/lon grid
+    ctx.lineWidth = 0.4;
+    for (let lat = -80; lat <= 80; lat += 20) {
+      const y = (90 - lat) / 180 * H;
+      ctx.strokeStyle = lat === 0 ? 'rgba(20,80,180,0.2)' : 'rgba(14,48,120,0.1)';
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+    for (let lon = -160; lon <= 160; lon += 20) {
+      const x = (lon + 180) / 360 * W;
+      ctx.strokeStyle = 'rgba(14,48,120,0.06)';
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    }
+
+    // Land fill
+    this.LAND.forEach(pts => {
+      if (pts.length < 3) return;
+      ctx.beginPath();
+      pts.forEach((pt, i) => {
+        const p = this.proj(pt[0], pt[1], W, H);
+        i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+      });
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(10,22,46,0.94)';
+      ctx.fill();
+    });
+
+    // Land border glow
+    this.LAND.forEach(pts => {
+      if (pts.length < 3) return;
+      ctx.beginPath();
+      pts.forEach((pt, i) => {
+        const p = this.proj(pt[0], pt[1], W, H);
+        i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+      });
+      ctx.closePath();
+      ctx.strokeStyle = 'rgba(38,98,220,0.30)';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+      // Outer glow pass
+      ctx.strokeStyle = 'rgba(60,140,255,0.08)';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    });
+
+    // Airport dots with glow
+    this.AIRPORTS.forEach(ap => {
+      const p = this.proj(ap.lon, ap.lat, W, H);
+      const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 8);
+      grd.addColorStop(0, 'rgba(212,160,23,0.55)');
+      grd.addColorStop(1, 'rgba(212,160,23,0)');
+      ctx.beginPath(); ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
+      ctx.fillStyle = grd; ctx.fill();
+      ctx.beginPath(); ctx.arc(p.x, p.y, 1.8, 0, Math.PI * 2);
+      ctx.fillStyle = '#d4a017'; ctx.fill();
+    });
+  }
+
+  private initFlights() {
+    for (let i = 0; i < 24; i++) this.flights.push(this.newFlight(i / 24));
+  }
+
+  private newFlight(startProgress = 0): Flight {
+    const col = this.COLORS[Math.floor(Math.random() * this.COLORS.length)];
+    let from = Math.floor(Math.random() * this.AIRPORTS.length);
+    let to   = Math.floor(Math.random() * this.AIRPORTS.length);
+    while (to === from) to = Math.floor(Math.random() * this.AIRPORTS.length);
+    return {
+      fromIdx: from, toIdx: to,
+      progress: startProgress,
+      speed: 0.0005 + Math.random() * 0.0007,
+      trail: [],
+      r: col[0], g: col[1], b: col[2],
     };
-    loop();
   }
 
-  // ── Sky dome ───────────────────────────────────────────────────────────────
-  private buildSky() {
-    const geo = new THREE.SphereGeometry(500, 16, 10);
-    const pos = geo.attributes['position'];
-    const cols = new Float32Array(pos.count * 3);
-    for (let i = 0; i < pos.count; i++) {
-      const y = (pos.getY(i) + 500) / 1000;
-      // Deep navy at top → purple-teal horizon
-      cols[i*3]   = THREE.MathUtils.lerp(0.22, 0.02, y); // R
-      cols[i*3+1] = THREE.MathUtils.lerp(0.08, 0.03, y); // G
-      cols[i*3+2] = THREE.MathUtils.lerp(0.20, 0.10, y); // B
-    }
-    geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
-    geo.scale(-1,1,1);
-    this.scene.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide })));
+  private bezierPt(t: number, from: Airport, to: Airport, W: number, H: number) {
+    const p0 = this.proj(from.lon, from.lat, W, H);
+    const p2 = this.proj(to.lon,   to.lat,   W, H);
+    const dx = p2.x - p0.x, dy = p2.y - p0.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const p1 = { x: (p0.x + p2.x) / 2, y: (p0.y + p2.y) / 2 - dist * 0.3 };
+    const mt = 1 - t;
+    return {
+      x: mt * mt * p0.x + 2 * mt * t * p1.x + t * t * p2.x,
+      y: mt * mt * p0.y + 2 * mt * t * p1.y + t * t * p2.y,
+    };
   }
 
-  // ── Ground ─────────────────────────────────────────────────────────────────
-  private buildGround() {
-    const g = new THREE.PlaneGeometry(600, 600);
-    const m = new THREE.MeshLambertMaterial({ color: 0x080c12 });
-    const mesh = new THREE.Mesh(g, m);
-    mesh.rotation.x = -Math.PI/2;
-    this.scene.add(mesh);
-  }
+  private animate() {
+    this.animId = requestAnimationFrame(() => this.animate());
+    this.tick++;
 
-  // ── Runway ─────────────────────────────────────────────────────────────────
-  private buildRunway() {
-    // Runway surface
-    const rwy = new THREE.Mesh(
-      new THREE.PlaneGeometry(20, 500),
-      new THREE.MeshLambertMaterial({ color: 0x181818 })
-    );
-    rwy.rotation.x = -Math.PI/2; rwy.position.y = 0.01;
-    this.scene.add(rwy);
+    const ctx = this.ctx;
+    const W = this.canvas.width, H = this.canvas.height;
 
-    // Center dashes
-    const dashM = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    for (let z = -230; z < 22; z += 14) {
-      const d = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.01, 7), dashM);
-      d.position.set(0, 0.02, z);
-      this.scene.add(d);
-    }
+    ctx.drawImage(this.staticCanvas, 0, 0);
 
-    // Threshold stripes
-    const tM = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    for (let x = -8; x <= 8; x += 2.8) {
-      const t = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.01, 8), tM);
-      t.position.set(x, 0.02, 14);
-      this.scene.add(t);
-    }
+    this.flights.forEach((f, idx) => {
+      f.progress += f.speed;
+      const pos = this.bezierPt(Math.min(f.progress, 1),
+        this.AIRPORTS[f.fromIdx], this.AIRPORTS[f.toIdx], W, H);
 
-    // Edge lights
-    const eM = new THREE.MeshBasicMaterial({ color: 0xffeedd });
-    for (let z = -230; z < 15; z += 9) {
-      [-10.5, 10.5].forEach(lx => {
-        const l = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.15, 6), eM);
-        l.position.set(lx, 0.08, z);
-        this.scene.add(l);
-        this.runwayLights.push(l);
-      });
-    }
+      f.trail.push({ x: pos.x, y: pos.y });
+      if (f.trail.length > 55) f.trail.shift();
 
-    // Taxiway blue edge lights
-    const bM = new THREE.MeshBasicMaterial({ color: 0x3366ff });
-    for (let z = -200; z < 0; z += 18) {
-      [-13.5, 13.5].forEach(lx => {
-        const l = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.12, 6), bM);
-        l.position.set(lx, 0.06, z);
-        this.scene.add(l);
-      });
-    }
-
-    // Approach light bars
-    const appM = new THREE.MeshBasicMaterial({ color: 0xff4400 });
-    const appW = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    [0,1,2,3].forEach(i => {
-      const l = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.3, 0.3), i < 2 ? appM : appW);
-      l.position.set(-15.5 + i * 1.4, 0.15, 14.5);
-      this.scene.add(l);
-    });
-  }
-
-  // ── Terminals ──────────────────────────────────────────────────────────────
-  private buildTerminals() {
-    this.addTerminal(-58, 7, -25, 42, 14, 16);
-    this.addTerminal( 60, 7, -35, 38, 14, 16);
-    this.addTerminal(-65, 5,  5,  22, 10, 18);
-
-    // Parked aircraft
-    [[-55,0,-8,0.4],[-63,0,5,0.35],[58,0,-4,0.4]] .forEach(([x,y,z,s]) => {
-      const p = this.makePlane(s as number);
-      p.position.set(x as number, y as number, z as number);
-      p.rotation.y = Math.random() * Math.PI * 0.4 - 0.2;
-      this.scene.add(p);
-    });
-  }
-
-  private addTerminal(cx: number, cy: number, cz: number, w: number, h: number, d: number) {
-    const g = new THREE.Group();
-
-    const body = new THREE.Mesh(
-      new THREE.BoxGeometry(w, h, d),
-      new THREE.MeshLambertMaterial({ color: 0x111828 })
-    );
-    g.add(body);
-
-    // Glass facade
-    g.add(Object.assign(new THREE.Mesh(
-      new THREE.BoxGeometry(w, h * 0.85, 0.2),
-      new THREE.MeshLambertMaterial({ color: 0x0a1535, transparent: true, opacity: 0.85 })
-    ), { position: new THREE.Vector3(0, 0, d/2 + 0.1) }));
-
-    // Window grid
-    const litM  = new THREE.MeshBasicMaterial({ color: 0xffdc80 });
-    const darkM = new THREE.MeshBasicMaterial({ color: 0x1a2d50 });
-    const cols = Math.floor(w / 3.2), rows = Math.floor(h / 2.8);
-    for (let c = 0; c < cols; c++) {
-      for (let r = 0; r < rows; r++) {
-        const lit = Math.random() > 0.3;
-        const win = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.5), lit ? litM : darkM);
-        win.position.set(-w/2 + 2 + c * 3.2, -h/2 + 2 + r * 2.8, d/2 + 0.22);
-        g.add(win);
+      // Trail gradient
+      for (let i = 1; i < f.trail.length; i++) {
+        const alpha = (i / f.trail.length) * 0.6;
+        ctx.beginPath();
+        ctx.moveTo(f.trail[i - 1].x, f.trail[i - 1].y);
+        ctx.lineTo(f.trail[i].x,     f.trail[i].y);
+        ctx.strokeStyle = `rgba(${f.r},${f.g},${f.b},${alpha.toFixed(2)})`;
+        ctx.lineWidth   = 1.4;
+        ctx.stroke();
       }
-    }
 
-    // Roof
-    g.add(Object.assign(new THREE.Mesh(
-      new THREE.BoxGeometry(w + 2, 1.2, d + 0.5),
-      new THREE.MeshLambertMaterial({ color: 0x0a1020 })
-    ), { position: new THREE.Vector3(0, h/2 + 0.6, 0) }));
-
-    // Jetways
-    for (let j = -w/3; j <= w/3; j += w/3) {
-      const jw = new THREE.Mesh(
-        new THREE.BoxGeometry(1.8, 2.5, d * 0.7),
-        new THREE.MeshLambertMaterial({ color: 0x1a2a40 })
-      );
-      jw.position.set(j, -0.5, d * 0.65);
-      g.add(jw);
-    }
-
-    g.position.set(cx, cy, cz);
-    this.scene.add(g);
-  }
-
-  // ── Control Tower ──────────────────────────────────────────────────────────
-  private buildControlTower() {
-    const g = new THREE.Group();
-
-    g.add(Object.assign(new THREE.Mesh(
-      new THREE.CylinderGeometry(1.6, 2.2, 24, 8),
-      new THREE.MeshLambertMaterial({ color: 0x162036 })
-    )));
-
-    const cab = new THREE.Mesh(
-      new THREE.CylinderGeometry(3.2, 2.8, 4.5, 10),
-      new THREE.MeshLambertMaterial({ color: 0x0c1a30 })
-    );
-    cab.position.y = 14;
-    g.add(cab);
-
-    const cabGlass = new THREE.Mesh(
-      new THREE.CylinderGeometry(3.1, 2.75, 3.5, 10),
-      new THREE.MeshBasicMaterial({ color: 0xff9933, transparent: true, opacity: 0.65 })
-    );
-    cabGlass.position.y = 14;
-    g.add(cabGlass);
-
-    const beaconGeo = new THREE.SphereGeometry(0.35, 8, 6);
-    const beaconMat = new THREE.MeshBasicMaterial({ color: 0xff1100, transparent: true });
-    const beacon = new THREE.Mesh(beaconGeo, beaconMat);
-    beacon.position.y = 18.5;
-    g.add(beacon);
-    this.beaconMeshes.push(beacon);
-
-    const ant = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.06, 0.06, 5, 4),
-      new THREE.MeshBasicMaterial({ color: 0x888888 })
-    );
-    ant.position.y = 22;
-    g.add(ant);
-
-    g.position.set(-44, 0, -22);
-    this.scene.add(g);
-  }
-
-  // ── City skyline in distance ────────────────────────────────────────────────
-  private buildCityLine() {
-    const buildings = [
-      {x:-130,h:32,w:9},{x:-115,h:50,w:6},{x:-100,h:28,w:11},{x:-88,h:60,w:5},
-      {x:-78,h:38,w:7},{x:-68,h:22,w:12},{x:68,h:45,w:6},{x:80,h:55,w:5},
-      {x:92,h:30,w:9},{x:104,h:48,w:6},{x:116,h:38,w:7},{x:128,h:65,w:4},
-    ];
-    buildings.forEach(b => {
-      const bGeo = new THREE.BoxGeometry(b.w, b.h, b.w * 0.9);
-      const bMat = new THREE.MeshLambertMaterial({ color: 0x0a1018 });
-      const bld = new THREE.Mesh(bGeo, bMat);
-      bld.position.set(b.x, b.h / 2, -130);
-      this.scene.add(bld);
-      // Lit windows
-      const litM  = [
-        new THREE.MeshBasicMaterial({ color: 0xffe880 }),
-        new THREE.MeshBasicMaterial({ color: 0x99bbff }),
-      ];
-      for (let r = 1; r < Math.floor(b.h / 4); r++) {
-        if (Math.random() > 0.4) {
-          const win = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 1.2), litM[Math.floor(Math.random()*2)]);
-          win.position.set(b.x + (Math.random()-0.5)*(b.w-1.5), r*4 - b.h/2 + 1, -130 + b.w*0.5 + 0.1);
-          this.scene.add(win);
-        }
+      // Head dot + glow
+      const last = f.trail[f.trail.length - 1];
+      if (last) {
+        const grd = ctx.createRadialGradient(last.x, last.y, 0, last.x, last.y, 14);
+        grd.addColorStop(0, `rgba(${f.r},${f.g},${f.b},0.8)`);
+        grd.addColorStop(1, `rgba(${f.r},${f.g},${f.b},0)`);
+        ctx.beginPath(); ctx.arc(last.x, last.y, 14, 0, Math.PI * 2);
+        ctx.fillStyle = grd; ctx.fill();
+        ctx.beginPath(); ctx.arc(last.x, last.y, 2.8, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,0.9)`; ctx.fill();
       }
-    });
-  }
 
-  // ── Stars ─────────────────────────────────────────────────────────────────
-  private buildStars() {
-    const n = 2500;
-    const pos = new Float32Array(n * 3);
-    for (let i = 0; i < n; i++) {
-      const theta = Math.random() * Math.PI * 2;
-      const phi   = Math.acos(Math.random() * 0.75);
-      const r     = 380 + Math.random() * 60;
-      pos[i*3]   = r * Math.sin(phi) * Math.cos(theta);
-      pos[i*3+1] = r * Math.cos(phi);
-      pos[i*3+2] = r * Math.sin(phi) * Math.sin(theta);
-    }
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    this.stars = new THREE.Points(geo, new THREE.PointsMaterial({
-      color: 0xffffff, size: 0.9, sizeAttenuation: false, transparent: true, opacity: 0.75
-    }));
-    this.scene.add(this.stars);
-  }
-
-  // ── Moon ──────────────────────────────────────────────────────────────────
-  private buildMoon() {
-    const moon = new THREE.Mesh(
-      new THREE.SphereGeometry(9, 18, 14),
-      new THREE.MeshBasicMaterial({ color: 0xddd8c0 })
-    );
-    moon.position.set(-160, 130, -320);
-    this.scene.add(moon);
-
-    const halo = new THREE.Mesh(
-      new THREE.SphereGeometry(14, 16, 12),
-      new THREE.MeshBasicMaterial({ color: 0xb8b0a0, transparent: true, opacity: 0.12, side: THREE.BackSide })
-    );
-    halo.position.copy(moon.position);
-    this.scene.add(halo);
-
-    const moonLight = new THREE.DirectionalLight(0x8899cc, 0.45);
-    moonLight.position.copy(moon.position);
-    this.scene.add(moonLight);
-  }
-
-  // ── Lights ────────────────────────────────────────────────────────────────
-  private buildLights() {
-    this.scene.add(new THREE.AmbientLight(0x091424, 2.2));
-    const rL = new THREE.PointLight(0xff9944, 1.2, 50);
-    rL.position.set(0, 1.5, 0);
-    this.scene.add(rL);
-    const tL = new THREE.PointLight(0xffe880, 1.5, 80);
-    tL.position.set(-58, 10, -22);
-    this.scene.add(tL);
-    const tR = new THREE.PointLight(0xffe880, 1.2, 75);
-    tR.position.set(60, 10, -30);
-    this.scene.add(tR);
-  }
-
-  // ── Plane mesh factory ────────────────────────────────────────────────────
-  private makePlane(scale: number): THREE.Group {
-    const g = new THREE.Group();
-    const w = new THREE.MeshLambertMaterial({ color: 0xe8edf2 });
-    const gr = new THREE.MeshLambertMaterial({ color: 0x556677 });
-    const nv = new THREE.MeshLambertMaterial({ color: 0x1a3a6e });
-
-    // Fuselage
-    const f = new THREE.Mesh(new THREE.CylinderGeometry(0.52, 0.46, 9, 12), w);
-    f.rotation.z = Math.PI/2;
-    g.add(f);
-    // Nose
-    const n = new THREE.Mesh(new THREE.ConeGeometry(0.46, 1.8, 10), w);
-    n.rotation.z = -Math.PI/2; n.position.set(5.3, 0, 0);
-    g.add(n);
-    // Tail cone
-    const tc = new THREE.Mesh(new THREE.ConeGeometry(0.46, 2.2, 10), w);
-    tc.rotation.z = Math.PI/2; tc.position.set(-5.5, 0, 0);
-    g.add(tc);
-    // Wings
-    const wing = new THREE.Mesh(new THREE.BoxGeometry(11, 0.1, 2), w);
-    wing.position.set(0.5, -0.1, 0);
-    g.add(wing);
-    // Winglets
-    [-5.6, 5.6].forEach(x => {
-      const wl = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.6, 0.65), nv);
-      wl.position.set(x, 0.25, 0);
-      g.add(wl);
-    });
-    // H-stabiliser
-    const hs = new THREE.Mesh(new THREE.BoxGeometry(4.5, 0.07, 1), w);
-    hs.position.set(-5, 0.1, 0);
-    g.add(hs);
-    // V-stabiliser
-    const vs = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1.4, 1.6), nv);
-    vs.position.set(-4.8, 0.8, 0);
-    g.add(vs);
-    // Engines
-    [-2.2, 2.2].forEach(ex => {
-      const eng = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.28, 2, 10), gr);
-      eng.rotation.z = Math.PI/2; eng.position.set(ex, -0.5, 0.55);
-      g.add(eng);
-      const intake = new THREE.Mesh(new THREE.CylinderGeometry(0.33, 0.33, 0.12, 10),
-        new THREE.MeshBasicMaterial({ color: 0x111111 }));
-      intake.rotation.z = Math.PI/2; intake.position.set(ex + 1.05, -0.5, 0.55);
-      g.add(intake);
-    });
-    // Livery stripe
-    const stripe = new THREE.Mesh(new THREE.BoxGeometry(8, 0.09, 1.05), nv);
-    stripe.position.set(0, 0.5, 0);
-    g.add(stripe);
-    // Nav lights
-    [[-5.7,0xee0000],[ 5.7,0x00ee00],[-6.5,0xffffff]].forEach(([x,c]) => {
-      const l = new THREE.Mesh(new THREE.SphereGeometry(0.09,6,4),
-        new THREE.MeshBasicMaterial({ color: c as number }));
-      l.position.set(x as number, 0, 0);
-      g.add(l);
-    });
-    g.scale.setScalar(scale);
-    return g;
-  }
-
-  // ── Animation tick ─────────────────────────────────────────────────────────
-  private tick() {
-    const t = this.clock.getElapsedTime();
-
-    // Beacon blink
-    this.beaconMeshes.forEach(b => {
-      (b.material as THREE.MeshBasicMaterial).opacity = Math.sin(t * Math.PI * 1.4) > 0.7 ? 1 : 0.05;
+      if (f.progress >= 1) this.flights[idx] = this.newFlight();
     });
 
-    // Runway light shimmer
-    this.runwayLights.forEach((l, i) => {
-      const s = 0.72 + Math.sin(t * 1.4 + i * 0.18) * 0.28;
-      (l.material as THREE.MeshBasicMaterial).color.setRGB(s, s*0.93, s*0.86);
+    // Animated airport pulse rings
+    const t = this.tick * 0.018;
+    this.AIRPORTS.forEach((ap, i) => {
+      if ((i + this.tick) % 5 !== 0) return;
+      const p = this.proj(ap.lon, ap.lat, W, H);
+      const pulse = (Math.sin(t + i * 0.97) * 0.5 + 0.5);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 5 + pulse * 9, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(212,160,23,${(0.22 * (1 - pulse)).toFixed(2)})`;
+      ctx.lineWidth = 1; ctx.stroke();
     });
-
-    // Stars twinkle
-    if (this.stars) (this.stars.material as THREE.PointsMaterial).opacity = 0.55 + Math.sin(t*0.25)*0.2;
-
-    // Plane 1 — TAKEOFF (28s loop)
-    const s1 = t % 28;
-    if (this.plane1) {
-      this.plane1.visible = true;
-      if (s1 < 5) {
-        const p = s1 / 5;
-        this.plane1.position.set(1.5, 0.55, 20 - p * 50);
-        this.plane1.rotation.set(0,0,0);
-      } else if (s1 < 11) {
-        const p = (s1-5)/6;
-        this.plane1.position.set(1.5, 0.55 + p*p*28, -30 - p*55);
-        this.plane1.rotation.set(p*0.22, 0, 0);
-      } else if (s1 < 23) {
-        const p = (s1-11)/12;
-        this.plane1.position.set(1.5 + p*20, 28 + p*70, -85 - p*160);
-        this.plane1.rotation.set(0.2-p*0.2, 0, Math.sin(p*Math.PI)*0.12);
-        this.plane1.visible = p < 0.88;
-      } else { this.plane1.visible = false; }
-      if (s1 > 26 && !this.plane1.visible) {
-        this.plane1.position.set(1.5, 0.55, 20);
-        this.plane1.rotation.set(0,0,0);
-      }
-    }
-
-    // Plane 2 — LANDING (38s loop, offset 18s)
-    const s2 = (t + 18) % 38;
-    if (this.plane2) {
-      if (s2 < 14) {
-        const p = s2 / 14;
-        this.plane2.position.set(-2, 42-p*32, -220+p*130);
-        this.plane2.rotation.set(0.1, Math.PI, 0);
-        this.plane2.visible = true;
-      } else if (s2 < 20) {
-        const p = (s2-14)/6;
-        this.plane2.position.set(-2, 10-p*9.5, -90+p*100);
-        this.plane2.rotation.set(0.06-p*0.06, Math.PI, 0);
-        this.plane2.visible = true;
-      } else if (s2 < 24) {
-        const p = (s2-20)/4;
-        this.plane2.position.set(-2, 0.55, 10+p*18);
-        this.plane2.rotation.set(0, Math.PI, 0);
-        this.plane2.visible = true;
-      } else { this.plane2.visible = false; }
-    }
-
-    // Slow camera sway
-    this.camera.position.x = Math.sin(t * 0.06) * 1.2;
-    this.camera.position.y = 3 + Math.sin(t * 0.1) * 0.4;
   }
 }
