@@ -21,28 +21,24 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: frontend-react/package-lock.json
 
       - name: Install dependencies
-        working-directory: frontend
-        run: npm ci --legacy-peer-deps
+        working-directory: frontend-react
+        run: npm ci
 
-      - name: Build Angular app
-        working-directory: frontend
-        run: npx ng build --base-href "/skylux-flight-booking/"
+      - name: Build React app
+        working-directory: frontend-react
+        run: npm run build
 
-      - name: Find build output and prepare for deploy
+      - name: Prepare for deploy
         run: |
-          DIST=$(find frontend/dist -name "index.html" | head -1 | xargs dirname)
-          echo "DIST_DIR=$DIST" >> $GITHUB_ENV
-          cp "$DIST/index.html" "$DIST/404.html"
-          touch "$DIST/.nojekyll"
-          echo "Deploying from: $DIST"
-          ls "$DIST"
+          cp frontend-react/dist/index.html frontend-react/dist/404.html
+          touch frontend-react/dist/.nojekyll
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ${{ env.DIST_DIR }}
+          publish_dir: frontend-react/dist
           publish_branch: gh-pages
