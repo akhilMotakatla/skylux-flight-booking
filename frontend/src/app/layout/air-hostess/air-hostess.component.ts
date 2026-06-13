@@ -16,6 +16,11 @@ const MESSAGES = [
     <div class="hostess-wrap">
       <canvas #hCanvas class="hostess-canvas"></canvas>
       <div class="speech-bubble" [class.visible]="bubbleVisible">
+        <div class="bubble-header">
+          <div class="bubble-avatar">A</div>
+          <span class="bubble-name">Aria · SkyLux</span>
+          <span class="bubble-dot"></span>
+        </div>
         <div class="bubble-text">{{ currentText }}</div>
         <div class="bubble-tail"></div>
       </div>

@@ -1,19 +1,18 @@
 <div class="wizard-page">
   <div class="wizard-shell">
 
-    <!-- Air Hostess (desktop only, fixed right) -->
+    <!-- Air Hostess (desktop only) -->
     @if (!loading() && step() < 4) {
       <div class="hostess-panel">
         <app-air-hostess [step]="hostessStep" />
       </div>
     }
 
-    <!-- Main Form -->
     <div class="wizard-main container">
 
       @if (loading()) {
         <div class="loading-state">
-          <div class="spinner"></div>
+          <div class="spinner-ring"></div>
           <p>Loading flight details…</p>
         </div>
       } @else if (error() && !flight()) {
@@ -28,7 +27,7 @@
           <div class="flight-summary glass-card fade-up">
             <div class="sum-route">
               <span class="iata">{{ f.departureIATA }}</span>
-              <span class="arr">✈</span>
+              <span class="route-plane">✈</span>
               <span class="iata">{{ f.arrivalIATA }}</span>
             </div>
             <div class="sum-meta">
@@ -39,7 +38,7 @@
           </div>
         }
 
-        <!-- Step indicator -->
+        <!-- Step Indicator -->
         @if (step() < 4) {
           <div class="step-indicator fade-up">
             @for (s of [1,2,3]; track s) {
@@ -52,47 +51,272 @@
           </div>
         }
 
-        <!-- ══ STEP 1 — Seat Selection ══════════════════════════════════ -->
+        <!-- ══ STEP 1 — Aircraft Seat Selection ══════════════════════════ -->
         @if (step() === 1) {
           <div class="wizard-step fade-up">
-            <h2>Select Your Seat<span class="gold-text">s</span></h2>
-            <p class="step-sub">Choose {{ passengerCount }} seat(s) · Selected: {{ selectedSeats().length }}/{{ passengerCount }}</p>
-
-            <div class="seat-map glass-card">
-              <div class="cabin-label">✈ CABIN LAYOUT</div>
-              <div class="seat-header">
-                <span class="row-spacer"></span>
-                @for (c of cols; track c) {
-                  <span class="col-lbl">{{ c }}</span>
-                  @if (c === 'C') { <span class="aisle"></span> }
-                }
+            <div class="step1-header">
+              <div>
+                <h2>Select Your Seat<span class="gold-text">s</span></h2>
+                <p class="step-sub">
+                  Choose <strong>{{ passengerCount }}</strong> seat(s)
+                  <span class="sel-count" [class.complete]="selectedSeats().length === passengerCount">
+                    {{ selectedSeats().length }}/{{ passengerCount }} selected
+                  </span>
+                </p>
               </div>
-              @for (row of rows; track row) {
-                <div class="seat-row">
-                  <span class="row-num">{{ row }}</span>
-                  @for (col of cols; track col) {
-                    <button
-                      class="seat"
-                      [class.occupied]="isSeatOccupied(row+col)"
-                      [class.selected]="isSeatSelected(row+col)"
-                      [disabled]="isSeatOccupied(row+col)"
-                      (click)="toggleSeat(row+col)"
-                    >{{ row }}{{ col }}</button>
-                    @if (col === 'C') { <span class="aisle-gap"></span> }
-                  }
-                </div>
-              }
+              <div class="seat-legend">
+                <div class="leg"><div class="dot-avail"></div>Available</div>
+                <div class="leg"><div class="dot-sel"></div>Selected</div>
+                <div class="leg"><div class="dot-occ"></div>Occupied</div>
+              </div>
             </div>
 
-            <div class="seat-legend">
-              <div class="leg"><div class="dot available"></div>Available</div>
-              <div class="leg"><div class="dot selected"></div>Selected</div>
-              <div class="leg"><div class="dot occupied"></div>Occupied</div>
+            <!-- Aircraft Visualization -->
+            <div class="aircraft-outer">
+
+              <!-- Nose -->
+              <div class="aircraft-nose">
+                <div class="nose-cone">
+                  <div class="cockpit-windows">
+                    <div class="cockpit-win"></div>
+                    <div class="cockpit-win"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Column headers (outside fuselage, above it) -->
+              <div class="col-headers">
+                <div class="col-spacer"></div>
+                @for (c of leftCols; track c) {
+                  <div class="col-h">{{ c }}</div>
+                }
+                <div class="aisle-h">☰</div>
+                @for (c of rightCols; track c) {
+                  <div class="col-h">{{ c }}</div>
+                }
+              </div>
+
+              <!-- Fuselage -->
+              <div class="fuselage">
+                <div class="fuse-edge left-edge">
+                  <div class="window-strip">
+                    @for (w of [1,2,3,4,5,6,7,8,9,10,11,12]; track w) {
+                      <div class="fuse-window"></div>
+                    }
+                  </div>
+                </div>
+
+                <div class="cabin-interior">
+
+                  <!-- ── FIRST CLASS ── -->
+                  <div class="cabin-zone zone-first">
+                    <div class="zone-label">
+                      <span class="zone-crown">♔</span>
+                      <span class="zone-name">First Class</span>
+                      <span class="zone-rows">Rows 1–4</span>
+                    </div>
+                    @for (row of firstClassRows; track row) {
+                      <div class="seat-row" [class.exit-row]="isExitRow(row)" [class.wing-row]="isWingRow(row)">
+                        <span class="row-num">{{ row }}</span>
+                        @for (col of leftCols; track col) {
+                          <button
+                            class="seat seat-first"
+                            [class.occupied]="isSeatOccupied(row+col)"
+                            [class.selected]="isSeatSelected(row+col)"
+                            [class.window-seat]="isWindowSeat(col)"
+                            [disabled]="isSeatOccupied(row+col)"
+                            (click)="toggleSeat(row+col)"
+                            [title]="row+col + (isExitRow(row) ? ' — Exit Row' : '') + (isWindowSeat(col) ? ' — Window' : '')">
+                            <span class="seat-lbl">{{ row }}{{ col }}</span>
+                          </button>
+                        }
+                        <div class="aisle-gap">
+                          @if (isExitRow(row)) { <span class="exit-badge">EXIT</span> }
+                        </div>
+                        @for (col of rightCols; track col) {
+                          <button
+                            class="seat seat-first"
+                            [class.occupied]="isSeatOccupied(row+col)"
+                            [class.selected]="isSeatSelected(row+col)"
+                            [class.window-seat]="isWindowSeat(col)"
+                            [disabled]="isSeatOccupied(row+col)"
+                            (click)="toggleSeat(row+col)"
+                            [title]="row+col + (isExitRow(row) ? ' — Exit Row' : '') + (isWindowSeat(col) ? ' — Window' : '')">
+                            <span class="seat-lbl">{{ row }}{{ col }}</span>
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Zone Divider: Business -->
+                  <div class="zone-divider divider-business">
+                    <div class="divider-line"></div>
+                    <span class="divider-label">✈ Business Class · Rows 5–12</span>
+                    <div class="divider-line"></div>
+                  </div>
+
+                  <!-- ── BUSINESS CLASS ── -->
+                  <div class="cabin-zone zone-business">
+                    @for (row of businessRows; track row) {
+                      <div class="seat-row" [class.exit-row]="isExitRow(row)" [class.wing-row]="isWingRow(row)">
+                        <span class="row-num">{{ row }}</span>
+                        @for (col of leftCols; track col) {
+                          <button
+                            class="seat seat-business"
+                            [class.occupied]="isSeatOccupied(row+col)"
+                            [class.selected]="isSeatSelected(row+col)"
+                            [class.window-seat]="isWindowSeat(col)"
+                            [disabled]="isSeatOccupied(row+col)"
+                            (click)="toggleSeat(row+col)"
+                            [title]="row+col">
+                            <span class="seat-lbl">{{ row }}{{ col }}</span>
+                          </button>
+                        }
+                        <div class="aisle-gap">
+                          @if (isExitRow(row)) { <span class="exit-badge">EXIT</span> }
+                        </div>
+                        @for (col of rightCols; track col) {
+                          <button
+                            class="seat seat-business"
+                            [class.occupied]="isSeatOccupied(row+col)"
+                            [class.selected]="isSeatSelected(row+col)"
+                            [class.window-seat]="isWindowSeat(col)"
+                            [disabled]="isSeatOccupied(row+col)"
+                            (click)="toggleSeat(row+col)"
+                            [title]="row+col">
+                            <span class="seat-lbl">{{ row }}{{ col }}</span>
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Zone Divider: Premium Economy -->
+                  <div class="zone-divider divider-premium">
+                    <div class="divider-line"></div>
+                    <span class="divider-label">◆ Premium Economy · Rows 13–18</span>
+                    <div class="divider-line"></div>
+                  </div>
+
+                  <!-- ── PREMIUM ECONOMY ── -->
+                  <div class="cabin-zone zone-premium">
+                    @for (row of premiumRows; track row) {
+                      <div class="seat-row" [class.exit-row]="isExitRow(row)" [class.wing-row]="isWingRow(row)">
+                        <span class="row-num">{{ row }}</span>
+                        @for (col of leftCols; track col) {
+                          <button
+                            class="seat seat-premium"
+                            [class.occupied]="isSeatOccupied(row+col)"
+                            [class.selected]="isSeatSelected(row+col)"
+                            [class.window-seat]="isWindowSeat(col)"
+                            [disabled]="isSeatOccupied(row+col)"
+                            (click)="toggleSeat(row+col)"
+                            [title]="row+col + (isExitRow(row) ? ' — Exit Row' : '') + (isWindowSeat(col) ? ' — Window' : '')">
+                            <span class="seat-lbl">{{ row }}{{ col }}</span>
+                          </button>
+                        }
+                        <div class="aisle-gap">
+                          @if (isExitRow(row)) { <span class="exit-badge">EXIT</span> }
+                        </div>
+                        @for (col of rightCols; track col) {
+                          <button
+                            class="seat seat-premium"
+                            [class.occupied]="isSeatOccupied(row+col)"
+                            [class.selected]="isSeatSelected(row+col)"
+                            [class.window-seat]="isWindowSeat(col)"
+                            [disabled]="isSeatOccupied(row+col)"
+                            (click)="toggleSeat(row+col)"
+                            [title]="row+col + (isExitRow(row) ? ' — Exit Row' : '') + (isWindowSeat(col) ? ' — Window' : '')">
+                            <span class="seat-lbl">{{ row }}{{ col }}</span>
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Wing Band -->
+                  <div class="wing-band">
+                    <span class="wing-left">◄◄◄</span>
+                    <span class="wing-text">WING AREA</span>
+                    <span class="wing-right">►►►</span>
+                  </div>
+
+                  <!-- Zone Divider: Economy -->
+                  <div class="zone-divider divider-economy">
+                    <div class="divider-line"></div>
+                    <span class="divider-label">Economy · Rows 19–30</span>
+                    <div class="divider-line"></div>
+                  </div>
+
+                  <!-- ── ECONOMY ── -->
+                  <div class="cabin-zone zone-economy">
+                    @for (row of economyRows; track row) {
+                      <div class="seat-row" [class.exit-row]="isExitRow(row)" [class.wing-row]="isWingRow(row)">
+                        <span class="row-num">{{ row }}</span>
+                        @for (col of leftCols; track col) {
+                          <button
+                            class="seat seat-economy"
+                            [class.occupied]="isSeatOccupied(row+col)"
+                            [class.selected]="isSeatSelected(row+col)"
+                            [class.window-seat]="isWindowSeat(col)"
+                            [disabled]="isSeatOccupied(row+col)"
+                            (click)="toggleSeat(row+col)"
+                            [title]="row+col + (isExitRow(row) ? ' — Exit Row' : '') + (isWindowSeat(col) ? ' — Window' : '')">
+                            <span class="seat-lbl">{{ row }}{{ col }}</span>
+                          </button>
+                        }
+                        <div class="aisle-gap">
+                          @if (isExitRow(row)) { <span class="exit-badge">EXIT</span> }
+                        </div>
+                        @for (col of rightCols; track col) {
+                          <button
+                            class="seat seat-economy"
+                            [class.occupied]="isSeatOccupied(row+col)"
+                            [class.selected]="isSeatSelected(row+col)"
+                            [class.window-seat]="isWindowSeat(col)"
+                            [disabled]="isSeatOccupied(row+col)"
+                            (click)="toggleSeat(row+col)"
+                            [title]="row+col + (isExitRow(row) ? ' — Exit Row' : '') + (isWindowSeat(col) ? ' — Window' : '')">
+                            <span class="seat-lbl">{{ row }}{{ col }}</span>
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+
+                </div><!-- /cabin-interior -->
+
+                <div class="fuse-edge right-edge">
+                  <div class="window-strip">
+                    @for (w of [1,2,3,4,5,6,7,8,9,10,11,12]; track w) {
+                      <div class="fuse-window"></div>
+                    }
+                  </div>
+                </div>
+              </div><!-- /fuselage -->
+
+              <!-- Tail -->
+              <div class="aircraft-tail">
+                <div class="tail-cone"></div>
+              </div>
+
+            </div><!-- /aircraft-outer -->
+
+            <!-- Class legend -->
+            <div class="class-legend">
+              <div class="cls-item"><span class="cls-dot first"></span>First</div>
+              <div class="cls-item"><span class="cls-dot business"></span>Business</div>
+              <div class="cls-item"><span class="cls-dot premium"></span>Premium Eco</div>
+              <div class="cls-item"><span class="cls-dot economy"></span>Economy</div>
+              <div class="cls-item exit-item"><span class="exit-mini">EXIT</span>Exit Row</div>
             </div>
 
             <div class="step-actions">
               <button class="btn-ghost" (click)="goHome()">Cancel</button>
-              <button class="btn-gold" (click)="nextStep()">Continue →</button>
+              <button class="btn-gold" (click)="nextStep()">
+                Continue to Passengers →
+              </button>
             </div>
           </div>
         }
@@ -107,7 +331,7 @@
                   <div [formGroupName]="$index" class="pax-card glass-card">
                     <div class="pax-header">
                       <span class="pax-num">Passenger {{ $index + 1 }}</span>
-                      <span class="seat-tag">Seat: <strong>{{ selectedSeats()[$index] || '—' }}</strong></span>
+                      <span class="seat-tag">Seat: <strong class="gold-text">{{ selectedSeats()[$index] || '—' }}</strong></span>
                     </div>
                     <div class="pax-grid">
                       <div class="field">
@@ -158,9 +382,7 @@
               </div>
             }
 
-            <!-- Credit Card -->
             <div class="card-section glass-card">
-              <!-- Visual Card -->
               <div class="credit-card-wrap" (mouseenter)="cardFlipped.set(false)">
                 <div class="credit-card" [class.flipped]="cardFlipped()">
                   <div class="card-front">
@@ -183,57 +405,23 @@
                   </div>
                 </div>
               </div>
-
-              <!-- Card Inputs -->
               <div class="card-inputs">
                 <div class="field">
                   <label>Card Number</label>
-                  <input
-                    [value]="cardNumber"
-                    (input)="onCardNumberInput($event)"
-                    placeholder="1234 5678 9012 3456"
-                    class="glass-input"
-                    inputmode="numeric"
-                    maxlength="19"
-                    autocomplete="cc-number"
-                  />
+                  <input [value]="cardNumber" (input)="onCardNumberInput($event)" placeholder="1234 5678 9012 3456" class="glass-input" inputmode="numeric" maxlength="19" autocomplete="cc-number" />
                 </div>
                 <div class="field">
                   <label>Cardholder Name</label>
-                  <input
-                    [value]="cardName"
-                    (input)="onNameInput($event)"
-                    placeholder="JOHN DOE"
-                    class="glass-input"
-                    autocomplete="cc-name"
-                  />
+                  <input [value]="cardName" (input)="onNameInput($event)" placeholder="JOHN DOE" class="glass-input" autocomplete="cc-name" />
                 </div>
                 <div class="field-row">
                   <div class="field">
                     <label>Expiry Date</label>
-                    <input
-                      [value]="cardExpiry"
-                      (input)="onExpiryInput($event)"
-                      placeholder="MM/YY"
-                      class="glass-input"
-                      inputmode="numeric"
-                      maxlength="5"
-                      autocomplete="cc-exp"
-                    />
+                    <input [value]="cardExpiry" (input)="onExpiryInput($event)" placeholder="MM/YY" class="glass-input" inputmode="numeric" maxlength="5" autocomplete="cc-exp" />
                   </div>
                   <div class="field">
                     <label>CVV</label>
-                    <input
-                      [value]="cardCvv"
-                      (input)="onCvvInput($event)"
-                      placeholder="{{ cardType === 'amex' ? '••••' : '•••' }}"
-                      class="glass-input"
-                      inputmode="numeric"
-                      [attr.maxlength]="cardType === 'amex' ? 4 : 3"
-                      (focus)="cardFlipped.set(true)"
-                      (blur)="cardFlipped.set(false)"
-                      autocomplete="cc-csc"
-                    />
+                    <input [value]="cardCvv" (input)="onCvvInput($event)" placeholder="{{ cardType === 'amex' ? '••••' : '•••' }}" class="glass-input" inputmode="numeric" [attr.maxlength]="cardType === 'amex' ? 4 : 3" (focus)="cardFlipped.set(true)" (blur)="cardFlipped.set(false)" autocomplete="cc-csc" />
                   </div>
                 </div>
                 <p class="secure-note">🔒 Payments secured with 256-bit SSL encryption</p>

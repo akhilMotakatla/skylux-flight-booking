@@ -13,10 +13,18 @@ import { ChatService } from '../../core/services/chat.service';
       @if (isOpen()) {
         <div class="chatbot-panel">
           <div class="panel-header">
-            <div class="bot-avatar">✈</div>
+            <!-- SVG plane avatar -->
+            <div class="bot-avatar">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="currentColor"/>
+              </svg>
+            </div>
             <div class="bot-info">
-              <div class="bot-name">SkyAssist</div>
-              <div class="bot-status"><span class="dot"></span> Online</div>
+              <div class="bot-name">SkyAssist AI</div>
+              <div class="bot-status"><span class="dot"></span> Online &amp; ready</div>
+            </div>
+            <div class="header-actions">
+              <button class="action-btn" title="Clear chat" (click)="chat.clearMessages()">⊘</button>
             </div>
             <button class="close-btn" (click)="toggle()">✕</button>
           </div>
@@ -25,7 +33,11 @@ import { ChatService } from '../../core/services/chat.service';
             @for (msg of chat.messages(); track msg.id) {
               <div class="msg" [class.bot]="msg.isBot" [class.user]="!msg.isBot">
                 @if (msg.isBot) {
-                  <div class="avatar">✈</div>
+                  <div class="avatar">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="currentColor"/>
+                    </svg>
+                  </div>
                 }
                 <div class="bubble">
                   <pre>{{ msg.text }}</pre>
@@ -41,9 +53,13 @@ import { ChatService } from '../../core/services/chat.service';
               }
             }
             @if (isTyping()) {
-              <div class="msg bot">
-                <div class="avatar">✈</div>
-                <div class="bubble typing">
+              <div class="msg bot typing">
+                <div class="avatar">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="currentColor"/>
+                  </svg>
+                </div>
+                <div class="bubble">
                   <span></span><span></span><span></span>
                 </div>
               </div>
@@ -58,7 +74,9 @@ import { ChatService } from '../../core/services/chat.service';
               [disabled]="isTyping()"
             />
             <button class="send-btn" (click)="send()" [disabled]="!inputText.trim() || isTyping()">
-              ➤
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M2 21L23 12 2 3v7l15 2-15 2v7z" fill="currentColor"/>
+              </svg>
             </button>
           </div>
         </div>
@@ -66,7 +84,13 @@ import { ChatService } from '../../core/services/chat.service';
 
       <!-- Toggle button -->
       <button class="toggle-btn" (click)="toggle()" [class.open]="isOpen()">
-        @if (isOpen()) { <span>✕</span> } @else { <span>✈</span> }
+        @if (isOpen()) {
+          <span>✕</span>
+        } @else {
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+            <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="currentColor"/>
+          </svg>
+        }
       </button>
     </div>
   `,

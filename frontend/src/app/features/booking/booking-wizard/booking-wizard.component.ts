@@ -29,7 +29,25 @@ export class BookingWizardComponent implements OnInit {
 
   readonly rows = Array.from({ length: 30 }, (_, i) => i + 1);
   readonly cols = ['A', 'B', 'C', 'D', 'E', 'F'];
+  readonly leftCols  = ['A', 'B', 'C'];
+  readonly rightCols = ['D', 'E', 'F'];
+  readonly firstClassRows = [1, 2, 3, 4];
+  readonly businessRows   = [5, 6, 7, 8, 9, 10, 11, 12];
+  readonly premiumRows    = [13, 14, 15, 16, 17, 18];
+  readonly economyRows    = [19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
+  readonly exitRowSet     = new Set([15, 22]);
+  readonly wingRowSet     = new Set([16, 17, 18, 19]);
   occupiedSeats = signal<string[]>([]);
+
+  getSeatClass(row: number): string {
+    if (row <= 4)  return 'first';
+    if (row <= 12) return 'business';
+    if (row <= 18) return 'premium';
+    return 'economy';
+  }
+  isExitRow(row: number): boolean { return this.exitRowSet.has(row); }
+  isWingRow(row: number): boolean { return this.wingRowSet.has(row); }
+  isWindowSeat(col: string): boolean { return col === 'A' || col === 'F'; }
 
   // Card fields (validated)
   cardNumber = '';
