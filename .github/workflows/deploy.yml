@@ -29,17 +29,20 @@ jobs:
 
       - name: Build Angular app
         working-directory: frontend
-        run: npx ng build --base-href "/skylux-flight-booking/" --output-path dist/browser
+        run: npx ng build --base-href "/skylux-flight-booking/"
 
-      - name: Add 404.html for SPA routing
-        run: cp frontend/dist/browser/index.html frontend/dist/browser/404.html
-
-      - name: Add .nojekyll
-        run: touch frontend/dist/browser/.nojekyll
+      - name: Find build output and prepare for deploy
+        run: |
+          DIST=$(find frontend/dist -name "index.html" | head -1 | xargs dirname)
+          echo "DIST_DIR=$DIST" >> $GITHUB_ENV
+          cp "$DIST/index.html" "$DIST/404.html"
+          touch "$DIST/.nojekyll"
+          echo "Deploying from: $DIST"
+          ls "$DIST"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: frontend/dist/browser
+          publish_dir: ${{ env.DIST_DIR }}
           publish_branch: gh-pages
