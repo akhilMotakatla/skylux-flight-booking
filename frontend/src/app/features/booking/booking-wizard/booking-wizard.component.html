@@ -1,13 +1,6 @@
 <div class="wizard-page">
   <div class="wizard-shell">
 
-    <!-- Air Hostess (desktop only) -->
-    @if (!loading() && step() < 4) {
-      <div class="hostess-panel">
-        <app-air-hostess [step]="hostessStep" />
-      </div>
-    }
-
     <div class="wizard-main container">
 
       @if (loading()) {
@@ -453,8 +446,10 @@
                         <button type="button" class="svc-card" [class.selected]="isServiceSelected(svc.id)"
                                 (click)="toggleService(svc.id)">
                           <span class="svc-icon">{{ svc.icon }}</span>
-                          <span class="svc-label">{{ svc.label }}</span>
-                          <span class="svc-price">{{ svc.priceLabel }}</span>
+                          <span class="svc-text">
+                            <span class="svc-label">{{ svc.label }}</span>
+                            <span class="svc-price">{{ svc.priceLabel }}</span>
+                          </span>
                           <span class="svc-check" [class.visible]="isServiceSelected(svc.id)">✓</span>
                         </button>
                       }
@@ -470,8 +465,10 @@
                         <button type="button" class="svc-card" [class.selected]="isServiceSelected(svc.id)"
                                 (click)="toggleService(svc.id)">
                           <span class="svc-icon">{{ svc.icon }}</span>
-                          <span class="svc-label">{{ svc.label }}</span>
-                          <span class="svc-price">{{ svc.priceLabel }}</span>
+                          <span class="svc-text">
+                            <span class="svc-label">{{ svc.label }}</span>
+                            <span class="svc-price">{{ svc.priceLabel }}</span>
+                          </span>
                           <span class="svc-check" [class.visible]="isServiceSelected(svc.id)">✓</span>
                         </button>
                       }
@@ -487,8 +484,10 @@
                         <button type="button" class="svc-card" [class.selected]="isServiceSelected(svc.id)"
                                 (click)="toggleService(svc.id)">
                           <span class="svc-icon">{{ svc.icon }}</span>
-                          <span class="svc-label">{{ svc.label }}</span>
-                          <span class="svc-price">{{ svc.priceLabel }}</span>
+                          <span class="svc-text">
+                            <span class="svc-label">{{ svc.label }}</span>
+                            <span class="svc-price">{{ svc.priceLabel }}</span>
+                          </span>
                           <span class="svc-check" [class.visible]="isServiceSelected(svc.id)">✓</span>
                         </button>
                       }
@@ -504,8 +503,10 @@
                         <button type="button" class="svc-card" [class.selected]="isServiceSelected(svc.id)"
                                 (click)="toggleService(svc.id)">
                           <span class="svc-icon">{{ svc.icon }}</span>
-                          <span class="svc-label">{{ svc.label }}</span>
-                          <span class="svc-price">{{ svc.priceLabel }}</span>
+                          <span class="svc-text">
+                            <span class="svc-label">{{ svc.label }}</span>
+                            <span class="svc-price">{{ svc.priceLabel }}</span>
+                          </span>
                           <span class="svc-check" [class.visible]="isServiceSelected(svc.id)">✓</span>
                         </button>
                       }

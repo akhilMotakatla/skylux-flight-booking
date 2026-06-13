@@ -5,12 +5,10 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { FlightService } from '../../../core/services/flight.service';
 import { BookingService } from '../../../core/services/booking.service';
 import { Flight } from '../../../core/models/flight.model';
-import { AirHostessComponent } from '../../../layout/air-hostess/air-hostess.component';
-
 @Component({
   selector: 'app-booking-wizard',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, DatePipe, DecimalPipe, AirHostessComponent],
+  imports: [ReactiveFormsModule, FormsModule, DatePipe, DecimalPipe],
   templateUrl: './booking-wizard.component.html',
   styleUrl: './booking-wizard.component.scss'
 })
@@ -68,11 +66,6 @@ export class BookingWizardComponent implements OnInit {
   get cardTypeIcon() {
     const icons: Record<string, string> = { visa: '💳 VISA', mastercard: '💳 MC', amex: '💳 AMEX', discover: '💳 DISC' };
     return icons[this.cardType] || '💳';
-  }
-
-  get hostessStep(): number {
-    if (!this.flight()) return 0;
-    return this.step();
   }
 
   constructor(
