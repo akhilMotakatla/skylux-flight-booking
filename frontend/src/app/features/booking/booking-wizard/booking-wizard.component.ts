@@ -106,15 +106,76 @@ export class BookingWizardComponent implements OnInit {
     this.occupiedSeats.set(occupied);
   }
 
+  // ── Country list ────────────────────────────────────────────────────────
+  readonly countries = [
+    'Afghanistan','Albania','Algeria','Argentina','Australia','Austria','Bahrain',
+    'Bangladesh','Belgium','Brazil','Canada','Chile','China','Colombia','Croatia',
+    'Czech Republic','Denmark','Egypt','Ethiopia','Finland','France','Germany',
+    'Ghana','Greece','Hungary','India','Indonesia','Iran','Iraq','Ireland',
+    'Israel','Italy','Japan','Jordan','Kenya','Kuwait','Lebanon','Malaysia',
+    'Mexico','Morocco','Netherlands','New Zealand','Nigeria','Norway','Oman',
+    'Pakistan','Peru','Philippines','Poland','Portugal','Qatar','Romania',
+    'Russia','Saudi Arabia','Singapore','South Africa','South Korea','Spain',
+    'Sri Lanka','Sweden','Switzerland','Thailand','Turkey','UAE','UK','Ukraine',
+    'United States','Vietnam','Zimbabwe'
+  ];
+
+  // ── Additional Services ─────────────────────────────────────────────────
+  readonly services = [
+    { id: 'wheelchair',      icon: '♿', label: 'Wheelchair Assistance',    price: 0,  priceLabel: 'Free',       category: 'assistance' },
+    { id: 'infant_bassinet', icon: '👶', label: 'Bassinet / Infant Seat',   price: 0,  priceLabel: 'Free',       category: 'assistance' },
+    { id: 'visual_impaired', icon: '👁️', label: 'Visual Impairment Aid',    price: 0,  priceLabel: 'Free',       category: 'assistance' },
+    { id: 'extra_baggage',   icon: '🧳', label: 'Extra Baggage +23kg',      price: 45, priceLabel: '$45/bag',    category: 'baggage'    },
+    { id: 'sports_equip',    icon: '🏌️', label: 'Sports Equipment',         price: 65, priceLabel: '$65',        category: 'baggage'    },
+    { id: 'pet_cabin',       icon: '🐾', label: 'Pet in Cabin (≤8kg)',      price: 85, priceLabel: '$85',        category: 'extras'     },
+    { id: 'priority',        icon: '🚀', label: 'Priority Boarding',        price: 15, priceLabel: '$15/person', category: 'extras'     },
+    { id: 'lounge',          icon: '🛋️', label: 'Airport Lounge Access',    price: 35, priceLabel: '$35/person', category: 'extras'     },
+    { id: 'insurance_basic', icon: '🛡️', label: 'Travel Insurance – Basic', price: 25, priceLabel: '$25/person', category: 'insurance'  },
+    { id: 'insurance_plus',  icon: '🛡️', label: 'Travel Insurance – Plus',  price: 45, priceLabel: '$45/person', category: 'insurance'  },
+  ];
+
+  selectedServices = signal<Set<string>>(new Set());
+
+  readonly mealOptions = [
+    { value: '',            label: 'Standard (included)' },
+    { value: 'vegetarian',  label: '🥗 Vegetarian' },
+    { value: 'vegan',       label: '🌱 Vegan' },
+    { value: 'halal',       label: '☪️  Halal' },
+    { value: 'kosher',      label: '✡️  Kosher' },
+    { value: 'gluten_free', label: '🌾 Gluten-Free' },
+    { value: 'low_sodium',  label: '🧂 Low-Sodium' },
+  ];
+
+  toggleService(id: string) {
+    const s = new Set(this.selectedServices());
+    if (s.has(id)) { s.delete(id); } else { s.add(id); }
+    this.selectedServices.set(s);
+  }
+
+  isServiceSelected(id: string) { return this.selectedServices().has(id); }
+
+  get servicesTotal(): number {
+    let total = 0;
+    for (const id of this.selectedServices()) {
+      const svc = this.services.find(s => s.id === id);
+      if (svc) total += svc.price * (svc.category === 'assistance' || svc.category === 'baggage' ? 1 : this.passengerCount);
+    }
+    return total;
+  }
+
   private buildForm(count: number) {
     this.form = this.fb.group({
       passengers: this.fb.array(
         Array.from({ length: count }, () => this.fb.group({
+          title:          ['Mr'],
           firstName:      ['', Validators.required],
           lastName:       ['', Validators.required],
+          email:          ['', [Validators.required, Validators.email]],
+          mobile:         ['', Validators.required],
           passportNumber: ['', Validators.required],
           dateOfBirth:    ['', Validators.required],
-          nationality:    ['', Validators.required]
+          nationality:    ['', Validators.required],
+          mealPreference: ['']
         }))
       )
     });

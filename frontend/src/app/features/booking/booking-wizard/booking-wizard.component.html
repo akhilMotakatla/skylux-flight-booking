@@ -325,43 +325,207 @@
         @if (step() === 2) {
           <div class="wizard-step fade-up">
             <h2>Passenger <span class="gold-text">Details</span></h2>
+
             <form [formGroup]="form">
               <div formArrayName="passengers">
                 @for (pg of passengerGroups; track $index) {
                   <div [formGroupName]="$index" class="pax-card glass-card">
+                    <!-- Card header -->
                     <div class="pax-header">
-                      <span class="pax-num">Passenger {{ $index + 1 }}</span>
-                      <span class="seat-tag">Seat: <strong class="gold-text">{{ selectedSeats()[$index] || '—' }}</strong></span>
+                      <div class="pax-header-left">
+                        <div class="pax-avatar">{{ $index + 1 }}</div>
+                        <span class="pax-num">Passenger {{ $index + 1 }}</span>
+                      </div>
+                      <span class="seat-tag">
+                        <span class="seat-icon">💺</span>
+                        Seat: <strong class="gold-text">{{ selectedSeats()[$index] || '—' }}</strong>
+                      </span>
                     </div>
+
+                    <!-- Personal info grid -->
+                    <div class="pax-section-label">Personal Information</div>
+                    <div class="pax-grid">
+                      <!-- Title -->
+                      <div class="field field--sm">
+                        <label>Title</label>
+                        <select formControlName="title" class="glass-input glass-select">
+                          <option value="Mr">Mr</option>
+                          <option value="Mrs">Mrs</option>
+                          <option value="Ms">Ms</option>
+                          <option value="Dr">Dr</option>
+                          <option value="Prof">Prof</option>
+                        </select>
+                      </div>
+                      <!-- First name -->
+                      <div class="field">
+                        <label>First Name <span class="req">*</span></label>
+                        <input formControlName="firstName" placeholder="John" class="glass-input"
+                               [class.invalid]="pg.get('firstName')?.touched && pg.get('firstName')?.invalid" />
+                      </div>
+                      <!-- Last name -->
+                      <div class="field">
+                        <label>Last Name <span class="req">*</span></label>
+                        <input formControlName="lastName" placeholder="Doe" class="glass-input"
+                               [class.invalid]="pg.get('lastName')?.touched && pg.get('lastName')?.invalid" />
+                      </div>
+                    </div>
+
+                    <!-- Contact info -->
+                    <div class="pax-section-label">Contact Details</div>
+                    <div class="pax-grid">
+                      <div class="field field--wide">
+                        <label>Email Address <span class="req">*</span></label>
+                        <div class="input-icon-wrap">
+                          <span class="input-icon">✉</span>
+                          <input formControlName="email" type="email" placeholder="john.doe@email.com"
+                                 class="glass-input has-icon"
+                                 [class.invalid]="pg.get('email')?.touched && pg.get('email')?.invalid" />
+                        </div>
+                      </div>
+                      <div class="field field--wide">
+                        <label>Mobile Number <span class="req">*</span></label>
+                        <div class="mobile-wrap">
+                          <span class="country-code">+1</span>
+                          <input formControlName="mobile" type="tel" placeholder="555 123 4567"
+                                 class="glass-input mobile-input"
+                                 [class.invalid]="pg.get('mobile')?.touched && pg.get('mobile')?.invalid" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Travel documents -->
+                    <div class="pax-section-label">Travel Documents</div>
                     <div class="pax-grid">
                       <div class="field">
-                        <label>First Name *</label>
-                        <input formControlName="firstName" placeholder="John" class="glass-input" />
+                        <label>Passport Number <span class="req">*</span></label>
+                        <input formControlName="passportNumber" placeholder="AB1234567" class="glass-input"
+                               [class.invalid]="pg.get('passportNumber')?.touched && pg.get('passportNumber')?.invalid" />
                       </div>
                       <div class="field">
-                        <label>Last Name *</label>
-                        <input formControlName="lastName" placeholder="Doe" class="glass-input" />
+                        <label>Date of Birth <span class="req">*</span></label>
+                        <input formControlName="dateOfBirth" type="date" class="glass-input"
+                               [class.invalid]="pg.get('dateOfBirth')?.touched && pg.get('dateOfBirth')?.invalid" />
                       </div>
-                      <div class="field">
-                        <label>Passport Number *</label>
-                        <input formControlName="passportNumber" placeholder="AB1234567" class="glass-input" />
+                      <div class="field field--wide">
+                        <label>Nationality <span class="req">*</span></label>
+                        <select formControlName="nationality" class="glass-input glass-select"
+                                [class.invalid]="pg.get('nationality')?.touched && pg.get('nationality')?.invalid">
+                          <option value="" disabled>Select country…</option>
+                          @for (c of countries; track c) {
+                            <option [value]="c">{{ c }}</option>
+                          }
+                        </select>
                       </div>
-                      <div class="field">
-                        <label>Date of Birth *</label>
-                        <input formControlName="dateOfBirth" type="date" class="glass-input" />
-                      </div>
-                      <div class="field">
-                        <label>Nationality *</label>
-                        <input formControlName="nationality" placeholder="American" class="glass-input" />
-                      </div>
+                    </div>
+
+                    <!-- Meal preference -->
+                    <div class="pax-section-label">Meal Preference</div>
+                    <div class="meal-grid">
+                      @for (meal of mealOptions; track meal.value) {
+                        <label class="meal-chip" [class.active]="pg.get('mealPreference')?.value === meal.value">
+                          <input type="radio" [value]="meal.value" formControlName="mealPreference" />
+                          {{ meal.label }}
+                        </label>
+                      }
                     </div>
                   </div>
                 }
               </div>
             </form>
+
+            <!-- ── Additional Services ──────────────────────────────────── -->
+            <div class="services-section glass-card">
+              <div class="services-header">
+                <div class="services-title">
+                  <span class="services-icon">✨</span>
+                  <h3>Additional Services</h3>
+                </div>
+                <span class="services-sub">Enhance your travel experience</span>
+              </div>
+
+              <div class="services-categories">
+
+                <div class="svc-category">
+                  <div class="svc-cat-label">Special Assistance</div>
+                  <div class="svc-grid">
+                    @for (svc of services; track svc.id) {
+                      @if (svc.category === 'assistance') {
+                        <button type="button" class="svc-card" [class.selected]="isServiceSelected(svc.id)"
+                                (click)="toggleService(svc.id)">
+                          <span class="svc-icon">{{ svc.icon }}</span>
+                          <span class="svc-label">{{ svc.label }}</span>
+                          <span class="svc-price">{{ svc.priceLabel }}</span>
+                          <span class="svc-check" [class.visible]="isServiceSelected(svc.id)">✓</span>
+                        </button>
+                      }
+                    }
+                  </div>
+                </div>
+
+                <div class="svc-category">
+                  <div class="svc-cat-label">Baggage</div>
+                  <div class="svc-grid">
+                    @for (svc of services; track svc.id) {
+                      @if (svc.category === 'baggage') {
+                        <button type="button" class="svc-card" [class.selected]="isServiceSelected(svc.id)"
+                                (click)="toggleService(svc.id)">
+                          <span class="svc-icon">{{ svc.icon }}</span>
+                          <span class="svc-label">{{ svc.label }}</span>
+                          <span class="svc-price">{{ svc.priceLabel }}</span>
+                          <span class="svc-check" [class.visible]="isServiceSelected(svc.id)">✓</span>
+                        </button>
+                      }
+                    }
+                  </div>
+                </div>
+
+                <div class="svc-category">
+                  <div class="svc-cat-label">Comfort &amp; Extras</div>
+                  <div class="svc-grid">
+                    @for (svc of services; track svc.id) {
+                      @if (svc.category === 'extras') {
+                        <button type="button" class="svc-card" [class.selected]="isServiceSelected(svc.id)"
+                                (click)="toggleService(svc.id)">
+                          <span class="svc-icon">{{ svc.icon }}</span>
+                          <span class="svc-label">{{ svc.label }}</span>
+                          <span class="svc-price">{{ svc.priceLabel }}</span>
+                          <span class="svc-check" [class.visible]="isServiceSelected(svc.id)">✓</span>
+                        </button>
+                      }
+                    }
+                  </div>
+                </div>
+
+                <div class="svc-category">
+                  <div class="svc-cat-label">Travel Protection</div>
+                  <div class="svc-grid">
+                    @for (svc of services; track svc.id) {
+                      @if (svc.category === 'insurance') {
+                        <button type="button" class="svc-card" [class.selected]="isServiceSelected(svc.id)"
+                                (click)="toggleService(svc.id)">
+                          <span class="svc-icon">{{ svc.icon }}</span>
+                          <span class="svc-label">{{ svc.label }}</span>
+                          <span class="svc-price">{{ svc.priceLabel }}</span>
+                          <span class="svc-check" [class.visible]="isServiceSelected(svc.id)">✓</span>
+                        </button>
+                      }
+                    }
+                  </div>
+                </div>
+
+              </div>
+
+              @if (servicesTotal > 0) {
+                <div class="services-total">
+                  <span>Additional Services Total</span>
+                  <span class="svc-total-price gold-text">+${{ servicesTotal }}</span>
+                </div>
+              }
+            </div>
+
             <div class="step-actions">
               <button class="btn-ghost" (click)="prevStep()">← Back</button>
-              <button class="btn-gold" (click)="nextStep()">Continue →</button>
+              <button class="btn-gold" (click)="nextStep()">Continue to Payment →</button>
             </div>
           </div>
         }
