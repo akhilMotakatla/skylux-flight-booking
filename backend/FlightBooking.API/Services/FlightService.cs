@@ -26,10 +26,13 @@ public class FlightService : IFlightService
         if (direct.Count < 8)
             connecting = await SearchConnectingAsync(dto);
 
-        return direct.Concat(connecting)
-                     .OrderBy(f => (double)f.Price)
-                     .Take(60)
-                     .ToList();
+        var combined = direct.Concat(connecting).ToList();
+
+        // Safety-net: if DB has no flights for this route/date, generate synthetic results
+        if (!combined.Any())
+            combined = await GenerateSyntheticResultsAsync(dto);
+
+        return combined.OrderBy(f => (double)f.Price).Take(60).ToList();
     }
 
     private async Task<List<FlightResultDto>> SearchDirectAsync(FlightSearchDto dto)
@@ -129,6 +132,100 @@ public class FlightService : IFlightService
         return results;
     }
 
+    private async Task<List<FlightResultDto>> GenerateSyntheticResultsAsync(FlightSearchDto dto)
+    {
+        var fromIata = dto.From.Trim().ToUpperInvariant();
+        var toIata   = dto.To.Trim().ToUpperInvariant();
+
+        var from = await _db.Airports.FirstOrDefaultAsync(a => a.IATA == fromIata);
+        var to   = await _db.Airports.FirstOrDefaultAsync(a => a.IATA == toIata);
+        if (from == null || to == null) return new();
+
+        var airlines = await _db.Airlines.ToListAsync();
+        if (!airlines.Any()) return new();
+
+        // Seeded by route so searches on the same day/route are deterministic
+        var rng = new Random(Math.Abs(fromIata.GetHashCode() ^ toIata.GetHashCode() ^ dto.Date.DayOfYear));
+
+        var results = new List<FlightResultDto>();
+
+        // Connection hubs ordered by likely geographic relevance
+        var hubCandidates = new[] { "DXB","LHR","SIN","DOH","JFK","FRA","AMS","IST","DEL","BOM","KUL","BKK","CDG","HKG","ATL" };
+
+        int addedHubs = 0;
+        foreach (var hub in hubCandidates)
+        {
+            if (hub == fromIata || hub == toIata) continue;
+            if (addedHubs >= 4) break;
+
+            var hubAirport = await _db.Airports.FirstOrDefaultAsync(a => a.IATA == hub);
+            if (hubAirport == null) continue;
+
+            double d1 = Haversine(from.Latitude, from.Longitude, hubAirport.Latitude, hubAirport.Longitude);
+            double d2 = Haversine(hubAirport.Latitude, hubAirport.Longitude, to.Latitude, to.Longitude);
+
+            int mins1 = Math.Max(60, (int)(d1 / 820 * 60) + 55);
+            int mins2 = Math.Max(60, (int)(d2 / 820 * 60) + 55);
+
+            decimal price1 = (decimal)(d1 * 0.06 + 90);
+            decimal price2 = (decimal)(d2 * 0.06 + 90);
+
+            string cls = string.IsNullOrEmpty(dto.Class) || dto.Class == "Any" ? "Economy" : dto.Class;
+            decimal classMul = cls == "First" ? 5.5m : cls == "Business" ? 3.2m : 1m;
+
+            // Two departure slots per hub
+            int[] depHours = { 6, 14 };
+            for (int slot = 0; slot < 2; slot++)
+            {
+                var a1 = airlines[Math.Abs((fromIata.GetHashCode() + slot) % airlines.Count)];
+                var a2 = airlines[Math.Abs((toIata.GetHashCode()   + slot + 1) % airlines.Count)];
+
+                var dep  = dto.Date.Date.AddHours(depHours[slot]).AddMinutes(rng.Next(0, 12) * 5);
+                var arr1 = dep.AddMinutes(mins1);
+                int lay  = 90 + rng.Next(0, 4) * 30;
+                var dep2 = arr1.AddMinutes(lay);
+                var arr2 = dep2.AddMinutes(mins2);
+
+                decimal priceMul = 0.80m + (decimal)(rng.NextDouble() * 0.40);
+                string fn1 = $"{a1.Code}{rng.Next(100, 9999)}";
+                string fn2 = $"{a2.Code}{rng.Next(100, 9999)}";
+
+                results.Add(new FlightResultDto
+                {
+                    Id               = -(results.Count + 1),
+                    FlightNumber     = $"{fn1} / {fn2}",
+                    AirlineName      = a1.Name,
+                    AirlineLogo      = a1.Logo,
+                    AirlineCode      = a1.Code,
+                    DepartureCity    = from.City,
+                    DepartureCountry = from.Country,
+                    DepartureIATA    = from.IATA,
+                    ArrivalCity      = to.City,
+                    ArrivalCountry   = to.Country,
+                    ArrivalIATA      = to.IATA,
+                    DepartureTime    = dep,
+                    ArrivalTime      = arr2,
+                    DurationMinutes  = (int)(arr2 - dep).TotalMinutes,
+                    Price            = Math.Round((price1 + price2) * classMul * priceMul, 2),
+                    AvailableSeats   = 30 + rng.Next(0, 80),
+                    Class            = cls,
+                    IsConnecting     = true,
+                    ConnectionIATA   = hub,
+                    ConnectionCity   = hubAirport.City,
+                    LayoverMinutes   = lay,
+                    Leg2FlightId     = -(results.Count + 2),
+                    Leg2FlightNumber = fn2,
+                    Leg2AirlineName  = a2.Name,
+                    Leg2DepartureTime = dep2,
+                    Leg2ArrivalTime   = arr2
+                });
+            }
+            addedHubs++;
+        }
+
+        return results;
+    }
+
     public async Task<FlightResultDto?> GetFlightByIdAsync(int id)
     {
         var f = await _db.Flights
@@ -137,6 +234,17 @@ public class FlightService : IFlightService
             .Include(f => f.ArrivalAirport)
             .FirstOrDefaultAsync(f => f.Id == id);
         return f == null ? null : Map(f);
+    }
+
+    private static double Haversine(double lat1, double lon1, double lat2, double lon2)
+    {
+        const double R = 6371;
+        var dLat = (lat2 - lat1) * Math.PI / 180;
+        var dLon = (lon2 - lon1) * Math.PI / 180;
+        var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2)
+              + Math.Cos(lat1 * Math.PI / 180) * Math.Cos(lat2 * Math.PI / 180)
+              * Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+        return R * 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
     }
 
     private static FlightResultDto Map(Flight f) => new()

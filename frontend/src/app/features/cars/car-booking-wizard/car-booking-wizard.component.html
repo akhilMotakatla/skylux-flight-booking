@@ -1,0 +1,406 @@
+<div class="wizard-page">
+  <div class="wizard-bg"></div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner-ring"></div>
+      <p>Loading rental details…</p>
+    </div>
+  } @else if (!car) {
+    <div class="error-state glass-card">
+      <span class="err-icon">🚗</span>
+      <h3>Car not found</h3>
+      <p>The rental details could not be loaded.</p>
+      <button class="btn-gold" (click)="goToCars()">Back to Cars</button>
+    </div>
+  } @else {
+
+    <!-- Header -->
+    <div class="wiz-header">
+      <div class="container wiz-header-inner">
+        <button class="back-btn" (click)="goToCars()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          Back to Cars
+        </button>
+        <div>
+          <h1 class="wiz-title">{{ car.emoji }} {{ car.brand }} <span class="accent">{{ car.name }}</span></h1>
+          <p class="wiz-sub">{{ car.category }} · ${{ car.pricePerDay }}/day · {{ days }} day{{ days === 1 ? '' : 's' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step indicator (steps 1-3 only) -->
+    @if (step() < 4) {
+      <div class="step-indicator container">
+        @for (s of [1,2,3]; track s) {
+          <div class="step-item" [class.active]="step() === s" [class.done]="step() > s">
+            <div class="step-circle">{{ step() > s ? '✓' : s }}</div>
+            <div class="step-label">{{ ['Driver Details','Add-ons','Payment'][s - 1] }}</div>
+          </div>
+          @if (s < 3) {
+            <div class="step-line" [class.done]="step() > s"></div>
+          }
+        }
+      </div>
+    }
+
+    <!-- Main grid -->
+    <div class="container wiz-layout">
+
+      <!-- ─── Left: step content ─── -->
+      <div class="wiz-main">
+
+        <!-- STEP 1: Driver Details -->
+        @if (step() === 1) {
+          <div class="step-panel fade-up">
+            <h2 class="step-title">Driver <span class="accent">Details</span></h2>
+            <p class="step-sub">Enter the primary driver's information exactly as on the driving licence.</p>
+
+            <form [formGroup]="form" class="driver-form">
+
+              <div class="form-row">
+                <div class="form-field form-field--sm">
+                  <label>Title</label>
+                  <select formControlName="title" class="glass-input">
+                    <option>Mr</option><option>Mrs</option><option>Ms</option><option>Dr</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label>First Name <span class="req">*</span></label>
+                  <input formControlName="firstName" class="glass-input" placeholder="As on licence"
+                    [class.invalid]="form.get('firstName')?.invalid && form.get('firstName')?.touched"/>
+                  @if (form.get('firstName')?.invalid && form.get('firstName')?.touched) {
+                    <span class="err-msg">First name is required</span>
+                  }
+                </div>
+                <div class="form-field">
+                  <label>Last Name <span class="req">*</span></label>
+                  <input formControlName="lastName" class="glass-input" placeholder="As on licence"
+                    [class.invalid]="form.get('lastName')?.invalid && form.get('lastName')?.touched"/>
+                  @if (form.get('lastName')?.invalid && form.get('lastName')?.touched) {
+                    <span class="err-msg">Last name is required</span>
+                  }
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-field">
+                  <label>Email Address <span class="req">*</span></label>
+                  <input formControlName="email" type="email" class="glass-input" placeholder="your@email.com"
+                    [class.invalid]="form.get('email')?.invalid && form.get('email')?.touched"/>
+                  @if (form.get('email')?.invalid && form.get('email')?.touched) {
+                    <span class="err-msg">Valid email required</span>
+                  }
+                </div>
+                <div class="form-field">
+                  <label>Mobile Number <span class="req">*</span></label>
+                  <input formControlName="mobile" class="glass-input" placeholder="+1 234 567 8900"
+                    [class.invalid]="form.get('mobile')?.invalid && form.get('mobile')?.touched"/>
+                  @if (form.get('mobile')?.invalid && form.get('mobile')?.touched) {
+                    <span class="err-msg">Mobile number is required</span>
+                  }
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-field">
+                  <label>Driver's Licence No. <span class="req">*</span></label>
+                  <input formControlName="licenseNumber" class="glass-input" placeholder="e.g. DL-1234567"
+                    [class.invalid]="form.get('licenseNumber')?.invalid && form.get('licenseNumber')?.touched"/>
+                  @if (form.get('licenseNumber')?.invalid && form.get('licenseNumber')?.touched) {
+                    <span class="err-msg">Licence number is required</span>
+                  }
+                </div>
+                <div class="form-field">
+                  <label>Date of Birth <span class="req">*</span></label>
+                  <input formControlName="dateOfBirth" type="date" class="glass-input"
+                    [class.invalid]="form.get('dateOfBirth')?.invalid && form.get('dateOfBirth')?.touched"/>
+                  @if (form.get('dateOfBirth')?.invalid && form.get('dateOfBirth')?.touched) {
+                    <span class="err-msg">Date of birth is required</span>
+                  }
+                </div>
+                <div class="form-field">
+                  <label>Nationality <span class="req">*</span></label>
+                  <select formControlName="nationality" class="glass-input"
+                    [class.invalid]="form.get('nationality')?.invalid && form.get('nationality')?.touched">
+                    <option value="">Select country</option>
+                    @for (c of countries; track c) { <option>{{ c }}</option> }
+                  </select>
+                  @if (form.get('nationality')?.invalid && form.get('nationality')?.touched) {
+                    <span class="err-msg">Nationality is required</span>
+                  }
+                </div>
+              </div>
+
+            </form>
+          </div>
+        }
+
+        <!-- STEP 2: Add-ons -->
+        @if (step() === 2) {
+          <div class="step-panel fade-up">
+            <h2 class="step-title">Optional <span class="accent">Add-ons</span></h2>
+            <p class="step-sub">Enhance your rental with extras. All prices are per rental day.</p>
+
+            <div class="addons-grid">
+              @for (ao of addOnOptions; track ao.id) {
+                <div class="addon-card" [class.selected]="isAddOnSelected(ao.id)" (click)="toggleAddOn(ao.id)">
+                  <div class="addon-check">
+                    @if (isAddOnSelected(ao.id)) {
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+                    }
+                  </div>
+                  <span class="addon-icon">{{ ao.icon }}</span>
+                  <div class="addon-info">
+                    <div class="addon-label">{{ ao.label }}</div>
+                    <div class="addon-price">${{ ao.price }}/day</div>
+                  </div>
+                  @if (isAddOnSelected(ao.id)) {
+                    <span class="addon-cost">+${{ ao.price * days }}</span>
+                  }
+                </div>
+              }
+            </div>
+
+            @if (selectedAddOns().size === 0) {
+              <div class="no-addons-notice">💡 No add-ons selected — proceed without any extras.</div>
+            }
+          </div>
+        }
+
+        <!-- STEP 3: Payment -->
+        @if (step() === 3) {
+          <div class="step-panel fade-up">
+            <h2 class="step-title">Secure <span class="accent">Payment</span></h2>
+            <p class="step-sub">Your payment information is encrypted and never stored.</p>
+
+            <!-- Card visualiser -->
+            <div class="card-scene" (click)="cardFlipped.set(!cardFlipped())">
+              <div class="card-3d" [class.is-flipped]="cardFlipped()">
+                <!-- Front face -->
+                <div class="card-face card-front">
+                  <div class="card-chip">
+                    <div class="chip-line"></div><div class="chip-line"></div>
+                  </div>
+                  <div class="card-number-display">{{ cardNumber || '•••• •••• •••• ••••' }}</div>
+                  <div class="card-bottom-row">
+                    <div>
+                      <div class="card-field-lbl">CARD HOLDER</div>
+                      <div class="card-field-val">{{ cardName || 'YOUR NAME' }}</div>
+                    </div>
+                    <div>
+                      <div class="card-field-lbl">EXPIRES</div>
+                      <div class="card-field-val">{{ cardExpiry || 'MM/YY' }}</div>
+                    </div>
+                    <div class="card-type-badge">
+                      @if (cardType === 'visa') { VISA }
+                      @else if (cardType === 'mastercard') { MC }
+                      @else if (cardType === 'amex') { AMEX }
+                      @else if (cardType === 'discover') { DISC }
+                    </div>
+                  </div>
+                </div>
+                <!-- Back face -->
+                <div class="card-face card-back">
+                  <div class="card-mag-strip"></div>
+                  <div class="card-cvv-row">
+                    <div class="card-cvv-box">{{ cardCvv || '•••' }}</div>
+                    <span class="card-cvv-lbl">CVV</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="card-flip-hint">Click card to flip and see CVV</p>
+
+            <!-- Inputs -->
+            <div class="card-form">
+              <div class="form-field">
+                <label>Card Number</label>
+                <input class="glass-input" placeholder="1234 5678 9012 3456"
+                       [value]="cardNumber" (input)="onCardNumberInput($event)" maxlength="19"/>
+              </div>
+              <div class="form-row">
+                <div class="form-field">
+                  <label>Expiry (MM/YY)</label>
+                  <input class="glass-input" placeholder="MM/YY"
+                         [value]="cardExpiry" (input)="onExpiryInput($event)" maxlength="5"/>
+                </div>
+                <div class="form-field">
+                  <label>CVV</label>
+                  <input class="glass-input" placeholder="•••"
+                         [value]="cardCvv" (input)="onCvvInput($event)"
+                         (focus)="cardFlipped.set(true)" (blur)="cardFlipped.set(false)" maxlength="4"/>
+                </div>
+              </div>
+              <div class="form-field">
+                <label>Cardholder Name</label>
+                <input class="glass-input" placeholder="NAME AS ON CARD"
+                       [value]="cardName" (input)="onNameInput($event)" maxlength="30"/>
+              </div>
+            </div>
+
+            @if (error()) {
+              <div class="pay-error">⚠️ {{ error() }}</div>
+            }
+          </div>
+        }
+
+        <!-- STEP 4: Confirmation -->
+        @if (step() === 4 && car) {
+          <div class="step-panel confirmation-panel fade-up">
+            <div class="confirm-icon">🎉</div>
+            <h2 class="confirm-title">Booking <span class="accent">Confirmed!</span></h2>
+            <p class="confirm-sub">Your car rental has been reserved successfully.</p>
+
+            <div class="confirm-ref glass-card">
+              <div class="ref-label">BOOKING REFERENCE</div>
+              <div class="ref-code">{{ bookingRef() }}</div>
+            </div>
+
+            <div class="confirm-details glass-card">
+              <div class="cd-car-row">
+                <span class="cd-car-emoji">{{ car.emoji }}</span>
+                <div>
+                  <div class="cd-car-name">{{ car.brand }} {{ car.name }}</div>
+                  <div class="cd-car-cat">{{ car.category }}</div>
+                </div>
+              </div>
+              <div class="cd-divider"></div>
+              <div class="cd-items">
+                <div class="cd-item">
+                  <span class="cd-lbl">📍 Pickup</span>
+                  <span class="cd-val">{{ pickupLocation || 'Airport' }}</span>
+                </div>
+                <div class="cd-item">
+                  <span class="cd-lbl">🏁 Drop-off</span>
+                  <span class="cd-val">{{ dropoffLocation || 'Destination' }}</span>
+                </div>
+                <div class="cd-item">
+                  <span class="cd-lbl">📅 Pickup Date</span>
+                  <span class="cd-val">{{ pickupDate }}</span>
+                </div>
+                <div class="cd-item">
+                  <span class="cd-lbl">📅 Return Date</span>
+                  <span class="cd-val">{{ returnDate }}</span>
+                </div>
+                <div class="cd-item">
+                  <span class="cd-lbl">⏱ Duration</span>
+                  <span class="cd-val">{{ days }} day{{ days === 1 ? '' : 's' }}</span>
+                </div>
+                <div class="cd-item">
+                  <span class="cd-lbl">💳 Total Paid</span>
+                  <span class="cd-val cd-total">${{ totalPrice | number:'1.0-0' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="confirm-actions">
+              <button class="btn-gold" (click)="goHome()">Back to Home</button>
+              <button class="btn-outline" (click)="goToCars()">Rent Another Car</button>
+            </div>
+          </div>
+        }
+
+        <!-- Navigation buttons -->
+        @if (step() < 4) {
+          <div class="wiz-nav">
+            @if (step() > 1) {
+              <button class="btn-outline" (click)="prevStep()">← Back</button>
+            }
+            <button class="btn-gold nav-next" (click)="nextStep()" [disabled]="submitting()">
+              @if (submitting()) {
+                <span class="btn-spinner"></span> Processing…
+              } @else if (step() === 3) {
+                Confirm &amp; Pay ${{ totalPrice | number:'1.0-0' }}
+              } @else {
+                Continue →
+              }
+            </button>
+          </div>
+        }
+
+      </div>
+
+      <!-- ─── Right: Rental Summary ─── -->
+      @if (step() < 4 && car) {
+        <aside class="wiz-sidebar">
+          <div class="summary-card glass-card">
+            <h3 class="sum-title">Rental Summary</h3>
+
+            <div class="sum-car">
+              <span class="sum-car-emoji">{{ car.emoji }}</span>
+              <div>
+                <div class="sum-car-name">{{ car.brand }} {{ car.name }}</div>
+                <div class="sum-car-cat">{{ car.category }}</div>
+              </div>
+            </div>
+
+            <div class="sum-specs">
+              <span class="sum-spec">👥 {{ car.seats }} seats</span>
+              <span class="sum-spec">🧳 {{ car.bags }} bags</span>
+              <span class="sum-spec">⚙️ {{ car.transmission }}</span>
+              <span class="sum-spec">⛽ {{ car.fuel }}</span>
+            </div>
+
+            <div class="sum-divider"></div>
+
+            <div class="sum-section">
+              <div class="sum-row">
+                <span class="sum-lbl">📍 Pickup</span>
+                <span class="sum-val">{{ pickupLocation || '—' }}</span>
+              </div>
+              <div class="sum-row">
+                <span class="sum-lbl">🏁 Drop-off</span>
+                <span class="sum-val">{{ dropoffLocation || '—' }}</span>
+              </div>
+              <div class="sum-row">
+                <span class="sum-lbl">📅 From</span>
+                <span class="sum-val">{{ pickupDate || '—' }}</span>
+              </div>
+              <div class="sum-row">
+                <span class="sum-lbl">📅 To</span>
+                <span class="sum-val">{{ returnDate || '—' }}</span>
+              </div>
+              <div class="sum-row">
+                <span class="sum-lbl">⏱ Days</span>
+                <span class="sum-val">{{ days }} day{{ days === 1 ? '' : 's' }}</span>
+              </div>
+            </div>
+
+            <div class="sum-divider"></div>
+
+            <div class="sum-section">
+              <div class="sum-row">
+                <span class="sum-lbl">Base rental</span>
+                <span class="sum-val">${{ car.pricePerDay }}/day × {{ days }}</span>
+              </div>
+              <div class="sum-row">
+                <span class="sum-lbl"></span>
+                <span class="sum-val">${{ basePrice | number:'1.0-0' }}</span>
+              </div>
+              @for (id of selectedAddOnsArray(); track id) {
+                <div class="sum-row sum-row--addon">
+                  <span class="sum-lbl">{{ getAddOn(id)?.icon }} {{ getAddOn(id)?.label }}</span>
+                  <span class="sum-val">+${{ (getAddOn(id)?.price ?? 0) * days }}</span>
+                </div>
+              }
+            </div>
+
+            <div class="sum-divider"></div>
+
+            <div class="sum-total">
+              <span class="sum-total-lbl">Total</span>
+              <span class="sum-total-amt">${{ totalPrice | number:'1.0-0' }}</span>
+            </div>
+
+            <div class="sum-note">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Free cancellation up to 24h before pickup
+            </div>
+          </div>
+        </aside>
+      }
+
+    </div>
+  }
+</div>

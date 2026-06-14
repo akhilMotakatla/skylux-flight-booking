@@ -1,0 +1,15 @@
+<div class="dp-wrap">
+  <label class="dp-label">{{ label }}</label>
+
+  <button class="dp-trigger" [class.has-value]="!!value" [class.is-open]="isOpen()"
+          (click)="toggle()" type="button">
+    <svg class="dp-cal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <rect x="3" y="4" width="18" height="18" rx="3"/>
+      <path d="M16 2v4M8 2v4M3 10h18"/>
+    </svg>
+    <span class="dp-text" [class.dp-placeholder]="!value">{{ displayValue || placeholder }}</span>
+    <svg class="dp-chevron" [class.rotated]="isOpen()" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M1 1l5 5 5-5"/>
+    </svg>
+  </button>
+</div>

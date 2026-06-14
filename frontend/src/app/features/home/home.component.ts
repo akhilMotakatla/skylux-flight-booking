@@ -5,12 +5,13 @@ import {
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AirportAutocompleteComponent } from '../../shared/components/airport-autocomplete/airport-autocomplete.component';
+import { DatePickerComponent } from '../../shared/components/date-picker/date-picker.component';
 import { Airport } from '../../core/models/airport.model';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [FormsModule, AirportAutocompleteComponent],
+  imports: [FormsModule, AirportAutocompleteComponent, DatePickerComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -197,6 +198,16 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   // ─── Flight form ───────────────────────────────────────────────────────────
+  get todayStr(): string {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  get maxStr(): string {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() + 1);
+    return d.toISOString().split('T')[0];
+  }
+
   setMinDate() {
     const d = new Date(); d.setDate(d.getDate() + 1);
     this.departDate.set(d.toISOString().split('T')[0]);

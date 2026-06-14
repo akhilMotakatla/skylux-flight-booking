@@ -64,17 +64,23 @@
           <!-- Options row -->
           <div class="options-row">
             <div class="field">
-              <label>Depart</label>
-              <input type="date" class="glass-input field-input"
-                [ngModel]="departDate()" [ngModelOptions]="{standalone:true}"
-                (ngModelChange)="departDate.set($event)"/>
+              <app-date-picker
+                label="Depart"
+                placeholder="Pick departure date"
+                [min]="todayStr"
+                [max]="maxStr"
+                [value]="departDate()"
+                (valueChange)="departDate.set($event)"/>
             </div>
             @if (tripType() === 'round-trip') {
               <div class="field">
-                <label>Return</label>
-                <input type="date" class="glass-input field-input"
-                  [ngModel]="returnDate()" [ngModelOptions]="{standalone:true}"
-                  (ngModelChange)="returnDate.set($event)"/>
+                <app-date-picker
+                  label="Return"
+                  placeholder="Pick return date"
+                  [min]="departDate() || todayStr"
+                  [max]="maxStr"
+                  [value]="returnDate()"
+                  (valueChange)="returnDate.set($event)"/>
               </div>
             }
             <div class="field">
@@ -125,14 +131,22 @@
           <!-- Dates + car type -->
           <div class="options-row">
             <div class="field">
-              <label>Pickup Date</label>
-              <input type="date" class="glass-input field-input"
-                [(ngModel)]="carPickupDate" [ngModelOptions]="{standalone:true}"/>
+              <app-date-picker
+                label="Pickup Date"
+                placeholder="Pick pickup date"
+                [min]="todayStr"
+                [max]="maxStr"
+                [value]="carPickupDate"
+                (valueChange)="carPickupDate = $event"/>
             </div>
             <div class="field">
-              <label>Return Date</label>
-              <input type="date" class="glass-input field-input"
-                [(ngModel)]="carReturnDate" [ngModelOptions]="{standalone:true}"/>
+              <app-date-picker
+                label="Return Date"
+                placeholder="Pick return date"
+                [min]="carPickupDate || todayStr"
+                [max]="maxStr"
+                [value]="carReturnDate"
+                (valueChange)="carReturnDate = $event"/>
             </div>
             <div class="field">
               <label>Car Type</label>

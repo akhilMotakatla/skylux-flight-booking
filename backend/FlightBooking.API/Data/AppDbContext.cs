@@ -13,6 +13,8 @@ public class AppDbContext : DbContext
     public DbSet<Flight> Flights => Set<Flight>();
     public DbSet<Booking> Bookings => Set<Booking>();
     public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
+    public DbSet<Car> Cars => Set<Car>();
+    public DbSet<CarRental> CarRentals => Set<CarRental>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -29,6 +31,22 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Booking>()
             .Property(b => b.TotalPrice)
+            .HasColumnType("REAL");
+
+        modelBuilder.Entity<Car>()
+            .Property(c => c.PricePerDay)
+            .HasColumnType("REAL");
+
+        modelBuilder.Entity<Car>()
+            .Property(c => c.Rating)
+            .HasColumnType("REAL");
+
+        modelBuilder.Entity<CarRental>()
+            .Property(r => r.TotalPrice)
+            .HasColumnType("REAL");
+
+        modelBuilder.Entity<CarRental>()
+            .Property(r => r.CarPricePerDay)
             .HasColumnType("REAL");
     }
 }

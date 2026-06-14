@@ -499,3 +499,186 @@
   .conn-leg    { font-size: 12px; color: v.$white-70; font-family: v.$font-mono; }
   .conn-layover { font-size: 11px; color: v.$warning; font-weight: 600; }
 }
+
+// ── Ticket Tier Selector ──────────────────────────────────────────────────────
+.card-extra { flex-direction: column; }
+
+.tier-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: v.$spacing-md;
+}
+
+.tier-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: v.$gold-400;
+  padding-bottom: v.$spacing-xs;
+  border-bottom: 1px solid rgba(212,160,23,0.15);
+}
+
+.tier-group {
+  display: flex;
+  align-items: center;
+  gap: v.$spacing-md;
+  flex-wrap: wrap;
+}
+
+.tier-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  width: 80px;
+  flex-shrink: 0;
+
+  &.eco-label   { color: rgba(34,197,94,0.85); }
+  &.biz-label   { color: rgba(59,130,246,0.9); }
+  &.first-label { color: v.$gold-400; }
+}
+
+.tier-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tier-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: v.$radius-full;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+  color: v.$white-70;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.22s cubic-bezier(0.23, 1, 0.32, 1);
+  backdrop-filter: blur(8px);
+
+  &:hover {
+    border-color: rgba(34,197,94,0.5);
+    background: rgba(34,197,94,0.08);
+    color: v.$white;
+    transform: translateY(-2px);
+  }
+
+  &.active {
+    border-color: rgba(34,197,94,0.7);
+    background: rgba(34,197,94,0.14);
+    color: rgba(34,197,94,1);
+    box-shadow: 0 0 12px rgba(34,197,94,0.2);
+  }
+
+  &--biz {
+    &:hover {
+      border-color: rgba(59,130,246,0.5);
+      background: rgba(59,130,246,0.08);
+    }
+    &.active {
+      border-color: rgba(59,130,246,0.7);
+      background: rgba(59,130,246,0.14);
+      color: rgba(147,197,253,1);
+      box-shadow: 0 0 12px rgba(59,130,246,0.2);
+    }
+  }
+
+  &--first {
+    &:hover {
+      border-color: rgba(212,160,23,0.5);
+      background: rgba(212,160,23,0.08);
+    }
+    &.active {
+      border-color: rgba(212,160,23,0.8);
+      background: rgba(212,160,23,0.15);
+      color: v.$gold-400;
+      box-shadow: 0 0 14px rgba(212,160,23,0.3);
+    }
+  }
+
+  .pill-name { letter-spacing: 0.2px; }
+  .pill-mul  { font-size: 10px; opacity: 0.65; font-family: v.$font-mono; }
+}
+
+// ── Tier features grid ────────────────────────────────────────────────────────
+.tier-features {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px 24px;
+  padding: v.$spacing-md;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: v.$radius-md;
+
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.tf-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+
+  &:last-child, &:nth-last-child(2):nth-child(odd) { border-bottom: none; }
+}
+
+.tf-label {
+  font-size: 11px;
+  color: v.$white-40;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+
+.tf-val {
+  font-size: 12px;
+  color: v.$white-70;
+  text-align: right;
+}
+
+// ── Tier book row ─────────────────────────────────────────────────────────────
+.tier-book-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.$spacing-md;
+  padding-top: v.$spacing-sm;
+}
+
+.tier-book-price {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .tbp-label { font-size: 11px; color: v.$white-40; }
+  .tbp-total {
+    font-family: v.$font-display;
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    text-shadow: 0 0 16px rgba(212,160,23,0.3);
+  }
+}
+
+.tier-book-btn {
+  padding: 12px 28px;
+  border-radius: v.$radius-full;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+
+  &:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 10px 28px rgba(212,160,23,0.55);
+  }
+}

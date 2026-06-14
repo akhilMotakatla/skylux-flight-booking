@@ -543,7 +543,10 @@
                 <div class="sum-row"><span>{{ f.departureIATA }} → {{ f.arrivalIATA }}</span><span>{{ f.departureTime | date:'MMM d, HH:mm' }}</span></div>
                 <div class="sum-row"><span>Seats</span><span>{{ selectedSeats().join(', ') }}</span></div>
                 <div class="sum-row"><span>{{ passengerCount }} Passenger{{ passengerCount > 1 ? 's' : '' }}</span><span>${{ f.price | number:'1.0-0' }} × {{ passengerCount }}</span></div>
-                <div class="sum-row total"><span>Total</span><span class="gold-text">${{ (f.price * passengerCount) | number:'1.2-2' }}</span></div>
+                @if (servicesTotal > 0) {
+                  <div class="sum-row"><span>Additional Services</span><span>+${{ servicesTotal | number:'1.0-0' }}</span></div>
+                }
+                <div class="sum-row total"><span>Total</span><span class="gold-text">${{ (f.price * passengerCount + servicesTotal) | number:'1.2-2' }}</span></div>
               </div>
             }
 

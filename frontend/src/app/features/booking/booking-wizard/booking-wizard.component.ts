@@ -81,6 +81,19 @@ export class BookingWizardComponent implements OnInit {
     const passengers = +this.route.snapshot.queryParamMap.get('passengers')! || 1;
     this.passengerCount = passengers;
 
+    // Flight results page stores the full Flight object so connecting/synthetic
+    // flights display correctly instead of showing only the leg-1 DB fragment.
+    const stored = sessionStorage.getItem('bookingFlight');
+    if (stored) {
+      sessionStorage.removeItem('bookingFlight');
+      const f: Flight = JSON.parse(stored);
+      this.flight.set(f);
+      this.loading.set(false);
+      this.generateOccupied(f.availableSeats, f.totalSeats ?? 180);
+      this.buildForm(passengers);
+      return;
+    }
+
     this.flightService.getFlightById(id).subscribe({
       next: f => {
         this.flight.set(f);

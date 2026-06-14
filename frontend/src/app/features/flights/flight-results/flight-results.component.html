@@ -118,10 +118,81 @@
                     <span class="conn-leg">Leg 2: {{ flight.connectionIATA }} → {{ flight.arrivalIATA }} · {{ flight.leg2FlightNumber }}</span>
                   </div>
                 }
-                <div class="amenity"><span>🍽️</span> Complimentary meal</div>
-                <div class="amenity"><span>📶</span> Wi-Fi available</div>
-                <div class="amenity"><span>🎬</span> In-flight entertainment</div>
-                <div class="amenity"><span>💼</span> {{ flight.class === 'First' ? '3×32kg' : flight.class === 'Business' ? '2×32kg' : '1×23kg' }} baggage</div>
+
+                <!-- ── Ticket Tier Selector ──────────────────────────────── -->
+                <div class="tier-section">
+                  <div class="tier-section-title">Select Your Experience</div>
+
+                  <!-- Tier group: Economy -->
+                  <div class="tier-group">
+                    <span class="tier-group-label eco-label">Economy Cabin</span>
+                    <div class="tier-pills">
+                      @for (t of ticketTiers.slice(0,4); track t.id) {
+                        <button class="tier-pill"
+                                [class.active]="(selectedTiers().get(flight.id) ?? 'economy') === t.id"
+                                (click)="selectTier(flight.id, t.id, $event)">
+                          <span class="pill-name">{{ t.label }}</span>
+                          <span class="pill-mul">×{{ t.priceMul }}</span>
+                        </button>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Tier group: Business -->
+                  <div class="tier-group">
+                    <span class="tier-group-label biz-label">Business Cabin</span>
+                    <div class="tier-pills">
+                      @for (t of ticketTiers.slice(4,6); track t.id) {
+                        <button class="tier-pill tier-pill--biz"
+                                [class.active]="(selectedTiers().get(flight.id) ?? 'economy') === t.id"
+                                (click)="selectTier(flight.id, t.id, $event)">
+                          <span class="pill-name">{{ t.label }}</span>
+                          <span class="pill-mul">×{{ t.priceMul }}</span>
+                        </button>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Tier group: First -->
+                  <div class="tier-group">
+                    <span class="tier-group-label first-label">First Class</span>
+                    <div class="tier-pills">
+                      <button class="tier-pill tier-pill--first"
+                              [class.active]="(selectedTiers().get(flight.id) ?? 'economy') === 'first_class'"
+                              (click)="selectTier(flight.id, 'first_class', $event)">
+                        <span class="pill-name">First Class</span>
+                        <span class="pill-mul">×12</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Selected tier feature grid -->
+                  @let tier = getSelectedTier(flight.id);
+                  <div class="tier-features">
+                    <div class="tf-row"><span class="tf-label">Seat Pitch</span><span class="tf-val">{{ tier.pitch }}</span></div>
+                    <div class="tf-row"><span class="tf-label">Baggage</span><span class="tf-val">{{ tier.baggage }}</span></div>
+                    <div class="tf-row"><span class="tf-label">Meals</span><span class="tf-val">{{ tier.meals }}</span></div>
+                    <div class="tf-row"><span class="tf-label">Cancellation</span><span class="tf-val">{{ tier.cancel }}</span></div>
+                    <div class="tf-row"><span class="tf-label">Refund Policy</span><span class="tf-val">{{ tier.refund }}</span></div>
+                    <div class="tf-row"><span class="tf-label">Seat Selection</span><span class="tf-val">{{ tier.seatSel }}</span></div>
+                    <div class="tf-row"><span class="tf-label">Lounge Access</span><span class="tf-val">{{ tier.lounge }}</span></div>
+                    <div class="tf-row"><span class="tf-label">Priority Boarding</span><span class="tf-val">{{ tier.priority }}</span></div>
+                    <div class="tf-row"><span class="tf-label">Wi-Fi</span><span class="tf-val">{{ tier.wifi }}</span></div>
+                    <div class="tf-row"><span class="tf-label">Seat / Bed</span><span class="tf-val">{{ tier.recline }}</span></div>
+                  </div>
+
+                  <!-- Price + book row -->
+                  <div class="tier-book-row">
+                    <div class="tier-book-price">
+                      <span class="tbp-label">{{ tier.label }} · {{ passengers }} pax</span>
+                      <span class="tbp-total gold-text">${{ getTierPrice(flight.price, flight.id) * passengers | number:'1.0-0' }}</span>
+                    </div>
+                    <button class="btn-gold tier-book-btn"
+                            (click)="$event.stopPropagation(); book(flight)">
+                      Book {{ tier.label }} →
+                    </button>
+                  </div>
+                </div>
               </div>
             }
           </div>

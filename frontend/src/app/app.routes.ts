@@ -38,5 +38,10 @@ export const routes: Routes = [
     path: 'cars',
     loadComponent: () => import('./features/cars/car-search.component').then(m => m.CarSearchComponent)
   },
+  {
+    path: 'cars/:id/book',
+    loadComponent: () => import('./features/cars/car-booking-wizard/car-booking-wizard.component').then(m => m.CarBookingWizardComponent),
+    canActivate: [authGuard]
+  },
   { path: '**', redirectTo: '' }
 ];

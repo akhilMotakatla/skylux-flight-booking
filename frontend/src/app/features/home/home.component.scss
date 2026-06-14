@@ -100,14 +100,23 @@
 
 
 // ─── Search Widget ──────────────────────────────────────────────────────────
+// Override the global fade-up animation with one whose `to` keyframe omits
+// `transform`. The global fade-up ends at transform:translateY(0) which,
+// even though visually zero, creates a CSS stacking context that breaks
+// position:fixed children (like the date-picker calendar popover).
+@keyframes widget-reveal {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; }   // no transform → resolves to transform:none → no stacking context
+}
+
 .search-widget {
   position: relative;
   padding: v.$spacing-xl;
   background: rgba(8,18,36,0.88) !important;
   border-color: rgba(212,160,23,0.25) !important;
   max-width: 740px;
-  // Breathing gold glow
-  animation: neon-pulse 4s ease-in-out infinite;
+  // Use custom reveal so transform settles to `none` (not translateY(0))
+  animation: widget-reveal 0.7s ease both, neon-pulse 4s ease-in-out 0.7s infinite;
 
   @include m.respond-to('md') { padding: v.$spacing-lg; }
 }

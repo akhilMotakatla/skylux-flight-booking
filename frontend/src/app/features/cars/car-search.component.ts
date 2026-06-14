@@ -739,7 +739,15 @@ export class CarSearchComponent implements OnInit {
   }
 
   bookCar(car: CarListing) {
-    alert(`Booking ${car.brand} ${car.name} — $${car.pricePerDay}/day\n\nThis would open the booking wizard in a full implementation.`);
+    sessionStorage.setItem('bookingCar', JSON.stringify(car));
+    this.router.navigate(['/cars', car.id, 'book'], {
+      queryParams: {
+        pickup:  this.pickup  || '',
+        dropoff: this.dropoff || '',
+        from:    this.from    || '',
+        to:      this.to      || ''
+      }
+    });
   }
 
   goHome() { this.router.navigate(['/']); }

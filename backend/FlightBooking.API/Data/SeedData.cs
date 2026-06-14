@@ -7,8 +7,9 @@ public static class SeedData
 {
     public static async Task SeedAsync(AppDbContext db)
     {
-        if (db.Airports.Any()) return;
-
+        bool needsStaticSeed = !db.Airports.Any();
+    if (needsStaticSeed)
+    {
         // ─── AIRPORTS ─────────────────────────────────────────────────────────
         var airports = new List<Airport>
         {
@@ -655,7 +656,18 @@ public static class SeedData
             await db.SaveChangesAsync();
         }
 
-        // ─── GENERATE FLIGHTS ─────────────────────────────────────────────────
+    } // end needsStaticSeed
+
+        // ─── GENERATE FLIGHTS (rolling 30-day window) ──────────────────────────
+        // Re-generate whenever no future flights remain in the DB
+        var tomorrow = DateTime.UtcNow.Date.AddDays(1);
+        if (!await db.Flights.AnyAsync(f => f.DepartureTime >= tomorrow))
+        {
+            if (await db.Flights.AnyAsync())
+            {
+                await db.Database.ExecuteSqlRawAsync("DELETE FROM \"Flights\"");
+            }
+
         var allAirports = await db.Airports.ToListAsync();
 
         // ─── ROUTES ───────────────────────────────────────────────────────────
@@ -692,7 +704,7 @@ public static class SeedData
             int flightMins  = (int)(distKm / 820 * 60) + 55;
 
             // 10 flights per route per day across all airlines, 10 days ahead
-            for (int day = 1; day <= 10; day++)
+            for (int day = 1; day <= 30; day++)
             {
                 var depDate = DateTime.UtcNow.Date.AddDays(day);
                 for (int slot = 0; slot < 10; slot++)
@@ -730,6 +742,26 @@ public static class SeedData
         for (int i = 0; i < flights.Count; i += batchSize)
         {
             await db.Flights.AddRangeAsync(flights.Skip(i).Take(batchSize));
+            await db.SaveChangesAsync();
+        }
+        } // end if (!hasFutureFlights)
+
+        // ─── CARS ─────────────────────────────────────────────────────────────
+        if (!db.Cars.Any())
+        {
+            var cars = new List<Car>
+            {
+                new() { Name="Corolla", Brand="Toyota", Category="Economy", Emoji="🚗", Seats=5, Bags=2, Transmission="Auto", Fuel="Petrol", PricePerDay=29, Rating=4.6m, Reviews=1240, FeaturesJson="""["A/C","Bluetooth","USB"]""", Color="linear-gradient(135deg,#22d3ee,#0891b2)", Available=true },
+                new() { Name="Polo", Brand="Volkswagen", Category="Compact", Emoji="🚙", Seats=5, Bags=2, Transmission="Manual", Fuel="Diesel", PricePerDay=39, Rating=4.4m, Reviews=876, FeaturesJson="""["A/C","GPS","Heated Seats"]""", Color="linear-gradient(135deg,#a78bfa,#7c3aed)", Available=true },
+                new() { Name="CR-V", Brand="Honda", Category="SUV", Emoji="🚐", Seats=7, Bags=4, Transmission="Auto", Fuel="Hybrid", PricePerDay=59, Rating=4.8m, Reviews=2103, FeaturesJson="""["A/C","GPS","Leather","Sunroof"]""", Color="linear-gradient(135deg,#34d399,#059669)", Available=true },
+                new() { Name="5 Series", Brand="BMW", Category="Business", Emoji="🚘", Seats=5, Bags=3, Transmission="Auto", Fuel="Petrol", PricePerDay=99, Rating=4.9m, Reviews=543, FeaturesJson="""["A/C","GPS","Leather","Ambient Lighting","Sunroof"]""", Color="linear-gradient(135deg,#f59e0b,#d97706)", Available=true },
+                new() { Name="Range Rover", Brand="Land Rover", Category="Luxury", Emoji="🏎️", Seats=5, Bags=4, Transmission="Auto", Fuel="Hybrid", PricePerDay=199, Rating=4.9m, Reviews=287, FeaturesJson="""["A/C","GPS","Massage Seats","Panoramic Roof","Surround Sound"]""", Color="linear-gradient(135deg,#fb923c,#dc2626)", Available=true },
+                new() { Name="Phantom", Brand="Rolls-Royce", Category="Luxury", Emoji="👑", Seats=4, Bags=3, Transmission="Auto", Fuel="Petrol", PricePerDay=499, Rating=5.0m, Reviews=94, FeaturesJson="""["Chauffeur","Champagne Bar","Starlight Roof","Stargazer Seats"]""", Color="linear-gradient(135deg,#fde68a,#d4a017)", Available=true },
+                new() { Name="911 Carrera", Brand="Porsche", Category="Sports", Emoji="🏁", Seats=2, Bags=1, Transmission="Auto", Fuel="Petrol", PricePerDay=299, Rating=4.9m, Reviews=178, FeaturesJson="""["Sport Mode","Launch Control","Carbon Ceramic Brakes"]""", Color="linear-gradient(135deg,#f472b6,#be185d)", Available=true },
+                new() { Name="Model 3", Brand="Tesla", Category="Compact", Emoji="⚡", Seats=5, Bags=3, Transmission="Auto", Fuel="Electric", PricePerDay=79, Rating=4.8m, Reviews=1541, FeaturesJson="""["Autopilot","Full Self-Driving","OTA Updates","Supercharger"]""", Color="linear-gradient(135deg,#67e8f9,#0e7490)", Available=false },
+                new() { Name="E-Class", Brand="Mercedes", Category="Business", Emoji="🌟", Seats=5, Bags=3, Transmission="Auto", Fuel="Diesel", PricePerDay=119, Rating=4.8m, Reviews=634, FeaturesJson="""["A/C","Widescreen Display","Leather","Ambient Light"]""", Color="linear-gradient(135deg,#c084fc,#9333ea)", Available=true },
+            };
+            await db.Cars.AddRangeAsync(cars);
             await db.SaveChangesAsync();
         }
     }

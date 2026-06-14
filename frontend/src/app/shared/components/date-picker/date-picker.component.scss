@@ -1,0 +1,61 @@
+// Trigger button only — calendar popover is a body-level DOM portal (see component.ts)
+$gold: #d4a017;
+
+.dp-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dp-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.60);
+}
+
+.dp-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 14px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(212,160,23,0.22);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  text-align: left;
+
+  &:hover, &.is-open {
+    border-color: rgba(212,160,23,0.55);
+    background: rgba(212,160,23,0.07);
+    box-shadow: 0 0 0 3px rgba(212,160,23,0.10);
+  }
+}
+
+.dp-cal-icon {
+  width: 16px;
+  height: 16px;
+  color: $gold;
+  flex-shrink: 0;
+}
+
+.dp-text {
+  flex: 1;
+  font-size: 14px;
+  color: #fff;
+  &.dp-placeholder { color: rgba(255,255,255,0.55); }
+}
+
+.dp-chevron {
+  width: 12px;
+  height: 8px;
+  color: $gold;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+  &.rotated { transform: rotate(180deg); }
+}
